@@ -1,0 +1,17 @@
+{ "circle": {
+  "id": "c1", "name": "Weekend Savers", "tier": 2, "contributionCents": 10000, "frequency": "monthly",
+  "memberLimit": 5, "memberCount": 5, "status": "active", "creatorName": "Tunde",
+  "nationalitiesInCircle": ["US", "GB"], "risk": "safe", "riskReason": "Members' currencies have been steady against USD.", "ownTier": true,
+  "inviteCode": "AJO-7K2Q", "includedNationalities": [], "excludedNationalities": [],
+  "currentCycle": 1, "totalCycles": 5, "potCents": 50000, "paidThisCycleCents": 50000,
+  "members": [
+    { "userId": "u1", "name": "Ada", "nationality": "US", "tier": 2, "rank": null, "turnPosition": 1, "currentCycleStatus": "paid" },
+    { "userId": "u2", "name": "Tunde", "nationality": "GB", "tier": 2, "rank": null, "turnPosition": 2, "currentCycleStatus": "paid" },
+    { "userId": "u3", "name": "Chidi", "nationality": "US", "tier": 1, "rank": null, "turnPosition": 3, "currentCycleStatus": "paid" },
+    { "userId": "u4", "name": "Bola", "nationality": "US", "tier": 1, "rank": null, "turnPosition": 4, "currentCycleStatus": "paid" },
+    { "userId": "u5", "name": "Efe", "nationality": "GB", "tier": 1, "rank": null, "turnPosition": 5, "currentCycleStatus": "paid" }
+  ],
+  "currentWinnerId": "u1",
+  "payout": { "id": "p1", "circleId": "c1", "cycle": 1, "winnerId": "u1", "grossCents": 50000, "feeCents": 750, "netCents": 49250, "status": "prepared" },
+  "viewerPaidThisCycle": true, "viewerIsCurrentWinner": true
+} }

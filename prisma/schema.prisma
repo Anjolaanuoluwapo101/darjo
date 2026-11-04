@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  nationality  String
+  currency     String
+  score        Int      @default(0)
+  tier         Int      @default(1)
+  rank         String?
+  createdAt    DateTime @default(now())
+  memberships  Membership[]
+  payments     Payment[]
+  scoreEvents  ScoreEvent[]
+}
+
+model Circle {
+  id                   String   @id @default(cuid())
+  name                 String
+  creatorId            String
+  tier                 Int
+  contributionCents    Int
+  frequency            String   // weekly | monthly
+  memberLimit          Int
+  status               String   @default("open") // open | active | completed
+  inviteCode           String   @unique
+  includedNationalities String[]
+  excludedNationalities String[]
+  currentCycle         Int      @default(1)
+  cycleStartedAt       DateTime?
+  createdAt            DateTime @default(now())
+  memberships          Membership[]
+  payments             Payment[]
+  payouts              Payout[]
+}
+
+model Membership {
+  id           String @id @default(cuid())
+  circleId     String
+  userId       String
+  turnPosition Int
+  circle       Circle @relation(fields: [circleId], references: [id])
+  user         User   @relation(fields: [userId], references: [id])
+  @@unique([circleId, userId])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  circleId        String
+  cycle           Int
+  userId          String
+  amountCents     Int
+  status          String   @default("pending") // pending | paid | late | failed
+  paypalOrderId   String?
+  paypalCaptureId String?
+  dueAt           DateTime
+  paidAt          DateTime?
+  circle          Circle   @relation(fields: [circleId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+  @@unique([circleId, cycle, userId])
+}
+
+model Payout {
+  id             String   @id @default(cuid())
+  circleId       String
+  cycle          Int
+  winnerId       String
+  grossCents     Int
+  feeCents       Int
+  netCents       Int
+  status         String   @default("prepared") // prepared | released | paid | failed
+  paypalBatchId  String?
+  idempotencyKey String   @unique
+  circle         Circle   @relation(fields: [circleId], references: [id])
+  @@unique([circleId, cycle])
+}
+
+model ScoreEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  circleId  String
+  type      String   // on_time | late | failed | recovered
+  points    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model WebhookEvent {
+  id          String   @id // PayPal event id, used to ignore duplicates
+  processedAt DateTime @default(now())
+}

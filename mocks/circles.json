@@ -1,0 +1,4 @@
+{ "circles": [
+  { "id": "c1", "name": "Weekend Savers", "tier": 2, "contributionCents": 10000, "frequency": "monthly", "memberLimit": 5, "memberCount": 3, "status": "open", "creatorName": "Tunde", "nationalitiesInCircle": ["US", "GB"], "risk": "safe", "riskReason": "Members' currencies have been steady against USD.", "ownTier": true },
+  { "id": "c2", "name": "Starter Circle", "tier": 1, "contributionCents": 5000, "frequency": "weekly", "memberLimit": 4, "memberCount": 2, "status": "open", "creatorName": "Chidi", "nationalitiesInCircle": ["US", "TR"], "risk": "risky", "riskReason": "One member's currency has swung a lot against USD.", "ownTier": false }
+] }

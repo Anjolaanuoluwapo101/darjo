@@ -1,0 +1,1 @@
+{ "payment": { "id": "pay1", "circleId": "c1", "cycle": 1, "userId": "u1", "amountCents": 10000, "status": "paid", "paidAt": "2026-11-03T09:00:00Z" } }

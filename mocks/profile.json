@@ -1,0 +1,7 @@
+{ "user": { "id": "u1", "name": "Ada", "email": "ada@example.com", "nationality": "US", "currency": "USD", "tier": 2, "rank": null, "score": 38 },
+  "nextTier": { "tier": 3, "requirement": "Reach a score of 50" },
+  "events": [
+    { "id": "e1", "type": "on_time", "circleName": "Weekend Savers", "points": 5, "createdAt": "2026-11-02T10:00:00Z" },
+    { "id": "e2", "type": "late", "circleName": "Starter Circle", "points": -5, "createdAt": "2026-10-20T10:00:00Z" }
+  ],
+  "circles": [ { "id": "c1", "name": "Weekend Savers", "status": "active" } ] }

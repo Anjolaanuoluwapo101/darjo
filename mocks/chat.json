@@ -1,0 +1,2 @@
+{ "reply": "Tunde has not paid yet and is 3 days late. Want me to draft a nudge?",
+  "actions": [ { "type": "nudge_drafted", "toUserId": "u2", "text": "Hi Tunde, your $100 contribution for Weekend Savers is due. Can you pay today?" } ] }
