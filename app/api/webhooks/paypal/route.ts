@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
       if (p) await settlePayment(p.id, event.resource?.id ?? null);
       break;
     }
-    case 'PAYMENT.CAPTURE.DENIED': {
+    case 'PAYMENT.CAPTURE.DENIED':
+    case 'PAYMENT.CAPTURE.DECLINED': {
       const p = await findPayment(event);
       if (p) await failPayment(p.id);
       break;
@@ -65,6 +66,18 @@ export async function POST(req: NextRequest) {
       break;
     }
     case 'PAYMENT.PAYOUTSBATCH.DENIED': {
+      const p = await findPayout(event);
+      if (p) await failPayout(p.id);
+      break;
+    }
+    case 'PAYMENT.PAYOUTS-ITEM.SUCCEEDED': {
+      const p = await findPayout(event);
+      if (p) await finalizePayout(p.id);
+      break;
+    }
+    case 'PAYMENT.PAYOUTS-ITEM.FAILED':
+    case 'PAYMENT.PAYOUTS-ITEM.BLOCKED':
+    case 'PAYMENT.PAYOUTS-ITEM.CANCELED': {
       const p = await findPayout(event);
       if (p) await failPayout(p.id);
       break;

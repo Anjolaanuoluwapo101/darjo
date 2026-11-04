@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 import { db, ok, fail, requireUser } from '@/lib/server';
 import { createOrder, captureOrder, PayPalError } from '@/lib/paypal';
 import { settlePayment, toPayment } from '@/lib/payments';
+import { isPaypalSupported } from '@/lib/rules/countries';
 
 type Ctx = { params: Promise<{ id: string; step?: string[] }> };
 
@@ -11,6 +12,8 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   const { id: circleId, step } = await ctx.params;
   const me = await requireUser();
   if (!me) return fail('UNAUTHENTICATED', 'Please log in.', 401);
+  if (!isPaypalSupported(me.nationality))
+    return fail('COUNTRY_NOT_SUPPORTED', 'PayPal cannot be used from your country yet.', 403);
 
   const circle = await db.circle.findUnique({ where: { id: circleId } });
   if (!circle) return fail('NOT_FOUND', 'Circle not found.', 404);
@@ -24,7 +27,6 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     // ----- start a payment -----
     if (!step || step.length === 0) {
       if (payment.status === 'paid') return fail('VALIDATION', 'You have already paid this cycle.');
-      // TODO: return COUNTRY_NOT_SUPPORTED when Teammate C's paypalSupported flag is false for me.nationality
       const orderId = await createOrder({
         amountCents: payment.amountCents,
         customId: `${circleId}:${circle.currentCycle}:${me.id}`,

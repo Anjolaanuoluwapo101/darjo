@@ -6,9 +6,11 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { SignJWT, jwtVerify } from 'jose';
 import type {
-  User, Tier, Member, Payout, CircleSummary, CircleDetail, VolatilityLabel,
+  User, Tier, Member, Payout, CircleSummary, CircleDetail,
 } from '@/types/api';
 import { computeRisk } from '@/lib/rules';
+import { currencyFor } from '@/lib/rules/countries';
+import { volatilityLabel } from '@/lib/rules/volatility';
 
 // ---------- database ----------
 const g = globalThis as unknown as { prisma?: PrismaClient };
@@ -49,20 +51,8 @@ export async function requireUser(): Promise<UserRow | null> {
   }
 }
 
-// ---------- TEMPORARY stand-ins (swap when Teammate C pushes) ----------
-// Replace with currencyFor() from '@/data/countries'
-const CURRENCY: Record<string, string> = {
-  US: 'USD', GB: 'GBP', CA: 'CAD', AU: 'AUD', DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR',
-  NG: 'NGN', GH: 'GHS', KE: 'KES', ZA: 'ZAR', EG: 'EGP', IN: 'INR', BR: 'BRL', MX: 'MXN',
-  TR: 'TRY', AR: 'ARS', JP: 'JPY', SG: 'SGD', CH: 'CHF',
-};
-export const currencyFor = (code: string): string | undefined => CURRENCY[code.toUpperCase()];
-
-// Replace with getVolatility() from '@/lib/fx'
-const HIGH = ['NGN', 'GHS', 'EGP', 'TRY', 'ARS'];
-const MEDIUM = ['INR', 'BRL', 'MXN', 'ZAR', 'KES'];
-export const volatilityLabel = (cur: string): VolatilityLabel =>
-  HIGH.includes(cur) ? 'high' : MEDIUM.includes(cur) ? 'medium' : 'low';
+// ---------- country and currency helpers (temporary stand-ins for Teammate C) ----------
+export { currencyFor, volatilityLabel };
 
 // ---------- mappers: database rows -> API shapes ----------
 export const circleInclude = {

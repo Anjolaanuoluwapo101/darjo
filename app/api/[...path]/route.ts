@@ -9,6 +9,7 @@ import {
   toUser, toSummary, toDetail, loadCircle, circleInclude,
 } from '@/lib/server';
 import { canSeeCircle, joinCheck, nationalityAllowed, sortForStudio } from '@/lib/rules';
+import { markLateIfDue } from '@/lib/payments';
 import { MIN_CONTRIBUTION_CENTS, MIN_MEMBERS, MAX_MEMBERS } from '@/lib/rules/constants';
 import type { Tier } from '@/types/api';
 
@@ -159,7 +160,10 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
       { tier: circle.tier as Tier, includedNationalities: circle.includedNationalities, excludedNationalities: circle.excludedNationalities },
     ));
     if (!circle || !allowed) return fail('NOT_FOUND', 'This circle is not available to you.', 404);
-    return ok({ circle: await toDetail(circle, me) });
+    // A contribution that passed its due date is late (checked when the circle is fetched)
+    if (circle.status === 'active') await markLateIfDue(circle.id);
+    const fresh = await loadCircle({ id: circle.id });
+    return ok({ circle: await toDetail(fresh!, me) });
   }
 
   return fail('NOT_FOUND', 'Unknown endpoint.', 404);

@@ -44,6 +44,9 @@ EnvironmentSetEnvironmentVariable.txt
 /EnvironmentSetEnvironmentVariable.txt
 .neon
 
+*.docx
+.docx
+
 .vercel
 .env*
 !.env.example
