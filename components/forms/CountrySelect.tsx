@@ -7,7 +7,7 @@ import {
   type FocusEvent,
   type KeyboardEvent,
 } from "react";
-import { currencyFor } from "@/lib/rules/countries";
+import { COUNTRIES, type Country } from "@/data/countries";
 import {
   errorClass,
   hintClass,
@@ -16,7 +16,10 @@ import {
   inputNormalClass,
   labelClass,
 } from "./fieldStyles";
-import { TEMP_COUNTRIES, type TempCountry } from "./tempCountries";
+
+const SORTED_COUNTRIES = [...COUNTRIES].sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
 
 type CountrySelectProps = {
   value: string;
@@ -39,20 +42,20 @@ export default function CountrySelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const selected = TEMP_COUNTRIES.find((country) => country.code === value);
-  const currency = selected ? currencyFor(selected.code) : undefined;
+  const selected = COUNTRIES.find((country) => country.code === value);
+  const currency = selected?.currency;
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase();
-    if (!search) return TEMP_COUNTRIES;
-    return TEMP_COUNTRIES.filter(
+    if (!search) return SORTED_COUNTRIES;
+    return SORTED_COUNTRIES.filter(
       (country) =>
         country.name.toLowerCase().includes(search) ||
         country.code.toLowerCase().includes(search)
     );
   }, [query]);
 
-  function choose(country: TempCountry) {
+  function choose(country: Country) {
     onChange(country.code);
     setQuery("");
     setOpen(false);
@@ -88,6 +91,10 @@ export default function CountrySelect({
           aria-invalid={error ? true : undefined}
           autoComplete="country-name"
           placeholder="Search countries"
+          inputMode="search"
+          enterKeyHint="search"
+          autoCapitalize="none"
+          spellCheck={false}
           value={open ? query : selected ? `${selected.name} (${selected.code})` : ""}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -106,7 +113,7 @@ export default function CountrySelect({
           <ul
             id={listId}
             role="listbox"
-            className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+            className="absolute z-20 mt-1 max-h-[min(16rem,50vh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
           >
             {filtered.length === 0 ? (
               <li className="px-4 py-2 text-sm text-gray-500">

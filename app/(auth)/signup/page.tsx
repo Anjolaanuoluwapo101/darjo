@@ -6,8 +6,8 @@ import { useState, type FormEvent } from "react";
 import CountrySelect from "@/components/forms/CountrySelect";
 import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
-import { PAYMENTS_DISCLAIMER } from "@/components/forms/constants";
 import { friendlyError } from "@/components/forms/errorMessages";
+import { DISCLAIMER } from "@/data/countries";
 import { signup } from "@/lib/api-client";
 import { isPaypalSupported } from "@/lib/rules/countries";
 
@@ -115,7 +115,7 @@ export default function SignupPage() {
           ) : null}
 
           <p className="text-xs leading-relaxed text-gray-500">
-            {PAYMENTS_DISCLAIMER}
+            {DISCLAIMER}
           </p>
 
           {formError ? (
