@@ -29,7 +29,7 @@ export interface Member {
   userId: string; name: string; nationality: string;
   tier: Tier; rank: string | null;
   turnPosition: number;
-  currentCycleStatus: 'paid' | 'pending' | 'late';
+  currentCycleStatus: 'paid' | 'pending' | 'late' | 'failed';
 }
 
 export interface Payout {

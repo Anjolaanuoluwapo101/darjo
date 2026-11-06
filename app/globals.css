@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --line: #e4e4e7;
+  --ink: #18181b;
+  --muted: #52525b;
+  --accent: #4f46e5;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --safe-soft: #dcfce7;
+  --safe-line: #bbf7d0;
+  --safe-ink: #15803d;
+
+  --risky-soft: #fef3c7;
+  --risky-line: #fde68a;
+  --risky-ink: #b45309;
+
+  --tier-1: #94a3b8;
+  --tier-2: #0ea5e9;
+  --tier-3: #8b5cf6;
+  --tier-4: #f59e0b;
+
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --surface: #0b0b0f;
+    --surface-2: #15151b;
+    --line: #2a2a33;
+    --ink: #f4f4f5;
+    --muted: #a1a1aa;
+    --accent: #818cf8;
+
+    --safe-soft: #052e16;
+    --safe-line: #166534;
+    --safe-ink: #86efac;
+
+    --risky-soft: #451a03;
+    --risky-line: #92400e;
+    --risky-ink: #fcd34d;
+
+    color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-safe-soft: var(--safe-soft);
+  --color-safe-line: var(--safe-line);
+  --color-safe-ink: var(--safe-ink);
+  --color-risky-soft: var(--risky-soft);
+  --color-risky-line: var(--risky-line);
+  --color-risky-ink: var(--risky-ink);
+  --color-tier-1: var(--tier-1);
+  --color-tier-2: var(--tier-2);
+  --color-tier-3: var(--tier-3);
+  --color-tier-4: var(--tier-4);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
 }

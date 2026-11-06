@@ -97,7 +97,7 @@ export async function toDetail(c: CircleRow, viewer: UserRow): Promise<CircleDet
     return {
       userId: m.userId, name: m.user.name, nationality: m.user.nationality,
       tier: m.user.tier as Tier, rank: m.user.rank, turnPosition: m.turnPosition,
-      currentCycleStatus: status === 'paid' ? 'paid' : status === 'late' ? 'late' : 'pending',
+      currentCycleStatus: status === 'failed' ? 'failed' : status === 'paid' ? 'paid' : status === 'late' ? 'late' : 'pending',
     };
   });
   const winner = c.status === 'active'

@@ -1,16 +1,9 @@
-// TEMPORARY country data. Teammate C owns /data/countries.ts (the source of truth).
-// Swap the lookups here for C's file once it lands; nothing else needs to change.
-const CURRENCY: Record<string, string> = {
-  US: 'USD', GB: 'GBP', CA: 'CAD', AU: 'AUD', DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR',
-  NG: 'NGN', GH: 'GHS', KE: 'KES', ZA: 'ZAR', EG: 'EGP', IN: 'INR', BR: 'BRL', MX: 'MXN',
-  TR: 'TRY', AR: 'ARS', JP: 'JPY', SG: 'SGD', CH: 'CHF',
-  CU: 'CUP', IR: 'IRR', KP: 'KPW', SD: 'SDG', SY: 'SYP',
-};
+// Country rules now live in /data/countries.ts so the signup form and the API share one list.
+import { countryByCode } from '@/data/countries';
 
-// Countries where PayPal cannot be used for a contribution.
-const NOT_SUPPORTED = ['CU', 'IR', 'KP', 'SD', 'SY'];
+export const currencyFor = (code: string): string | undefined =>
+  countryByCode(code)?.currency;
 
-export const currencyFor = (code: string): string | undefined => CURRENCY[code.toUpperCase()];
-
+// Unknown codes are treated as supported so existing members are never locked out.
 export const isPaypalSupported = (nationality: string): boolean =>
-  !NOT_SUPPORTED.includes(nationality.toUpperCase());
+  countryByCode(nationality)?.paypalSupported ?? true;

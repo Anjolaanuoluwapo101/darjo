@@ -21,10 +21,10 @@ export default function RiskTag({ risk, reason }: RiskTagProps) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={`inline-flex min-h-10 items-center gap-2 self-start rounded-full px-4 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
+        className={`inline-flex min-h-10 items-center gap-2 self-start rounded-full px-4 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
           isSafe
-            ? "bg-green-50 text-green-800 hover:bg-green-100"
-            : "bg-amber-50 text-amber-800 hover:bg-amber-100"
+            ? "bg-safe-soft text-safe-ink hover:brightness-95"
+            : "bg-risky-soft text-risky-ink hover:brightness-95"
         }`}
       >
         {isSafe ? (
@@ -62,8 +62,8 @@ export default function RiskTag({ risk, reason }: RiskTagProps) {
         <p
           className={`max-w-full rounded-xl border px-3 py-2 text-sm leading-relaxed ${
             isSafe
-              ? "border-green-200 bg-green-50 text-green-900"
-              : "border-amber-200 bg-amber-50 text-amber-900"
+              ? "border-safe-line bg-safe-soft text-safe-ink"
+              : "border-risky-line bg-risky-soft text-risky-ink"
           }`}
         >
           {reason}
