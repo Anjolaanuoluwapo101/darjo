@@ -15,7 +15,16 @@ import releasePayoutMock from '@/mocks/release-payout.json';
 
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
+// Screens are Client Components; calling these during a server render means the
+// component is missing "use client". Fail loudly instead of quietly throwing.
+const MOCK_CIRCLES = circlesMock.circles as unknown as CircleSummary[];
+
 async function http<T>(path: string, method = 'GET', body?: unknown): Promise<ApiResult<T>> {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      'lib/api-client is client-only. Add "use client" to the component that calls it.',
+    );
+  }
   try {
     const res = await fetch(path, {
       method,
@@ -43,7 +52,9 @@ export const getMe = () =>
 
 export const listCircles = (params?: { risk?: 'safe' | 'risky' }) =>
   USE_MOCKS
-    ? mock<{ circles: CircleSummary[] }>(circlesMock)
+    ? mock<{ circles: CircleSummary[] }>({
+        circles: MOCK_CIRCLES.filter((circle) => !params?.risk || circle.risk === params.risk),
+      })
     : http<{ circles: CircleSummary[] }>(`/api/circles${params?.risk ? `?risk=${params.risk}` : ''}`);
 export const createCircle = (b: CreateCircleBody) =>
   USE_MOCKS ? mock<{ circle: CircleDetail }>(circleDetailMock) : http<{ circle: CircleDetail }>('/api/circles', 'POST', b);
@@ -56,6 +67,8 @@ export const startPayment = (circleId: string) =>
   USE_MOCKS
     ? mock<{ orderId: string; amountCents: number; currency: 'USD' }>(startPaymentMock)
     : http<{ orderId: string; amountCents: number; currency: 'USD' }>(`/api/circles/${circleId}/pay`, 'POST');
+// Mock mode only covers the settled happy path (paid / released). The real API
+// can return pending or prepared states while a PayPal webhook is still in flight.
 export const capturePayment = (circleId: string, orderId: string) =>
   USE_MOCKS
     ? mock<{ payment: Payment }>(capturePaymentMock)
