@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import PayButton from "@/components/circles/PayButton";
+import PayoutCard from "@/components/circles/PayoutCard";
 import { friendlyError } from "@/components/forms/errorMessages";
 import RiskTag from "@/components/ui/RiskTag";
 import TierBadge from "@/components/ui/TierBadge";
 import { formatUsd } from "@/components/ui/formatUsd";
-import { getCircle, getMe, joinCircle, releasePayout } from "@/lib/api-client";
+import { getCircle, getMe, joinCircle } from "@/lib/api-client";
 import type { CircleDetail, Member } from "@/types/api";
 
 const STATUS_LABEL: Record<CircleDetail["status"], string> = {
@@ -97,6 +98,8 @@ function CircleDetail() {
               circle={circle}
               viewerId={viewerId}
             />
+
+            {/* Assistant drawer slot: Teammate C adds <AssistantDrawer circleId={circle.id} /> here. */}
           </>
         ) : null}
       </div>
@@ -239,9 +242,6 @@ function CircleActions({
   const router = useRouter();
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
-  const [confirmingRelease, setConfirmingRelease] = useState(false);
-  const [releasing, setReleasing] = useState(false);
-  const [releaseError, setReleaseError] = useState<string | null>(null);
 
   function handleAuthError(code: string): boolean {
     if (code === "UNAUTHENTICATED") {
@@ -266,24 +266,6 @@ function CircleActions({
 
     onCircleChange(result.data.circle);
     setJoining(false);
-  }
-
-  async function handleRelease() {
-    setReleaseError(null);
-    setReleasing(true);
-
-    const result = await releasePayout(circle.id);
-
-    if (!result.ok) {
-      setReleasing(false);
-      if (handleAuthError(result.error.code)) return;
-      setReleaseError(friendlyError(result.error.code, result.error.message));
-      return;
-    }
-
-    onCircleChange({ ...circle, payout: result.data.payout });
-    setReleasing(false);
-    setConfirmingRelease(false);
   }
 
   if (circle.status === "completed") {
@@ -329,22 +311,26 @@ function CircleActions({
     );
   }
 
+  if (circle.status === "open") {
+    return (
+      <InfoPanel
+        title="Waiting for the circle to fill"
+        body="You can pay once the circle is full and the first cycle starts."
+      />
+    );
+  }
+
   const payout = circle.payout;
 
   return (
     <section className="flex flex-col gap-4">
       {circle.viewerIsCurrentWinner && payout ? (
         <PayoutCard
+          circleId={circle.id}
           payout={payout}
-          confirming={confirmingRelease}
-          releasing={releasing}
-          error={releaseError}
-          onStart={() => setConfirmingRelease(true)}
-          onCancel={() => {
-            setConfirmingRelease(false);
-            setReleaseError(null);
-          }}
-          onConfirm={handleRelease}
+          onReleased={(releasedPayout) =>
+            onCircleChange({ ...circle, payout: releasedPayout })
+          }
         />
       ) : null}
 
@@ -357,123 +343,12 @@ function CircleActions({
           </p>
           <PayButton circleId={circle.id} onPaid={onCircleChange} />
         </div>
-      ) : !circle.viewerIsCurrentWinner || !payout ? (
+      ) : (
         <InfoPanel
-          title="You are paid up this cycle"
+          title="You've paid this cycle"
           body="Thanks for paying. We will let you know when the next cycle starts."
         />
-      ) : null}
-    </section>
-  );
-}
-
-function PayoutCard({
-  payout,
-  confirming,
-  releasing,
-  error,
-  onStart,
-  onCancel,
-  onConfirm,
-}: {
-  payout: NonNullable<CircleDetail["payout"]>;
-  confirming: boolean;
-  releasing: boolean;
-  error: string | null;
-  onStart: () => void;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  if (payout.status === "released" || payout.status === "paid") {
-    return (
-      <section className="flex flex-col gap-2 rounded-2xl border border-green-200 bg-green-50 p-5">
-        <h2 className="text-base font-semibold text-green-800">
-          Payout sent
-        </h2>
-        <p className="text-sm text-green-800">
-          You received {formatUsd(payout.netCents)}.
-        </p>
-      </section>
-    );
-  }
-
-  if (payout.status === "failed") {
-    return (
-      <InfoPanel
-        title="Payout issue"
-        body="The payout could not be sent. Please contact support so we can help."
-      />
-    );
-  }
-
-  return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-[#ffd140] bg-amber-50 p-5">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-[#001c64]">
-          Your payout is ready
-        </h2>
-        <span className="rounded-full bg-[#ffd140] px-2.5 py-1 text-xs font-semibold text-[#001c64]">
-          Cycle {payout.cycle}
-        </span>
-      </div>
-
-      <dl className="flex flex-col gap-1.5 text-sm">
-        <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Pot collected</dt>
-          <dd className="font-medium">{formatUsd(payout.grossCents)}</dd>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Service fee</dt>
-          <dd className="font-medium">-{formatUsd(payout.feeCents)}</dd>
-        </div>
-        <div className="flex items-center justify-between gap-3 border-t border-[#ffd140] pt-1.5">
-          <dt className="font-semibold text-[#001c64]">You receive</dt>
-          <dd className="text-base font-semibold text-[#001c64]">
-            {formatUsd(payout.netCents)}
-          </dd>
-        </div>
-      </dl>
-
-      {confirming ? (
-        <div className="flex flex-col gap-2 rounded-xl border border-[#ffd140] bg-white p-3">
-          <p className="text-sm text-gray-700">
-            Send {formatUsd(payout.netCents)} to your account now? This cannot
-            be undone.
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onConfirm}
-              disabled={releasing}
-              className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {releasing ? "Sending..." : "Yes, release payout"}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={releasing}
-              className="min-h-11 flex-1 rounded-xl border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={onStart}
-          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
-          Release payout
-        </button>
       )}
-
-      {error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {error}
-        </p>
-      ) : null}
     </section>
   );
 }
