@@ -100,6 +100,7 @@ function CircleDetail() {
             />
 
             {/* Assistant drawer slot: Teammate C adds <AssistantDrawer circleId={circle.id} /> here. */}
+            <div id="assistant-drawer-slot" data-circle-id={circle.id} />
           </>
         ) : null}
       </div>
@@ -124,7 +125,7 @@ function CircleHeader({ circle }: { circle: CircleDetail }) {
     <header className="flex flex-col gap-3">
       <Link
         href="/studio"
-        className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#0070e0] hover:underline"
+        className="inline-flex min-h-11 w-fit items-center gap-1 text-sm font-medium text-[#0070e0] hover:underline"
       >
         <span aria-hidden="true">&larr;</span>
         Back to studio
@@ -132,7 +133,7 @@ function CircleHeader({ circle }: { circle: CircleDetail }) {
 
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="break-words text-2xl font-semibold tracking-tight">
             {circle.name}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -169,7 +170,7 @@ function CircleHeader({ circle }: { circle: CircleDetail }) {
           <button
             type="button"
             onClick={copyInviteCode}
-            className="min-h-9 rounded-lg border border-[#003087] px-2.5 text-xs font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+            className="min-h-11 rounded-lg border border-[#003087] px-2.5 text-xs font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
           >
             {copied ? "Copied" : "Copy"}
           </button>
@@ -300,7 +301,7 @@ function CircleActions({
           disabled={joining}
           className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {joining ? "Joining..." : "Join circle"}
+          {joining ? "Joining..." : "Join this circle"}
         </button>
         {joinError ? (
           <p role="alert" className="text-sm text-red-700">
@@ -375,16 +376,22 @@ function MembersList({
         </span>
       </div>
 
-      <ul className="flex flex-col gap-2">
-        {members.map((member) => (
-          <MemberRow
-            key={member.userId}
-            member={member}
-            isViewer={member.userId === viewerId}
-            isWinner={member.userId === circle.currentWinnerId}
-          />
-        ))}
-      </ul>
+      {members.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
+          No members have joined this circle yet.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {members.map((member) => (
+            <MemberRow
+              key={member.userId}
+              member={member}
+              isViewer={member.userId === viewerId}
+              isWinner={member.userId === circle.currentWinnerId}
+            />
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -413,7 +420,7 @@ function MemberRow({
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-medium text-gray-900">{member.name}</span>
+          <span className="break-words font-medium text-gray-900">{member.name}</span>
           {isViewer ? (
             <span className="rounded-full bg-[#0070e0] px-2 py-0.5 text-xs font-semibold text-white">
               You
@@ -442,8 +449,8 @@ function StatusPill({ status }: { status: Member["currentCycleStatus"] }) {
   const styles: Record<Member["currentCycleStatus"], string> = {
     paid: "bg-green-100 text-green-800",
     pending: "bg-gray-100 text-gray-600",
-    late: "bg-amber-100 text-amber-800",
-    failed: "bg-red-100 text-red-700",
+    late: "bg-red-100 text-red-700",
+    failed: "bg-red-200 text-red-800",
   };
 
   const labels: Record<Member["currentCycleStatus"], string> = {
