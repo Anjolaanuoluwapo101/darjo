@@ -7,6 +7,8 @@ import type {
 import meMock from '@/mocks/me.json';
 import circlesMock from '@/mocks/circles.json';
 import circleDetailMock from '@/mocks/circle-detail.json';
+import circleDetailNonMemberMock from '@/mocks/circle-detail-nonmember.json';
+import circleDetailUnpaidMock from '@/mocks/circle-detail-unpaid.json';
 import profileMock from '@/mocks/profile.json';
 import chatMock from '@/mocks/chat.json';
 import startPaymentMock from '@/mocks/start-payment.json';
@@ -18,6 +20,13 @@ const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 // Screens are Client Components; calling these during a server render means the
 // component is missing "use client". Fail loudly instead of quietly throwing.
 const MOCK_CIRCLES = circlesMock.circles as unknown as CircleSummary[];
+
+// Demo circle variants so screens can show a non-member viewer (c3) or a
+// member who has not paid this cycle (c4). Any other id keeps the default.
+const MOCK_CIRCLE_DETAILS: Record<string, unknown> = {
+  c3: circleDetailNonMemberMock,
+  c4: circleDetailUnpaidMock,
+};
 
 async function http<T>(path: string, method = 'GET', body?: unknown): Promise<ApiResult<T>> {
   if (typeof window === 'undefined') {
@@ -59,7 +68,9 @@ export const listCircles = (params?: { risk?: 'safe' | 'risky' }) =>
 export const createCircle = (b: CreateCircleBody) =>
   USE_MOCKS ? mock<{ circle: CircleDetail }>(circleDetailMock) : http<{ circle: CircleDetail }>('/api/circles', 'POST', b);
 export const getCircle = (id: string) =>
-  USE_MOCKS ? mock<{ circle: CircleDetail }>(circleDetailMock) : http<{ circle: CircleDetail }>(`/api/circles/${id}`);
+  USE_MOCKS
+    ? mock<{ circle: CircleDetail }>(MOCK_CIRCLE_DETAILS[id] ?? circleDetailMock)
+    : http<{ circle: CircleDetail }>(`/api/circles/${id}`);
 export const joinCircle = (b: JoinBody) =>
   USE_MOCKS ? mock<{ circle: CircleDetail }>(circleDetailMock) : http<{ circle: CircleDetail }>('/api/circles/join', 'POST', b);
 

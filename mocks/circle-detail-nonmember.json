@@ -1,0 +1,15 @@
+{ "circle": {
+  "id": "c3", "name": "Nairobi Circle", "tier": 1, "contributionCents": 5000, "frequency": "monthly",
+  "memberLimit": 5, "memberCount": 3, "status": "open", "creatorName": "Wanjiku",
+  "nationalitiesInCircle": ["KE", "NG"], "risk": "safe", "riskReason": "Members' currencies have been steady against USD.", "ownTier": true,
+  "inviteCode": "AJO-4M8P", "includedNationalities": [], "excludedNationalities": [],
+  "currentCycle": 1, "totalCycles": 5, "potCents": 25000, "paidThisCycleCents": 0,
+  "members": [
+    { "userId": "u6", "name": "Wanjiku", "nationality": "KE", "tier": 1, "rank": null, "turnPosition": 1, "currentCycleStatus": "pending" },
+    { "userId": "u7", "name": "Kofi", "nationality": "NG", "tier": 1, "rank": null, "turnPosition": 2, "currentCycleStatus": "pending" },
+    { "userId": "u8", "name": "Amara", "nationality": "KE", "tier": 1, "rank": null, "turnPosition": 3, "currentCycleStatus": "pending" }
+  ],
+  "currentWinnerId": null,
+  "payout": null,
+  "viewerPaidThisCycle": false, "viewerIsCurrentWinner": false
+} }
