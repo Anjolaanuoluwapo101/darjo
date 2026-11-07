@@ -54,12 +54,33 @@ and `proxy.ts` lets every route through, so no database or session is needed.
 ## Checks
 
 ```bash
+npm test
 npx tsc --noEmit
 npx eslint app components lib data types proxy.ts next.config.ts
 npm run build
 ```
 
 `npm run build` also runs TypeScript.
+
+## Tests
+
+`npm test` runs the Vitest unit tests in `tests/`: the rules engine and the mock
+branches of `lib/api-client.ts`. `lib/api-client.ts` reads
+`NEXT_PUBLIC_USE_MOCKS` when the module loads, so the tests set the variable and
+re-import the module for every case.
+
+`node scripts/smoke-api.mjs` runs an end-to-end smoke test against the real API.
+It starts `next dev` on port 3100, signs up three throwaway users, and checks the
+non-member view, the hidden circle, joining, unpaid, late, failed and paid
+contributions. Pass `--base=http://localhost:3000` to use a server you already
+have running, or `--skip-db` to leave out the direct database probes.
+
+The smoke test keeps its rows on purpose. The circles it creates are set to
+`completed` when the run ends so they stay out of Studio and join lists; the
+created emails are printed at the end of the run.
+
+Mock circles `c1` and `c2` are the standard fixtures. `c3` is a non-member view
+of an open circle and `c4` is a member who has not paid this cycle.
 
 ## Deploy
 
