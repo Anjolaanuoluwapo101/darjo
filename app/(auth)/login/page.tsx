@@ -28,6 +28,11 @@ export default function LoginPage() {
     }
 
     // Already on /login, so show the error instead of redirecting to the same page.
+    if (result.error.code === "UNAUTHENTICATED") {
+      setFormError("Email or password is incorrect.");
+      return;
+    }
+
     setFormError(
       result.error.code === "VALIDATION"
         ? result.error.message
