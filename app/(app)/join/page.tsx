@@ -46,11 +46,13 @@ function JoinForm() {
   );
   const [codeError, setCodeError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
+    setErrorCode(null);
 
     const normalizedCode = inviteCode.trim().toUpperCase();
     if (!normalizedCode) {
@@ -75,6 +77,7 @@ function JoinForm() {
       return;
     }
 
+    setErrorCode(result.error.code);
     setFormError(
       result.error.code === "VALIDATION"
         ? result.error.message
@@ -109,12 +112,17 @@ function JoinForm() {
       />
 
       {formError ? (
-        <p
+        <div
           role="alert"
           className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
-          {formError}
-        </p>
+          <p>{formError}</p>
+          {errorCode === "NOT_FOUND" ? (
+            <p className="mt-1 text-xs text-red-600">
+              Check the code with the person who invited you.
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       <button
