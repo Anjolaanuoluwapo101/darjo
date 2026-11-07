@@ -51,5 +51,19 @@ export const countryByCode = (code: string): Country | undefined => {
   return COUNTRIES.find((country) => country.code === normalized);
 };
 
+// Helper function: get country by ISO code
+export function getCountry(code: string): Country | undefined {
+  return countryByCode(code);
+}
+
+// Helper function: get currency by country ISO code
+export function currencyFor(code: string): string | undefined {
+  return getCountry(code)?.currency;
+}
+
+export const DISCLAIMER =
+  'Payments are currently available for PayPal-supported countries only.';
 export const DISCLAIMER =
   'PayPal availability and exchange rates vary by country. Amounts shown are estimates; the final charge is set by PayPal at checkout.';
+
+
