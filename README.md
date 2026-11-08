@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# D'arjo — Cross-Border ROSCA & Credit Scoring Platform
 
-## Getting Started
+D'arjo is a modern, mobile-first fintech application designed to modernize traditional rotating savings and credit associations (ROSCAs / Tandas / Esusu) across emerging markets. It introduces algorithmic credit scoring, currency volatility safeguards, and automated payout management.
 
-First, run the development server:
+---
 
-```bash
+## 🚀 Tech Stack & Infrastructure
+
+- **Framework:** Next.js 16 (App Router with Server & Client Components)
+- **Language:** TypeScript 5
+- **Styling:** Tailwind CSS v4
+- **Database & ORM:** PostgreSQL (Neon Serverless) with Prisma ORM
+- **AI Engine:** Google Gemini AI API (`@google/genai`) for intelligent score explanations and member nudges
+- **Payments:** PayPal React SDK (`@paypal/react-paypal-js`)
+- **FX Engine:** Custom in-memory cached volatility evaluation against USD
+
+---
+
+## 📁 Repository Architecture
+
+```text
+darjo/
+├── app/
+│   ├── (app)/
+│   │   ├── assistant/      # AI Assistant chat & circle inspection drawer
+│   │   ├── profile/        # D'arjo credit score ring & tier progression
+│   │   └── circles/        # Active ROSCA pools and payout schedules
+│   └── api/                # Next.js Serverless API endpoints
+├── components/
+│   ├── agent/              # CircleDrawer and Assistant UI cards
+│   ├── profile/            # ScoreRing SVG progress gauge
+│   └── ui/                 # Shared Tailwind design components
+├── data/
+│   └── countries.ts        # ISO country codes, currency mapping & PayPal flags
+├── lib/
+│   ├── api-client.ts       # Unified API client layer (Mock & Live toggle)
+│   └── fx/                 # Currency volatility scoring engine with fallback
+├── scripts/
+│   └── seed.ts             # Database seeding script for mock users & events
+└── public/                 # Static assets and icons
+
+⚙️ Environment Configuration
+Create a .env.local file in the root of your project:
+
+Code snippet
+# Toggle between local mock state and live backend services
+NEXT_PUBLIC_USE_MOCKS=true
+
+# API Keys & Credentials
+FX_API_KEY=your_exchange_rate_api_key
+GEMINI_API_KEY=your_google_gemini_key
+
+# Database & Authentication
+DATABASE_URL=your_neon_postgresql_url
+JWT_SECRET=your_jwt_secret_key
+
+# PayPal Sandbox Credentials
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
+🛠️ Local Development Quickstart
+Clone the repository and install dependencies:
+
+Bash
+git clone [https://github.com/your-org/darjo.git](https://github.com/your-org/darjo.git)
+cd darjo
+npm install
+Seed local test data:
+
+Bash
+npm run seed
+Start the local development server:
+
+Bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open application:
+Navigate to http://localhost:3000 in your browser. Use mobile viewport emulation (e.g., iPhone 12/14 — 390px width) for optimal testing.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🔀 Branching Strategy & Development Rules
+Default Branch: master
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Feature Branches: All individual work must be developed on feature branches prefixed with c/ (e.g., c/countries-data, c/fx-volatility, c/profile-screen, c/assistant-screen).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Pull Requests: All PRs target master and require review and approval from lead reviewers prior to merging.
