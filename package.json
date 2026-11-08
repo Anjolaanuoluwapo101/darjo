@@ -8,7 +8,8 @@
     "vercel-build": "prisma generate && next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "npx tsx scripts/seed.ts"
   },
   "dependencies": {
     "@google/genai": "^2.32.0",
