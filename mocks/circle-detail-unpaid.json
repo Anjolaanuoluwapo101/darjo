@@ -1,14 +1,14 @@
 { "circle": {
   "id": "c4", "name": "Lagos Circle", "tier": 1, "contributionCents": 5000, "frequency": "weekly",
   "memberLimit": 4, "memberCount": 4, "status": "active", "creatorName": "Tunde",
-  "nationalitiesInCircle": ["NG", "GB"], "risk": "safe", "riskReason": "Members' currencies have been steady against USD.", "ownTier": true,
+  "nationalitiesInCircle": ["ZA", "GB"], "risk": "safe", "riskReason": "Members' currencies have been steady against USD.", "ownTier": true,
   "inviteCode": "AJO-9C3T", "includedNationalities": [], "excludedNationalities": [],
   "currentCycle": 1, "totalCycles": 4, "potCents": 20000, "paidThisCycleCents": 15000,
   "members": [
     { "userId": "u6", "name": "Tunde", "nationality": "GB", "tier": 1, "rank": null, "turnPosition": 1, "currentCycleStatus": "paid" },
-    { "userId": "u7", "name": "Amara", "nationality": "NG", "tier": 1, "rank": null, "turnPosition": 2, "currentCycleStatus": "paid" },
-    { "userId": "u8", "name": "Kofi", "nationality": "NG", "tier": 1, "rank": null, "turnPosition": 3, "currentCycleStatus": "paid" },
-    { "userId": "u9", "name": "Ada", "nationality": "NG", "tier": 1, "rank": null, "turnPosition": 4, "currentCycleStatus": "pending" }
+    { "userId": "u7", "name": "Amara", "nationality": "ZA", "tier": 1, "rank": null, "turnPosition": 2, "currentCycleStatus": "paid" },
+    { "userId": "u8", "name": "Kofi", "nationality": "ZA", "tier": 1, "rank": null, "turnPosition": 3, "currentCycleStatus": "paid" },
+    { "userId": "u9", "name": "Ada", "nationality": "ZA", "tier": 1, "rank": null, "turnPosition": 4, "currentCycleStatus": "pending" }
   ],
   "currentWinnerId": "u6",
   "payout": null,

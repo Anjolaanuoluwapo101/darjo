@@ -4,6 +4,7 @@ import { countryByCode } from '@/data/countries';
 export const currencyFor = (code: string): string | undefined =>
   countryByCode(code)?.currency;
 
-// Unknown codes are treated as supported so existing members are never locked out.
+// A country we do not know about is not treated as supported: PayPal cannot pay
+// out to a country that is missing from our list, so the payment is refused early.
 export const isPaypalSupported = (nationality: string): boolean =>
-  countryByCode(nationality)?.paypalSupported ?? true;
+  countryByCode(nationality)?.paypalSupported ?? false;
