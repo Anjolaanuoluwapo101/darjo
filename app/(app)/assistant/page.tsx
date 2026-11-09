@@ -1,5 +1,116 @@
-import PlaceholderPage from "@/components/placeholder-page";
+"use client";
+
+import { useEffect, useState } from "react";
+import ChatPanel from "@/components/agent/ChatPanel";
+import { friendlyError } from "@/components/forms/errorMessages";
+import { listCircles } from "@/lib/api-client";
+import type { CircleSummary } from "@/types/api";
 
 export default function AssistantPage() {
-  return <PlaceholderPage title="Assistant" />;
+  const [circles, setCircles] = useState<CircleSummary[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      const result = await listCircles();
+      if (!active) return;
+
+      if (!result.ok) {
+        setError(friendlyError(result.error.code, result.error.message));
+        setLoading(false);
+        return;
+      }
+
+      setCircles(result.data.circles);
+      setSelectedId((current) => current || result.data.circles[0]?.id || "");
+      setLoading(false);
+    }
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [reloadKey]);
+
+  const selected = circles.find((circle) => circle.id === selectedId);
+
+  return (
+    <main className="min-h-screen bg-white font-sans text-gray-900">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+        <header className="flex flex-col gap-1">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
+            Assistant
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Ask about your money circle
+          </h1>
+          <p className="text-sm text-gray-600">
+            The assistant reads your circles, payments and payouts for you.
+          </p>
+        </header>
+
+        {loading ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="h-11 animate-pulse rounded-xl bg-gray-100"
+          >
+            <span className="sr-only">Loading circles...</span>
+          </div>
+        ) : error ? (
+          <div
+            role="alert"
+            className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-red-50 p-5"
+          >
+            <p className="text-sm text-red-700">{error}</p>
+            <button
+              type="button"
+              onClick={() => setReloadKey((key) => key + 1)}
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+            >
+              Try again
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="assistant-circle"
+                className="text-sm font-semibold uppercase tracking-wide text-gray-500"
+              >
+                Circle
+              </label>
+              <select
+                id="assistant-circle"
+                value={selectedId}
+                onChange={(event) => setSelectedId(event.target.value)}
+                className="min-h-11 rounded-xl border border-gray-300 bg-white px-3 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
+              >
+                {circles.length === 0 ? (
+                  <option value="">No circles yet</option>
+                ) : null}
+                {circles.map((circle) => (
+                  <option key={circle.id} value={circle.id}>
+                    {circle.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <ChatPanel
+              circleId={selectedId || undefined}
+              circleName={selected?.name}
+            />
+          </div>
+        )}
+      </div>
+    </main>
+  );
 }

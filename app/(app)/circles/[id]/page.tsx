@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import PayButton from "@/components/circles/PayButton";
 import PayoutCard from "@/components/circles/PayoutCard";
+import AssistantDrawer from "@/components/agent/AssistantDrawer";
 import { friendlyError } from "@/components/forms/errorMessages";
 import RiskTag from "@/components/ui/RiskTag";
 import TierBadge from "@/components/ui/TierBadge";
@@ -99,8 +100,7 @@ function CircleDetail() {
               viewerId={viewerId}
             />
 
-            {/* Assistant drawer slot: Teammate C adds <AssistantDrawer circleId={circle.id} /> here. */}
-            <div id="assistant-drawer-slot" data-circle-id={circle.id} />
+            <AssistantDrawer circleId={circle.id} circleName={circle.name} />
           </>
         ) : null}
       </div>
