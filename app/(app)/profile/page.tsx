@@ -28,6 +28,13 @@ const CIRCLE_STATUS: Record<ProfileData["circles"][number]["status"], string> = 
   completed: "Completed",
 };
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -191,6 +198,13 @@ export default function ProfilePage() {
               )}
             </section>
 
+            <Link
+              href="/assistant"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+            >
+              Ask the assistant to explain my score
+            </Link>
+
             <section className="flex flex-col gap-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
                 Score history
@@ -209,7 +223,7 @@ export default function ProfilePage() {
                       <div className="flex flex-col">
                         <span className="font-medium">{EVENT_TEXT[event.type]}</span>
                         <span className="text-sm text-gray-500">
-                          {event.circleName}
+                          {event.circleName} · {formatDate(event.createdAt)}
                         </span>
                       </div>
                       <span

@@ -35,12 +35,23 @@ export default function ChatPanel({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastActions, setLastActions] = useState<AgentAction[]>([]);
+  const [copiedNudge, setCopiedNudge] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(0);
 
   function nextId() {
     idRef.current += 1;
     return `m${idRef.current}`;
+  }
+
+  async function copyNudge(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedNudge(text);
+      setTimeout(() => setCopiedNudge(null), 2000);
+    } catch {
+      setCopiedNudge(null);
+    }
   }
 
   async function send(text: string) {
@@ -140,9 +151,20 @@ export default function ChatPanel({
               key={`${action.type}-${index}`}
               className="rounded-xl border border-[#ffd140] bg-[#fff9e6] px-3.5 py-2.5 text-sm text-[#4a3a00]"
             >
-              {action.type === "nudge_drafted"
-                ? `Draft nudge ready: "${action.text}"`
-                : "A payout was prepared for this cycle."}
+              {action.type === "nudge_drafted" ? (
+                <div className="flex flex-col gap-2">
+                  <span>Draft nudge ready: &ldquo;{action.text}&rdquo;</span>
+                  <button
+                    type="button"
+                    onClick={() => copyNudge(action.text)}
+                    className="w-fit min-h-10 rounded-lg border border-[#003087] px-3 text-xs font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                  >
+                    {copiedNudge === action.text ? "Copied" : "Copy nudge"}
+                  </button>
+                </div>
+              ) : (
+                "A payout was prepared for this cycle."
+              )}
             </li>
           ))}
         </ul>

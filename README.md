@@ -42,6 +42,14 @@ Open http://localhost:3000. `/` redirects to `/studio`.
 database. See [SETUP.md](SETUP.md) for the environment variables and
 [docs/demo-script.md](docs/demo-script.md) for a guided demo.
 
+## Branches and pull requests
+
+`master` is the default branch and always holds the code that is deployed.
+
+Work goes on a feature branch named `c/<what-it-is>`, for example
+`c/countries-data`, `c/fx-volatility`, `c/profile-screen` or `c/assistant-screen`.
+Every pull request targets `master` and needs a review before it is merged.
+
 ## Checks
 
 ```bash

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ChatPanel from "@/components/agent/ChatPanel";
+import CircleDetailsDrawer from "@/components/agent/CircleDetailsDrawer";
 import { friendlyError } from "@/components/forms/errorMessages";
 import { listCircles } from "@/lib/api-client";
 import type { CircleSummary } from "@/types/api";
@@ -9,6 +10,7 @@ import type { CircleSummary } from "@/types/api";
 export default function AssistantPage() {
   const [circles, setCircles] = useState<CircleSummary[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -81,12 +83,22 @@ export default function AssistantPage() {
         ) : (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <label
-                htmlFor="assistant-circle"
-                className="text-sm font-semibold uppercase tracking-wide text-gray-500"
-              >
-                Circle
-              </label>
+              <div className="flex items-center justify-between gap-3">
+                <label
+                  htmlFor="assistant-circle"
+                  className="text-sm font-semibold uppercase tracking-wide text-gray-500"
+                >
+                  Circle
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setDetailsOpen(true)}
+                  disabled={!selected}
+                  className="min-h-10 rounded-full border border-gray-300 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                >
+                  Circle details
+                </button>
+              </div>
               <select
                 id="assistant-circle"
                 value={selectedId}
@@ -107,6 +119,11 @@ export default function AssistantPage() {
             <ChatPanel
               circleId={selectedId || undefined}
               circleName={selected?.name}
+            />
+
+            <CircleDetailsDrawer
+              circle={detailsOpen ? selected ?? null : null}
+              onClose={() => setDetailsOpen(false)}
             />
           </div>
         )}
