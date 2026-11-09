@@ -1,96 +1,106 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
+import PasswordField from "@/components/forms/PasswordField";
+import TextField from "@/components/forms/TextField";
+import { friendlyError } from "@/components/forms/errorMessages";
 import { login } from "@/lib/api-client";
-import Field from "@/components/forms/Field";
 
-// Only allow same-origin paths as a post-login destination.
-function safeNext(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/studio";
-}
-
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter();
-  const params = useSearchParams();
-  const next = safeNext(params.get("next"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBusy(true);
-    setError(null);
+    setFormError(null);
+    setSubmitting(true);
     const result = await login({ email, password });
+    setSubmitting(false);
+
     if (result.ok) {
-      router.replace(next);
-      router.refresh();
+      router.push("/studio");
       return;
     }
-    setError(result.error.message);
-    setBusy(false);
+
+    // Already on /login, so show the error instead of redirecting to the same page.
+    if (result.error.code === "UNAUTHENTICATED") {
+      setFormError("Email or password is incorrect.");
+      return;
+    }
+
+    setFormError(
+      result.error.code === "VALIDATION"
+        ? result.error.message
+        : friendlyError(result.error.code, result.error.message)
+    );
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-ink">Welcome back</h1>
-      <p className="mt-1 text-sm text-muted">Log in to see your circles.</p>
-
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <Field
-          label="Email"
-          htmlFor="email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-        <Field
-          label="Password"
-          htmlFor="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-
-        {error ? (
-          <p role="alert" className="rounded-lg bg-risky-soft px-3 py-2 text-sm text-risky-ink">
-            {error}
+    <main className="min-h-screen bg-white font-sans text-gray-900">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-10">
+        <header className="flex flex-col gap-1">
+          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+            D&apos;arjo
           </p>
-        ) : null}
+          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+          <p className="text-sm text-gray-600">
+            Log in to see your circle and keep saving.
+          </p>
+        </header>
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-        >
-          {busy ? "Logging in…" : "Log in"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="ada@example.com"
+          />
+          <PasswordField
+            label="Password"
+            name="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
 
-      <p className="mt-4 text-sm text-muted">
-        New here?{" "}
-        <Link
-          href={next === "/studio" ? "/signup" : `/signup?next=${encodeURIComponent(next)}`}
-          className="font-medium text-accent hover:underline"
-        >
-          Create an account
-        </Link>
-      </p>
-    </div>
-  );
-}
+          {formError ? (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {formError}
+            </p>
+          ) : null}
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
-      <LoginForm />
-    </Suspense>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-600 px-5 text-base font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "Logging in..." : "Log in"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600">
+          New to D&apos;arjo?{" "}
+          <Link
+            href="/signup"
+            className="font-semibold text-indigo-700 hover:underline"
+          >
+            Create an account
+          </Link>
+        </p>
+      </div>
+    </main>
   );
 }
