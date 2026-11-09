@@ -1,1 +1,1 @@
-{ "payout": { "id": "p1", "circleId": "c1", "cycle": 1, "winnerId": "u1", "grossCents": 50000, "feeCents": 750, "netCents": 49250, "status": "released" } }
+{ "payout": { "id": "p1", "circleId": "c1", "cycle": 1, "winnerId": "u1", "grossCents": 50000, "feeCents": 750, "netCents": 49250, "status": "released", "localCurrency": "JPY", "localAmount": 73875, "localFormatted": "¥73,875" } }

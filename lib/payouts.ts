@@ -1,16 +1,28 @@
 // What happens after PayPal confirms (or rejects) a payout. Safe to call more than once.
 import { db } from '@/lib/server';
 import { rankFor } from '@/lib/rules';
+import { estimateLocalAmount } from '@/lib/fx';
 import type { Tier, Payout } from '@/types/api';
 
 export const toPayoutApi = (p: {
   id: string; circleId: string; cycle: number; winnerId: string;
   grossCents: number; feeCents: number; netCents: number; status: string;
-}): Payout => ({
-  id: p.id, circleId: p.circleId, cycle: p.cycle, winnerId: p.winnerId,
-  grossCents: p.grossCents, feeCents: p.feeCents, netCents: p.netCents,
-  status: p.status as Payout['status'],
-});
+}, winner?: { currency: string; nationality: string }): Payout => {
+  const payout: Payout = {
+    id: p.id, circleId: p.circleId, cycle: p.cycle, winnerId: p.winnerId,
+    grossCents: p.grossCents, feeCents: p.feeCents, netCents: p.netCents,
+    status: p.status as Payout['status'],
+  };
+  if (winner) {
+    const estimate = estimateLocalAmount(payout.netCents, winner.currency, winner.nationality);
+    if (estimate) {
+      payout.localCurrency = estimate.currency;
+      payout.localAmount = estimate.amount;
+      payout.localFormatted = estimate.formatted;
+    }
+  }
+  return payout;
+};
 
 // Payout reached the winner: mark paid, then start the next cycle (or finish the circle)
 export async function finalizePayout(payoutId: string) {

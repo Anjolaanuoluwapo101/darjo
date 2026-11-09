@@ -92,9 +92,21 @@ export default function PayoutCard({
           <dt className="font-semibold text-[#001c64]">You receive</dt>
           <dd className="text-base font-semibold text-[#001c64]">
             {formatUsd(payout.netCents)}
+            {payout.localFormatted && payout.localCurrency !== "USD" ? (
+              <span className="block text-xs font-medium text-gray-600">
+                about {payout.localFormatted} {payout.localCurrency}
+              </span>
+            ) : null}
           </dd>
         </div>
       </dl>
+
+      {payout.localFormatted && payout.localCurrency !== "USD" ? (
+        <p className="text-xs text-gray-600">
+          PayPal sends the money in US dollars and converts it into your own
+          currency at its own rate, so the final amount can differ a little.
+        </p>
+      ) : null}
 
       {confirming ? (
         <div className="flex flex-col gap-2 rounded-xl border border-[#ffd140] bg-white p-3">

@@ -10,7 +10,7 @@ import type {
 } from '@/types/api';
 import { computeRisk } from '@/lib/rules';
 import { currencyFor } from '@/lib/rules/countries';
-import { volatilityLabel } from '@/lib/rules/volatility';
+import { estimateLocalAmount, volatilityLabel } from '@/lib/fx';
 
 // ---------- database ----------
 const g = globalThis as unknown as { prisma?: PrismaClient };
@@ -51,7 +51,7 @@ export async function requireUser(): Promise<UserRow | null> {
   }
 }
 
-// ---------- country and currency helpers (temporary stand-ins for Teammate C) ----------
+// ---------- country and currency helpers ----------
 export { currencyFor, volatilityLabel };
 
 // ---------- mappers: database rows -> API shapes ----------
@@ -85,7 +85,6 @@ export const toPayout = (p: {
   id: string; circleId: string; cycle: number; winnerId: string;
   grossCents: number; feeCents: number; netCents: number; status: string;
 }): Payout => ({ ...p, status: p.status as Payout['status'] });
-
 export async function toDetail(c: CircleRow, viewer: UserRow): Promise<CircleDetail> {
   const [payments, payoutRow] = await Promise.all([
     db.payment.findMany({ where: { circleId: c.id, cycle: c.currentCycle } }),
@@ -96,12 +95,26 @@ export async function toDetail(c: CircleRow, viewer: UserRow): Promise<CircleDet
     const status = byUser.get(m.userId)?.status;
     return {
       userId: m.userId, name: m.user.name, nationality: m.user.nationality,
+      currency: m.user.currency,
       tier: m.user.tier as Tier, rank: m.user.rank, turnPosition: m.turnPosition,
       currentCycleStatus: status === 'failed' ? 'failed' : status === 'paid' ? 'paid' : status === 'late' ? 'late' : 'pending',
     };
   });
   const winner = c.status === 'active'
     ? c.memberships.find((m) => m.turnPosition === c.currentCycle) : undefined;
+  const payout = payoutRow ? toPayout(payoutRow) : null;
+  if (payout) {
+    // Show the winner roughly what the pot is worth in their own currency.
+    const winnerMember = c.memberships.find((m) => m.userId === payoutRow!.winnerId);
+    const estimate = winnerMember
+      ? estimateLocalAmount(payout.netCents, winnerMember.user.currency, winnerMember.user.nationality)
+      : null;
+    if (estimate) {
+      payout.localCurrency = estimate.currency;
+      payout.localAmount = estimate.amount;
+      payout.localFormatted = estimate.formatted;
+    }
+  }
   return {
     ...toSummary(c, viewer),
     inviteCode: c.inviteCode,
@@ -112,7 +125,7 @@ export async function toDetail(c: CircleRow, viewer: UserRow): Promise<CircleDet
     paidThisCycleCents: payments.filter((p) => p.status === 'paid').reduce((s, p) => s + p.amountCents, 0),
     members,
     currentWinnerId: winner?.userId ?? null,
-    payout: payoutRow ? toPayout(payoutRow) : null,
+    payout,
     viewerPaidThisCycle: byUser.get(viewer.id)?.status === 'paid',
     viewerIsCurrentWinner: winner?.userId === viewer.id,
   };

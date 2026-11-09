@@ -27,6 +27,7 @@ export interface CircleSummary {
 
 export interface Member {
   userId: string; name: string; nationality: string;
+  currency: string;    // ISO currency of the member, e.g. 'JPY'
   tier: Tier; rank: string | null;
   turnPosition: number;
   currentCycleStatus: 'paid' | 'pending' | 'late' | 'failed';
@@ -36,6 +37,9 @@ export interface Payout {
   id: string; circleId: string; cycle: number; winnerId: string;
   grossCents: number; feeCents: number; netCents: number;
   status: 'prepared' | 'released' | 'paid' | 'failed';
+  // Rough value of the payout in the winner's own currency. PayPal does the
+  // real conversion, so this is a guide and not a promise.
+  localCurrency?: string; localAmount?: number; localFormatted?: string;
 }
 
 export interface CircleDetail extends CircleSummary {

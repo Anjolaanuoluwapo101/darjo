@@ -5,6 +5,7 @@ import { db, ok, fail, requireUser } from '@/lib/server';
 import { PayPalError } from '@/lib/paypal';
 import { sendPayout, getBatchStatus } from '@/lib/paypal/payouts';
 import { finalizePayout, failPayout, toPayoutApi } from '@/lib/payouts';
+import { isPaypalSupported } from '@/lib/rules/countries';
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -22,6 +23,9 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
     return fail('POT_NOT_FULL', 'Not everyone has paid yet.', 409);
   if (payout.winnerId !== me.id)
     return fail('NOT_YOUR_TURN', 'Only this cycle\'s winner can release the payout.', 403);
+  // PayPal cannot pay out to every country, so we refuse before touching money.
+  if (!isPaypalSupported(me.nationality))
+    return fail('COUNTRY_NOT_SUPPORTED', 'PayPal cannot send a payout to your country yet.', 403);
   if (payout.status === 'released' || payout.status === 'paid')
     return fail('PAYOUT_ALREADY_RELEASED', 'The payout was already sent.', 409);
 
@@ -57,5 +61,7 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
     throw e;
   }
   const fresh = await db.payout.findUnique({ where: { id: payout.id } });
-  return ok({ payout: toPayoutApi(fresh ?? payout) });
+  return ok({
+    payout: toPayoutApi(fresh ?? payout, { currency: me.currency, nationality: me.nationality }),
+  });
 }
