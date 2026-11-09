@@ -2,6 +2,7 @@
   "name": "darjo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,8 @@
     "start": "next start",
     "postinstall": "prisma generate",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "node scripts/seed.mts"
   },
   "dependencies": {
     "@google/genai": "^2.32.0",

@@ -1,0 +1,23 @@
+{
+  "note": "PayPal SANDBOX accounts for the demo only. These are not real accounts and the passwords only work against the PayPal sandbox.",
+  "users": [
+    {
+      "name": "Ada Sandbox",
+      "email": "sb-yl7dj53722335@personal.example.com",
+      "password": "1A+jxpJK",
+      "nationality": "US"
+    },
+    {
+      "name": "Ben Sandbox",
+      "email": "sb-ql7kl53706685@personal.example.com",
+      "password": "HbfLM0_^",
+      "nationality": "US"
+    },
+    {
+      "name": "Kenji Sandbox",
+      "email": "sb-eytkw53718260@personal.example.com",
+      "password": "Apf40+:{",
+      "nationality": "JP"
+    }
+  ]
+}
