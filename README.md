@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# D'arjo
 
-## Getting Started
+D'arjo is a savings-circle app: a small group of people agrees to put the same
+amount into a pot every week or every month, and the pot goes to one member per
+cycle. Everyone pays through PayPal, and the money is paid out through PayPal
+Payouts.
 
-First, run the development server:
+## What is in the app
+
+- **Sign up and join** with a country, so the app can warn you when a circle
+  carries currency risk (a circle where many members use a currency that swings
+  against the US dollar is marked risky).
+- **Circle Studio** lists the circles you can join, split into your own tier and
+  the tiers below.
+- **Circle pages** show the pot, who has paid, whose turn it is and what the
+  payout will be, in US dollars and as a rough estimate in the winner's own
+  currency.
+- **Profile** shows your D'arjo score, your tier and rank, your score history
+  and how steady your currency is.
+- **Assistant** answers questions about your circles, payments and payouts, and
+  can draft a nudge for someone who has not paid yet.
+- **Payouts** go out through PayPal Payouts. The pot is always collected and sent
+  in US dollars, and PayPal converts it into the receiver's own currency.
+
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Prisma with
+Neon Postgres, PayPal REST + JS SDK, and Gemini for the assistant.
+
+## Quick start
 
 ```bash
+npm install
+npx prisma migrate deploy
+npm run seed      # optional: three PayPal sandbox people and a ready-to-pay circle
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. `/` redirects to `/studio`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`npm run seed` wipes the database first, so only run it against a demo
+database. See [SETUP.md](SETUP.md) for the environment variables and
+[docs/demo-script.md](docs/demo-script.md) for a guided demo.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Checks
 
-## Learn More
+```bash
+npm test
+npx tsc --noEmit
+npm run lint
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Layout
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path | What lives there |
+| --- | --- |
+| `app/` | Screens and API routes |
+| `components/` | Screen building blocks |
+| `lib/` | Server helpers, PayPal client, rules engine, FX helpers |
+| `data/` | Country list and the demo sandbox accounts |
+| `mocks/` | Sample data used when `NEXT_PUBLIC_USE_MOCKS=true` |
+| `prisma/` | Database schema and migrations |
+| `scripts/` | Seed script and the API smoke test |
+| `tests/` | Vitest unit tests |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Licence
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [LICENSE](LICENSE).

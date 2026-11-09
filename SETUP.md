@@ -42,9 +42,30 @@ to `/login` by `proxy.ts`.
 
 ## Demo data
 
-With `DEMO_TOOLS=true`, sign in with a seeded person (`secret123` by default) and
-POST `{"confirm":"RESET"}` to `/api/dev/reset` to recreate the demo circle. The
-reset wipes existing rows, so never enable it against data you care about.
+`npm run seed` wipes the database and recreates the demo: three PayPal sandbox
+people and one circle whose first cycle is already paid, with the Japan account
+as the winner, so a payout can be released straight away.
+
+```bash
+npm run seed
+```
+
+The sandbox accounts live in `data/demo-users.json` and their app password is
+the same as their PayPal sandbox password. They are sandbox accounts only and
+never work against live PayPal.
+
+With `DEMO_TOOLS=true`, you can also POST `{"confirm":"RESET"}` to
+`/api/dev/reset` to recreate the demo people from `DEMO_SEED_USERS` (or the
+built-in default). The reset wipes existing rows, so never enable it against
+data you care about.
+
+## Payouts and currencies
+
+The pot is always collected and paid out in US dollars. PayPal converts the
+payout into the receiver's own currency, so the app only shows an estimate next
+to the payout, and the country list in `data/countries.ts` follows the PayPal
+Payouts country list. A member from a country PayPal cannot pay out to is
+refused the payout before any money is sent.
 
 ## Frontend without a backend
 
@@ -56,11 +77,12 @@ and `proxy.ts` lets every route through, so no database or session is needed.
 ```bash
 npm test
 npx tsc --noEmit
-npx eslint app components lib data types proxy.ts next.config.ts
+npx eslint app components lib data types scripts proxy.ts next.config.ts
 npm run build
 ```
 
-`npm run build` also runs TypeScript.
+`npm run build` also runs TypeScript. `npm run seed` needs a reachable database
+and wipes it, so do not run it in the middle of a demo.
 
 ## Tests
 
