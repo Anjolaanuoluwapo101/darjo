@@ -91,6 +91,27 @@ export const releasePayout = (circleId: string) =>
 
 export const getProfile = () =>
   USE_MOCKS ? mock<ProfileData>(profileMock) : http<ProfileData>('/api/me/profile');
+
+export interface VolatilityReading {
+  currency: string;
+  score: number;
+  label: 'low' | 'medium' | 'high';
+  asOf: string;
+  source: 'live' | 'fallback';
+}
+
+export const getVolatility = (currency?: string) =>
+  USE_MOCKS
+    ? mock<VolatilityReading>({
+        currency: currency ?? 'USD',
+        score: 0,
+        label: 'low',
+        asOf: new Date().toISOString(),
+        source: 'fallback',
+      })
+    : http<VolatilityReading>(
+        `/api/fx/volatility${currency ? `?currency=${encodeURIComponent(currency)}` : ''}`,
+      );
 export const chatWithAgent = (b: ChatBody) =>
   USE_MOCKS
     ? mock<{ reply: string; actions: AgentAction[] }>(chatMock)
