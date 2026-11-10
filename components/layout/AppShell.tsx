@@ -73,7 +73,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-surface-2">
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
+        <div className="mx-auto flex w-full max-w-md flex-wrap items-center gap-3 px-5 py-3 sm:px-6 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl">
           <Link href="/studio" className="text-lg font-semibold tracking-tight text-ink">
             D&apos;arjo
           </Link>

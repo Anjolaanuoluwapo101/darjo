@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ScoreRing from "@/components/profile/ScoreRing";
+import PageContainer from "@/components/layout/PageContainer";
 import TierBadge from "@/components/ui/TierBadge";
 import { friendlyError } from "@/components/forms/errorMessages";
 import { getProfile, getVolatility, type VolatilityReading } from "@/lib/api-client";
@@ -80,7 +81,7 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+      <PageContainer>
         <header className="flex flex-col gap-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Profile
@@ -127,44 +128,47 @@ export default function ProfilePage() {
             </button>
           </div>
         ) : profile ? (
-          <>
-            <section className="flex flex-col items-center gap-4 rounded-2xl border border-gray-200 p-6">
-              <ScoreRing score={profile.user.score} />
-              <p className="text-center text-sm text-gray-600">
-                {profile.nextTier.requirement}
-              </p>
-            </section>
-
-            {volatility ? (
-              <section className="flex flex-col gap-2 rounded-2xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    {volatility.currency} risk
-                  </h2>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      volatility.label === "low"
-                        ? "bg-safe-soft text-safe-ink"
-                        : volatility.label === "medium"
-                          ? "bg-[#fff4d6] text-[#7a5200]"
-                          : "bg-risky-soft text-risky-ink"
-                    }`}
-                  >
-                    {volatility.label} volatility
-                  </span>
-                </div>
-                <p className="text-sm leading-relaxed text-gray-700">
-                  {VOLATILITY_TEXT[volatility.label]}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {volatility.source === "live"
-                    ? "Live reading from the market"
-                    : "Our own reference table"}
+          <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+            <div className="flex flex-col gap-6">
+              <section className="flex flex-col items-center gap-4 rounded-2xl border border-gray-200 p-6">
+                <ScoreRing score={profile.user.score} />
+                <p className="text-center text-sm text-gray-600">
+                  {profile.nextTier.requirement}
                 </p>
               </section>
-            ) : null}
 
-            <section className="flex flex-col gap-3">
+              {volatility ? (
+                <section className="flex flex-col gap-2 rounded-2xl border border-gray-200 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                      {volatility.currency} risk
+                    </h2>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        volatility.label === "low"
+                          ? "bg-safe-soft text-safe-ink"
+                          : volatility.label === "medium"
+                            ? "bg-[#fff4d6] text-[#7a5200]"
+                            : "bg-risky-soft text-risky-ink"
+                      }`}
+                    >
+                      {volatility.label} volatility
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-gray-700">
+                    {VOLATILITY_TEXT[volatility.label]}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {volatility.source === "live"
+                      ? "Live reading from the market"
+                      : "Our own reference table"}
+                  </p>
+                </section>
+              ) : null}
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <section className="flex flex-col gap-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
                 Your circles
               </h2>
@@ -239,9 +243,10 @@ export default function ProfilePage() {
                 </ul>
               )}
             </section>
-          </>
+            </div>
+          </div>
         ) : null}
-      </div>
+      </PageContainer>
     </main>
   );
 }

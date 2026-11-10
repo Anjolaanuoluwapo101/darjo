@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ChatPanel from "@/components/agent/ChatPanel";
 import CircleDetailsDrawer from "@/components/agent/CircleDetailsDrawer";
 import { friendlyError } from "@/components/forms/errorMessages";
+import PageContainer from "@/components/layout/PageContainer";
 import { listCircles } from "@/lib/api-client";
 import type { CircleSummary } from "@/types/api";
 
@@ -45,7 +46,7 @@ export default function AssistantPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+      <PageContainer width="wide">
         <header className="flex flex-col gap-1">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Assistant
@@ -127,7 +128,7 @@ export default function AssistantPage() {
             />
           </div>
         )}
-      </div>
+      </PageContainer>
     </main>
   );
 }

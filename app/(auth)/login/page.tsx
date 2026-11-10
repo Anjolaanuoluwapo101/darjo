@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
+import PageContainer from "@/components/layout/PageContainer";
 import { login } from "@/lib/api-client";
 import { nextPath, redirectAfterAuth } from "@/lib/redirect";
 
@@ -43,7 +44,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-10">
+      <PageContainer width="narrow" className="py-10">
         <header className="flex flex-col gap-1">
           <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
             D&apos;arjo
@@ -101,7 +102,7 @@ export default function LoginPage() {
             Create an account
           </Link>
         </p>
-      </div>
+      </PageContainer>
     </main>
   );
 }

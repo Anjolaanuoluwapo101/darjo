@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CircleCard from "@/components/circles/CircleCard";
 import { friendlyError } from "@/components/forms/errorMessages";
+import PageContainer from "@/components/layout/PageContainer";
 import TierBadge from "@/components/ui/TierBadge";
 import { getMe, listCircles } from "@/lib/api-client";
 import type { CircleSummary, User } from "@/types/api";
@@ -82,7 +83,7 @@ export default function StudioPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+      <PageContainer width="wide">
         <header className="flex flex-col gap-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Circle Studio
@@ -157,7 +158,7 @@ export default function StudioPage() {
                 <h2 className="self-start rounded-full bg-[#ffd140] px-3 py-1 text-sm font-semibold text-[#001c64]">
                   Your tier
                 </h2>
-                <ul className="flex flex-col gap-3">
+                <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {ownTier.map((circle) => (
                     <li key={circle.id}>
                       <CircleCard circle={circle} />
@@ -172,7 +173,7 @@ export default function StudioPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
                   Lower tiers
                 </h2>
-                <ul className="flex flex-col gap-3">
+                <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {lowerTiers.map((circle) => (
                     <li key={circle.id}>
                       <CircleCard circle={circle} />
@@ -183,14 +184,14 @@ export default function StudioPage() {
             ) : null}
           </div>
         )}
-      </div>
+      </PageContainer>
     </main>
   );
 }
 
 function LoadingCircles() {
   return (
-    <div className="flex flex-col gap-3" role="status" aria-live="polite">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-live="polite">
       <span className="sr-only">Loading circles...</span>
       {[0, 1, 2].map((item) => (
         <div key={item} className="rounded-2xl border border-gray-200 p-4">

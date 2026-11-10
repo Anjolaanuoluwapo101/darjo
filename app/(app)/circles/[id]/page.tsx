@@ -7,6 +7,7 @@ import PayButton from "@/components/circles/PayButton";
 import PayoutCard from "@/components/circles/PayoutCard";
 import AssistantDrawer from "@/components/agent/AssistantDrawer";
 import { friendlyError } from "@/components/forms/errorMessages";
+import PageContainer from "@/components/layout/PageContainer";
 import RiskTag from "@/components/ui/RiskTag";
 import TierBadge from "@/components/ui/TierBadge";
 import { formatUsd } from "@/components/ui/formatUsd";
@@ -75,7 +76,7 @@ function CircleDetail() {
 
   return (
     <div className="min-h-full bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+      <PageContainer>
         {loading ? (
           <CircleSkeleton />
         ) : error ? (
@@ -84,26 +85,30 @@ function CircleDetail() {
             onRetry={() => setReloadKey((key) => key + 1)}
           />
         ) : circle ? (
-          <>
-            <CircleHeader circle={circle} />
+          <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+            <div className="flex flex-col gap-6">
+              <CircleHeader circle={circle} />
 
-            <PotCard circle={circle} />
+              <PotCard circle={circle} />
 
-            <CircleActions
-              circle={circle}
-              isMember={isMember}
-              onCircleChange={setCircle}
-            />
+              <CircleActions
+                circle={circle}
+                isMember={isMember}
+                onCircleChange={setCircle}
+              />
+            </div>
 
-            <MembersList
-              circle={circle}
-              viewerId={viewerId}
-            />
+            <div className="flex flex-col gap-6">
+              <MembersList
+                circle={circle}
+                viewerId={viewerId}
+              />
 
-            <AssistantDrawer circleId={circle.id} circleName={circle.name} />
-          </>
+              <AssistantDrawer circleId={circle.id} circleName={circle.name} />
+            </div>
+          </div>
         ) : null}
-      </div>
+      </PageContainer>
     </div>
   );
 }

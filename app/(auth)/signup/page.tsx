@@ -7,6 +7,7 @@ import CountrySelect from "@/components/forms/CountrySelect";
 import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
+import PageContainer from "@/components/layout/PageContainer";
 import { DISCLAIMER } from "@/data/countries";
 import { signup } from "@/lib/api-client";
 import { nextPath, redirectAfterAuth } from "@/lib/redirect";
@@ -60,7 +61,7 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-10">
+      <PageContainer width="narrow" className="py-10">
         <header className="flex flex-col gap-1">
           <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
             D&apos;arjo
@@ -146,7 +147,7 @@ export default function SignupPage() {
             Log in
           </Link>
         </p>
-      </div>
+      </PageContainer>
     </main>
   );
 }
