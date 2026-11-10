@@ -50,6 +50,12 @@ async function http<T>(path: string, method = 'GET', body?: unknown): Promise<Ap
 const mock = <T>(data: unknown): Promise<ApiResult<T>> =>
   Promise.resolve({ ok: true, data: data as T });
 
+// Builds "?a=b&c=d" (or "" when there is nothing to send).
+function query(params: Record<string, string>): string {
+  const search = new URLSearchParams(params).toString();
+  return search ? `?${search}` : '';
+}
+
 export const signup = (b: SignupBody) =>
   USE_MOCKS ? mock<{ user: User }>(meMock) : http<{ user: User }>('/api/auth/signup', 'POST', b);
 export const login = (b: LoginBody) =>
@@ -59,12 +65,17 @@ export const logout = () =>
 export const getMe = () =>
   USE_MOCKS ? mock<{ user: User }>(meMock) : http<{ user: User }>('/api/me');
 
-export const listCircles = (params?: { risk?: 'safe' | 'risky' }) =>
+export const listCircles = (params?: { risk?: 'safe' | 'risky'; mine?: boolean }) =>
   USE_MOCKS
     ? mock<{ circles: CircleSummary[] }>({
         circles: MOCK_CIRCLES.filter((circle) => !params?.risk || circle.risk === params.risk),
       })
-    : http<{ circles: CircleSummary[] }>(`/api/circles${params?.risk ? `?risk=${params.risk}` : ''}`);
+    : http<{ circles: CircleSummary[] }>(
+        `/api/circles${query({
+          ...(params?.risk ? { risk: params.risk } : {}),
+          ...(params?.mine ? { mine: '1' } : {}),
+        })}`,
+      );
 export const createCircle = (b: CreateCircleBody) =>
   USE_MOCKS ? mock<{ circle: CircleDetail }>(circleDetailMock) : http<{ circle: CircleDetail }>('/api/circles', 'POST', b);
 export const getCircle = (id: string) =>

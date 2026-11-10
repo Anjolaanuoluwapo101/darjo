@@ -82,6 +82,20 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
 
   // ----- circles -----
   if (key === 'GET circles') {
+    const mine = req.nextUrl.searchParams.get('mine') === '1';
+    // "My circles" for the assistant: every circle the viewer belongs to, in any
+    // status. The studio listing below only shows open circles the viewer has not joined.
+    if (mine) {
+      const rows = await db.circle.findMany({
+        where: { memberships: { some: { userId: me.id } } },
+        include: circleInclude,
+      });
+      const order = { active: 0, open: 1, completed: 2 } as const;
+      const circles = rows
+        .map((circle) => toSummary(circle, me))
+        .sort((a, b) => order[a.status] - order[b.status] || a.name.localeCompare(b.name));
+      return ok({ circles });
+    }
     const risk = req.nextUrl.searchParams.get('risk');
     const rows = await db.circle.findMany({
       where: { status: 'open', tier: { lte: me.tier }, memberships: { none: { userId: me.id } } },

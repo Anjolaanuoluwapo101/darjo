@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import ChatPanel from "@/components/agent/ChatPanel";
 import CircleDetailsDrawer from "@/components/agent/CircleDetailsDrawer";
@@ -22,7 +23,7 @@ export default function AssistantPage() {
     async function load() {
       setLoading(true);
       setError(null);
-      const result = await listCircles();
+      const result = await listCircles({ mine: true });
       if (!active) return;
 
       if (!result.ok) {
@@ -83,39 +84,49 @@ export default function AssistantPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <label
-                  htmlFor="assistant-circle"
-                  className="text-sm font-semibold uppercase tracking-wide text-gray-500"
+            {circles.length === 0 ? (
+              <p className="rounded-2xl border border-gray-200 bg-gray-50 p-5 text-sm text-gray-600">
+                You are not in a circle yet.{" "}
+                <Link
+                  href="/studio"
+                  className="font-semibold text-[#0070e0] underline"
                 >
-                  Circle
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setDetailsOpen(true)}
-                  disabled={!selected}
-                  className="min-h-10 rounded-full border border-gray-300 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                  Find one in the Studio
+                </Link>
+                , then come back to ask about it.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <label
+                    htmlFor="assistant-circle"
+                    className="text-sm font-semibold uppercase tracking-wide text-gray-500"
+                  >
+                    Circle
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setDetailsOpen(true)}
+                    disabled={!selected}
+                    className="min-h-10 rounded-full border border-gray-300 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                  >
+                    Circle details
+                  </button>
+                </div>
+                <select
+                  id="assistant-circle"
+                  value={selectedId}
+                  onChange={(event) => setSelectedId(event.target.value)}
+                  className="min-h-11 rounded-xl border border-gray-300 bg-white px-3 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
                 >
-                  Circle details
-                </button>
+                  {circles.map((circle) => (
+                    <option key={circle.id} value={circle.id}>
+                      {circle.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <select
-                id="assistant-circle"
-                value={selectedId}
-                onChange={(event) => setSelectedId(event.target.value)}
-                className="min-h-11 rounded-xl border border-gray-300 bg-white px-3 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
-              >
-                {circles.length === 0 ? (
-                  <option value="">No circles yet</option>
-                ) : null}
-                {circles.map((circle) => (
-                  <option key={circle.id} value={circle.id}>
-                    {circle.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            )}
 
             <ChatPanel
               circleId={selectedId || undefined}

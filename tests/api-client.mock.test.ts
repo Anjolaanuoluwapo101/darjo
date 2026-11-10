@@ -51,6 +51,11 @@ describe('mock mode', () => {
     if (!risky.ok) throw new Error('expected risky circles');
     expect(risky.data.circles.map((c) => c.id)).toEqual(['c2']);
     expect(risky.data.circles.every((c) => c.risk === 'risky')).toBe(true);
+
+    // The assistant asks for the viewer's circles; mock mode ignores the scope.
+    const mine = await client.listCircles({ mine: true });
+    if (!mine.ok) throw new Error('expected my circles');
+    expect(mine.data.circles.map((c) => c.id)).toEqual(['c1', 'c2']);
   });
 
   it('returns the paid member view for the default circle', async () => {
