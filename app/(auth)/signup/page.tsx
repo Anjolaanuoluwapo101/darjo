@@ -9,6 +9,7 @@ import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
 import { DISCLAIMER } from "@/data/countries";
 import { signup } from "@/lib/api-client";
+import { nextPath, redirectAfterAuth } from "@/lib/redirect";
 import { isPaypalSupported } from "@/lib/rules/countries";
 
 export default function SignupPage() {
@@ -40,7 +41,7 @@ export default function SignupPage() {
     setSubmitting(false);
 
     if (result.ok) {
-      router.push("/studio");
+      redirectAfterAuth(router, nextPath());
       return;
     }
 

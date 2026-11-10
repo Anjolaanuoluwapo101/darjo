@@ -7,6 +7,7 @@ import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
 import { login } from "@/lib/api-client";
+import { nextPath, redirectAfterAuth } from "@/lib/redirect";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function LoginPage() {
     setSubmitting(false);
 
     if (result.ok) {
-      router.push("/studio");
+      redirectAfterAuth(router, nextPath());
       return;
     }
 

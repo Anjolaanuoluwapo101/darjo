@@ -16,6 +16,10 @@ import type { Tier } from '@/types/api';
 type Ctx = { params: Promise<{ path: string[] }> };
 
 const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+// Passwords are never trimmed: a leading or trailing space can be part of the
+// password. Login accepts the exact password and, as a convenience, the same
+// password without surrounding spaces (people often paste one with a space).
+const rawStr = (v: unknown) => (typeof v === 'string' ? v : '');
 const int = (v: unknown) => (typeof v === 'number' && Number.isInteger(v) ? v : NaN);
 const codes = (v: unknown) =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string').map((x) => x.toUpperCase()) : [];
@@ -40,7 +44,7 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
   // ----- auth -----
   if (key === 'POST auth/signup') {
     const name = str(body.name), email = str(body.email).toLowerCase();
-    const password = str(body.password), nationality = str(body.nationality).toUpperCase();
+    const password = rawStr(body.password), nationality = str(body.nationality).toUpperCase();
     if (!name || !email.includes('@') || password.length < 6)
       return fail('VALIDATION', 'Enter a name, a valid email and a password of at least 6 characters.');
     const currency = currencyFor(nationality);
@@ -56,8 +60,11 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
 
   if (key === 'POST auth/login') {
     const user = await db.user.findUnique({ where: { email: str(body.email).toLowerCase() } });
-    if (!user || !(await bcrypt.compare(str(body.password), user.passwordHash)))
-      return fail('UNAUTHENTICATED', 'Wrong email or password.', 401);
+    if (!user) return fail('UNAUTHENTICATED', 'Wrong email or password.', 401);
+    const password = rawStr(body.password);
+    const matches = await bcrypt.compare(password, user.passwordHash)
+      || (password !== password.trim() && await bcrypt.compare(password.trim(), user.passwordHash));
+    if (!matches) return fail('UNAUTHENTICATED', 'Wrong email or password.', 401);
     await setSession(user.id);
     return ok({ user: toUser(user) });
   }
