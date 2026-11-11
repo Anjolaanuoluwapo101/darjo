@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useId, useState, type FormEvent } from "react";
 import CountryMultiSelect from "@/components/forms/CountryMultiSelect";
 import TextField from "@/components/forms/TextField";
-import PageContainer from "@/components/layout/PageContainer";
 import { friendlyError } from "@/components/forms/errorMessages";
 import {
   errorClass,
@@ -50,17 +49,37 @@ function countryName(code: string): string {
   return countryByCode(code)?.name ?? code;
 }
 
-export default function NewCirclePage() {
+function NewCircleForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
   const [userReloadKey, setUserReloadKey] = useState(0);
 
-  const [name, setName] = useState("");
-  const [contribution, setContribution] = useState("");
-  const [frequency, setFrequency] = useState<Frequency>("monthly");
-  const [memberLimit, setMemberLimit] = useState(5);
+  const [name, setName] = useState(() =>
+    (searchParams.get("name") ?? "").slice(0, 60)
+  );
+  const [contribution, setContribution] = useState(() => {
+    const suggestedAmount = searchParams.get("amount");
+    return suggestedAmount && /^\d+(\.\d{1,2})?$/.test(suggestedAmount)
+      ? suggestedAmount
+      : "";
+  });
+  const [frequency, setFrequency] = useState<Frequency>(() => {
+    const suggestedFrequency = searchParams.get("frequency");
+    return suggestedFrequency === "weekly" || suggestedFrequency === "monthly"
+      ? suggestedFrequency
+      : "monthly";
+  });
+  const [memberLimit, setMemberLimit] = useState(() => {
+    const suggestedMembers = Number(searchParams.get("members"));
+    return Number.isInteger(suggestedMembers) &&
+      suggestedMembers >= 2 &&
+      suggestedMembers <= 12
+      ? suggestedMembers
+      : 5;
+  });
   const [included, setIncluded] = useState<string[]>([]);
   const [excluded, setExcluded] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -69,25 +88,6 @@ export default function NewCirclePage() {
   const [submitting, setSubmitting] = useState(false);
 
   const memberLimitId = useId();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const suggestedName = params.get("name");
-    const suggestedAmount = params.get("amount");
-    const suggestedFrequency = params.get("frequency");
-    const suggestedMembers = Number(params.get("members"));
-
-    if (suggestedName) setName(suggestedName.slice(0, 60));
-    if (suggestedAmount && /^\d+(\.\d{1,2})?$/.test(suggestedAmount)) {
-      setContribution(suggestedAmount);
-    }
-    if (suggestedFrequency === "weekly" || suggestedFrequency === "monthly") {
-      setFrequency(suggestedFrequency);
-    }
-    if (Number.isInteger(suggestedMembers) && suggestedMembers >= 2 && suggestedMembers <= 12) {
-      setMemberLimit(suggestedMembers);
-    }
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -225,8 +225,8 @@ export default function NewCirclePage() {
   }
 
   return (
-    <div className="min-h-full bg-white font-sans text-gray-900">
-      <PageContainer>
+    <div className="min-h-dvh bg-white font-sans text-gray-900">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 lg:py-10">
         <header className="flex flex-col gap-2">
           <Link
             href="/studio"
@@ -430,8 +430,24 @@ export default function NewCirclePage() {
             </button>
           </form>
         ) : null}
-      </PageContainer>
+      </div>
     </div>
+  );
+}
+
+export default function NewCirclePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-dvh bg-white font-sans text-gray-900">
+          <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:py-10">
+            <PageLoading />
+          </div>
+        </div>
+      }
+    >
+      <NewCircleForm />
+    </Suspense>
   );
 }
 

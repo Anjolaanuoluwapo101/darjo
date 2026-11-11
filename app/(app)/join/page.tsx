@@ -4,37 +4,38 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type FormEvent } from "react";
 import TextField from "@/components/forms/TextField";
-import PageContainer from "@/components/layout/PageContainer";
 import { friendlyError } from "@/components/forms/errorMessages";
 import { joinCircle } from "@/lib/api-client";
 
 export default function JoinPage() {
   return (
-    <div className="min-h-full bg-white font-sans text-gray-900">
-      <PageContainer width="narrow">
-        <header className="flex flex-col gap-2">
-          <Link
-            href="/studio"
-            className="inline-flex w-fit items-center gap-1 rounded-lg text-sm font-medium text-[#0070e0] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-          >
-            <span aria-hidden="true">&larr;</span>
-            Back to Circle Studio
-          </Link>
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            Join a circle
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Enter an invite code
-          </h1>
-          <p className="text-sm text-gray-600">
-            Ask the circle&apos;s creator for the code, then join in one tap.
-          </p>
-        </header>
+    <div className="min-h-dvh bg-white font-sans text-gray-900">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 lg:py-10">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+          <header className="flex flex-col gap-2">
+            <Link
+              href="/studio"
+              className="inline-flex w-fit items-center gap-1 rounded-lg text-sm font-medium text-[#0070e0] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+            >
+              <span aria-hidden="true">&larr;</span>
+              Back to Circle Studio
+            </Link>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
+              Join a circle
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Enter an invite code
+            </h1>
+            <p className="text-sm text-gray-600">
+              Ask the circle&apos;s creator for the code, then join in one tap.
+            </p>
+          </header>
 
-        <Suspense fallback={<JoinFormLoading />}>
-          <JoinForm />
-        </Suspense>
-      </PageContainer>
+          <Suspense fallback={<JoinFormLoading />}>
+            <JoinForm />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 }

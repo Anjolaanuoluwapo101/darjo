@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import CircleCard from "@/components/circles/CircleCard";
 import MatchPanel from "@/components/match/MatchPanel";
 import { friendlyError } from "@/components/forms/errorMessages";
-import PageContainer from "@/components/layout/PageContainer";
 import TierBadge from "@/components/ui/TierBadge";
 import { getMe, listCircles } from "@/lib/api-client";
 import type { CircleSummary, User } from "@/types/api";
@@ -91,8 +90,8 @@ export default function StudioPage() {
   const lowerTiers = circles.filter((circle) => !circle.ownTier);
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer width="wide">
+    <div className="min-h-dvh bg-white font-sans text-gray-900">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 lg:py-10">
         <header className="flex flex-col gap-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Circle Studio
@@ -114,32 +113,32 @@ export default function StudioPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
             <Link
               href="/circles/new"
-              className="flex min-h-12 items-center justify-center rounded-xl bg-[#003087] px-4 text-center text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+              className="flex min-h-12 items-center justify-center rounded-xl bg-[#003087] px-4 text-center text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 sm:max-w-56"
             >
               Create circle
             </Link>
             <Link
               href="/join"
-              className="flex min-h-12 items-center justify-center rounded-xl border border-[#003087] px-4 text-center text-base font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+              className="flex min-h-12 items-center justify-center rounded-xl border border-[#003087] px-4 text-center text-base font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 sm:max-w-56"
             >
               Join with code
             </Link>
           </div>
         </header>
 
-        <div role="tablist" aria-label="Studio view" className="flex gap-2 border-b border-line pb-1">
+        <div role="tablist" aria-label="Studio view" className="flex flex-wrap gap-2">
           <button
             type="button"
             role="tab"
             aria-selected={view === "browse"}
             onClick={() => setView("browse")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            className={`min-h-11 rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2 ${
               view === "browse"
-                ? "bg-surface text-ink"
-                : "text-muted hover:bg-surface-2 hover:text-ink"
+                ? "bg-[#ffd140] text-[#001c64]"
+                : "text-gray-500 hover:text-[#001c64]"
             }`}
           >
             Browse circles
@@ -149,10 +148,10 @@ export default function StudioPage() {
             role="tab"
             aria-selected={view === "match"}
             onClick={() => setView("match")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            className={`min-h-11 rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2 ${
               view === "match"
-                ? "bg-surface text-ink"
-                : "text-muted hover:bg-surface-2 hover:text-ink"
+                ? "bg-[#ffd140] text-[#001c64]"
+                : "text-gray-500 hover:text-[#001c64]"
             }`}
           >
             Find my circle
@@ -195,9 +194,15 @@ export default function StudioPage() {
           <div className="flex flex-col gap-6">
             {ownTier.length > 0 ? (
               <section className="flex flex-col gap-3">
-                <h2 className="self-start rounded-full bg-[#ffd140] px-3 py-1 text-sm font-semibold text-[#001c64]">
-                  Your tier
-                </h2>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-4 w-1 rounded-full bg-[#ffd140]"
+                    aria-hidden="true"
+                  />
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    Your tier
+                  </h2>
+                </div>
                 <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {ownTier.map((circle) => (
                     <li key={circle.id}>
@@ -226,8 +231,8 @@ export default function StudioPage() {
         )}
         </>
         )}
-      </PageContainer>
-    </main>
+      </div>
+    </div>
   );
 }
 

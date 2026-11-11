@@ -75,7 +75,7 @@ function CircleDetail() {
     : false;
 
   return (
-    <div className="min-h-full bg-white font-sans text-gray-900">
+    <div className="min-h-dvh bg-white font-sans text-gray-900">
       <PageContainer>
         {loading ? (
           <CircleSkeleton />
@@ -219,10 +219,10 @@ function PotCard({ circle }: { circle: CircleDetail }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Pot collected this cycle"
-        className="mt-3 h-3 w-full overflow-hidden rounded-full bg-gray-100"
+        className="mt-3 h-3 w-full overflow-hidden rounded-full bg-gray-200"
       >
         <div
-          className="h-full rounded-full bg-[#0070e0] transition-all"
+          className="h-full rounded-full bg-[#ffd140] transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -432,7 +432,7 @@ function MemberRow({
             </span>
           ) : null}
           {isWinner ? (
-            <span className="rounded-full bg-[#ffd140] px-2 py-0.5 text-xs font-semibold text-[#001c64]">
+            <span className="whitespace-nowrap rounded-full bg-[#ffd140] px-2 py-0.5 text-xs font-semibold text-[#001c64]">
               Winner this cycle
             </span>
           ) : null}
@@ -532,7 +532,7 @@ export default function CircleDetailPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-full bg-white px-5 py-8">
+        <div className="min-h-dvh bg-white px-5 py-8 font-sans text-gray-900">
           <p className="text-sm text-gray-500">Loading circle...</p>
         </div>
       }

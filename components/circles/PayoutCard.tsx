@@ -69,7 +69,7 @@ export default function PayoutCard({
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-[#ffd140] bg-amber-50 p-5">
+    <section className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-amber-50 p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-[#001c64]">
           Your payout is ready
@@ -88,7 +88,7 @@ export default function PayoutCard({
           <dt className="text-gray-600">Service fee</dt>
           <dd className="font-medium">-{formatUsd(payout.feeCents)}</dd>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-[#ffd140] pt-1.5">
+        <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-1.5">
           <dt className="font-semibold text-[#001c64]">You receive</dt>
           <dd className="text-base font-semibold text-[#001c64]">
             {formatUsd(payout.netCents)}
@@ -109,7 +109,7 @@ export default function PayoutCard({
       ) : null}
 
       {confirming ? (
-        <div className="flex flex-col gap-2 rounded-xl border border-[#ffd140] bg-white p-3">
+        <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3">
           <p className="text-sm text-gray-700">
             Send {formatUsd(payout.netCents)} to your account now? This cannot
             be undone.
@@ -119,7 +119,7 @@ export default function PayoutCard({
               type="button"
               onClick={handleRelease}
               disabled={releasing}
-              className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#ffd140] px-4 text-sm font-semibold text-[#001c64] transition hover:bg-[#f2c000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {releasing ? "Sending..." : "Yes, release my payout"}
             </button>
@@ -140,7 +140,7 @@ export default function PayoutCard({
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#ffd140] px-5 text-base font-semibold text-[#001c64] transition hover:bg-[#f2c000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2"
         >
           Release my payout
         </button>
