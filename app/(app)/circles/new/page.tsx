@@ -71,6 +71,25 @@ export default function NewCirclePage() {
   const memberLimitId = useId();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const suggestedName = params.get("name");
+    const suggestedAmount = params.get("amount");
+    const suggestedFrequency = params.get("frequency");
+    const suggestedMembers = Number(params.get("members"));
+
+    if (suggestedName) setName(suggestedName.slice(0, 60));
+    if (suggestedAmount && /^\d+(\.\d{1,2})?$/.test(suggestedAmount)) {
+      setContribution(suggestedAmount);
+    }
+    if (suggestedFrequency === "weekly" || suggestedFrequency === "monthly") {
+      setFrequency(suggestedFrequency);
+    }
+    if (Number.isInteger(suggestedMembers) && suggestedMembers >= 2 && suggestedMembers <= 12) {
+      setMemberLimit(suggestedMembers);
+    }
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     async function load() {

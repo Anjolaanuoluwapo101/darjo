@@ -1,8 +1,10 @@
 // POST /api/dev/mark-late -> demo helper. Off unless DEMO_TOOLS=true.
 // Marks one member's contribution as late so the video does not have to wait for a real due date.
-import { NextRequest } from 'next/server';
+import { NextRequest, after } from 'next/server';
 import { db, ok, fail, requireUser } from '@/lib/server';
 import { markLate, toPayment } from '@/lib/payments';
+import { notifyPaymentLate } from '@/lib/notification-events';
+import { dispatchPush } from '@/lib/push';
 
 export async function POST(req: NextRequest) {
   if (process.env.DEMO_TOOLS !== 'true') return fail('NOT_FOUND', 'Unknown endpoint.', 404);
@@ -25,5 +27,7 @@ export async function POST(req: NextRequest) {
   if (!payment) return fail('NOT_FOUND', 'That person has no contribution in this cycle.', 404);
 
   const updated = await markLate(payment.id, true);
+  const notificationIds = await notifyPaymentLate(payment.id);
+  after(() => dispatchPush(notificationIds));
   return ok({ payment: toPayment(updated ?? payment) });
 }

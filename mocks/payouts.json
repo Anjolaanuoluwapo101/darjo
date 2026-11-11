@@ -1,0 +1,41 @@
+{
+  "ready": [
+    {
+      "id": "p1",
+      "circleId": "c1",
+      "cycle": 3,
+      "winnerId": "u1",
+      "grossCents": 30000,
+      "feeCents": 1500,
+      "netCents": 28500,
+      "status": "prepared",
+      "circleName": "Weekend Savers",
+      "winnerName": "Ada",
+      "viewerRole": "winner",
+      "canRelease": true,
+      "localCurrency": "USD",
+      "localAmount": 285,
+      "localFormatted": "$285.00"
+    }
+  ],
+  "history": [
+    {
+      "id": "p0",
+      "circleId": "c2",
+      "cycle": 2,
+      "winnerId": "u1",
+      "grossCents": 20000,
+      "feeCents": 1000,
+      "netCents": 19000,
+      "status": "paid",
+      "circleName": "Starter Circle",
+      "winnerName": "Ada",
+      "viewerRole": "winner",
+      "canRelease": false,
+      "localCurrency": "USD",
+      "localAmount": 190,
+      "localFormatted": "$190.00"
+    }
+  ],
+  "totals": { "readyNetCents": 28500, "paidNetCents": 19000 }
+}

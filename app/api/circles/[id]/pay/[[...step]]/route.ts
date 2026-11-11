@@ -1,9 +1,11 @@
 // POST /api/circles/:id/pay          -> create a PayPal order for my contribution this cycle
 // POST /api/circles/:id/pay/capture  -> capture the approved order and settle the payment
-import { NextRequest } from 'next/server';
+import { NextRequest, after } from 'next/server';
 import { db, ok, fail, requireUser } from '@/lib/server';
 import { createOrder, captureOrder, PayPalError } from '@/lib/paypal';
 import { settlePayment, toPayment } from '@/lib/payments';
+import { notifyPaymentSettled } from '@/lib/notification-events';
+import { dispatchPush } from '@/lib/push';
 import { isPaypalSupported } from '@/lib/rules/countries';
 
 type Ctx = { params: Promise<{ id: string; step?: string[] }> };
@@ -47,6 +49,8 @@ export async function POST(req: NextRequest, ctx: Ctx) {
       const result = await captureOrder(orderId);
       if (result.status === 'COMPLETED') {
         const settled = await settlePayment(payment.id, result.captureId);
+        const notificationIds = await notifyPaymentSettled(payment.id);
+        after(() => dispatchPush(notificationIds));
         return ok({ payment: toPayment(settled ?? payment) });
       }
       // Not completed yet (for example pending review): the webhook will settle it later

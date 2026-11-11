@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "n1",
+      "type": "payout_ready",
+      "title": "Your payout is ready",
+      "body": "Weekend Savers finished collecting. Release your $285.00 payout when you are ready.",
+      "url": "/payouts",
+      "data": { "payoutId": "p1", "circleId": "c1" },
+      "readAt": null,
+      "pushStatus": "sent",
+      "createdAt": "2026-11-11T09:05:00.000Z"
+    },
+    {
+      "id": "n2",
+      "type": "payment_due",
+      "title": "Contribution due soon",
+      "body": "Your $100.00 contribution to Weekend Savers is due in 2 days.",
+      "url": "/circles/c1",
+      "data": { "paymentId": "pay1", "circleId": "c1" },
+      "readAt": null,
+      "pushStatus": "sent",
+      "createdAt": "2026-11-10T09:00:00.000Z"
+    },
+    {
+      "id": "n3",
+      "type": "nudge",
+      "title": "A circle member nudged you",
+      "body": "Please pay your Weekend Savers contribution when you can.",
+      "url": "/circles/c1",
+      "data": { "circleId": "c1" },
+      "readAt": "2026-11-09T15:20:00.000Z",
+      "pushStatus": "skipped",
+      "createdAt": "2026-11-09T14:00:00.000Z"
+    }
+  ],
+  "unreadCount": 2,
+  "nextCursor": null
+}

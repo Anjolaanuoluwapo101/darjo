@@ -11,7 +11,8 @@
     "postinstall": "prisma generate",
     "lint": "eslint",
     "test": "vitest run",
-    "seed": "node scripts/seed.mts"
+    "seed": "node scripts/seed.mts",
+    "backfill-payouts": "node scripts/backfill-legacy-payouts.mts"
   },
   "dependencies": {
     "@google/genai": "^2.32.0",
@@ -24,7 +25,8 @@
     "next": "16.4.4",
     "prisma": "^6.19.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "web-push": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
@@ -32,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.4.4",
     "tailwindcss": "^4",

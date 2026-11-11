@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CircleCard from "@/components/circles/CircleCard";
+import MatchPanel from "@/components/match/MatchPanel";
 import { friendlyError } from "@/components/forms/errorMessages";
 import PageContainer from "@/components/layout/PageContainer";
 import TierBadge from "@/components/ui/TierBadge";
@@ -11,6 +12,8 @@ import { getMe, listCircles } from "@/lib/api-client";
 import type { CircleSummary, User } from "@/types/api";
 
 type Filter = "all" | "safe" | "risky";
+type Frequency = "weekly" | "monthly";
+type Risk = "safe" | "risky";
 
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
@@ -23,6 +26,12 @@ export default function StudioPage() {
   const [user, setUser] = useState<User | null>(null);
   const [circles, setCircles] = useState<CircleSummary[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
+  const [view, setView] = useState<"browse" | "match">("browse");
+  const urlParams =
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const qAmount = urlParams.get("amount");
+  const qFrequency = urlParams.get("frequency");
+  const qRisk = urlParams.get("risk");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -121,6 +130,37 @@ export default function StudioPage() {
           </div>
         </header>
 
+        <div role="tablist" aria-label="Studio view" className="flex gap-2 border-b border-line pb-1">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "browse"}
+            onClick={() => setView("browse")}
+            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+              view === "browse"
+                ? "bg-surface text-ink"
+                : "text-muted hover:bg-surface-2 hover:text-ink"
+            }`}
+          >
+            Browse circles
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "match"}
+            onClick={() => setView("match")}
+            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+              view === "match"
+                ? "bg-surface text-ink"
+                : "text-muted hover:bg-surface-2 hover:text-ink"
+            }`}
+          >
+            Find my circle
+          </button>
+        </div>
+
+        {view === "match" ? <MatchPanel initialAmount={qAmount ?? ''} initialFrequency={(qFrequency ?? '') as Frequency | ''} initialRisk={(qRisk ?? '') as Risk | ''} /> : (
+        <>
         <div role="group" aria-label="Filter circles" className="flex gap-2">
           {FILTERS.map((option) => {
             const selected = filter === option.value;
@@ -183,6 +223,8 @@ export default function StudioPage() {
               </section>
             ) : null}
           </div>
+        )}
+        </>
         )}
       </PageContainer>
     </main>

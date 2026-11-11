@@ -22,6 +22,8 @@ model User {
   memberships  Membership[]
   payments     Payment[]
   scoreEvents  ScoreEvent[]
+  notifications Notification[]
+  pushSubscriptions PushSubscription[]
 }
 
 model Circle {
@@ -93,6 +95,40 @@ model ScoreEvent {
   points    Int
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id            String    @id @default(cuid())
+  userId        String
+  type          String
+  title         String
+  body          String
+  url           String?
+  data          Json?
+  dedupeKey     String
+  readAt        DateTime?
+  pushStatus    String    @default("pending") // pending | sent | skipped | failed
+  pushAttempts  Int       @default(0)
+  pushLastError String?
+  pushSentAt    DateTime?
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, dedupeKey])
+  @@index([userId, createdAt])
+  @@index([pushStatus, pushAttempts])
+}
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }
 
 model WebhookEvent {

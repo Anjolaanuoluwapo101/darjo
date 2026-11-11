@@ -68,8 +68,76 @@ export interface ScoreEvent {
   circleName: string; points: number; createdAt: string;
 }
 
+export type NotificationType =
+  | 'payment_due' | 'payment_overdue' | 'payment_paid' | 'payment_failed'
+  | 'nudge'
+  | 'payout_ready' | 'payout_sent' | 'payout_paid' | 'payout_failed'
+  | 'tier_up' | 'circle_filled' | 'cycle_started' | 'circle_completed';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  url: string | null;
+  data: Record<string, unknown> | null;
+  readAt: string | null;
+  pushStatus: 'pending' | 'sent' | 'skipped' | 'failed';
+  createdAt: string;
+}
+
+export interface NotificationPage {
+  items: AppNotification[];
+  unreadCount: number;
+  nextCursor: string | null;
+}
+
+export interface PushSubscriptionBody {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+  userAgent?: string;
+}
+
+export interface PayoutHubItem extends Payout {
+  circleName: string;
+  winnerName: string;
+  viewerRole: 'winner' | 'member';
+  canRelease: boolean;
+  releaseBlockedReason?: string;
+}
+
+export interface PayoutHubData {
+  ready: PayoutHubItem[];
+  history: PayoutHubItem[];
+  totals: { readyNetCents: number; paidNetCents: number };
+}
+
+export interface MatchCandidate {
+  circle: CircleSummary;
+  inviteCode: string;
+  score: number;
+  reasons: string[];
+  seatsLeft: number;
+  joinPath: string;
+}
+
+export interface MatchSuggestion {
+  name: string;
+  contributionCents: number;
+  frequency: 'weekly' | 'monthly';
+  memberLimit: number;
+  reason: string;
+}
+
+export interface MatchData {
+  candidates: MatchCandidate[];
+  summary: string;
+  createSuggestion: MatchSuggestion | null;
+}
+
 export type AgentAction =
-  | { type: 'nudge_drafted'; toUserId: string; text: string }
+  | { type: 'nudge_drafted'; toUserId: string; text: string; circleId?: string }
+  | { type: 'nudge_sent'; toUserId: string; circleId: string; text: string }
   | { type: 'payout_prepared'; payoutId: string };
 
 export interface ProfileData {

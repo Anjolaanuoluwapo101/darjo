@@ -3,6 +3,7 @@
 import type {
   ApiResult, User, CircleSummary, CircleDetail, Payment, Payout, ProfileData, AgentAction,
   SignupBody, LoginBody, CreateCircleBody, JoinBody, ChatBody,
+  NotificationPage, PushSubscriptionBody, PayoutHubData, MatchData,
 } from '@/types/api';
 import meMock from '@/mocks/me.json';
 import circlesMock from '@/mocks/circles.json';
@@ -14,6 +15,9 @@ import chatMock from '@/mocks/chat.json';
 import startPaymentMock from '@/mocks/start-payment.json';
 import capturePaymentMock from '@/mocks/capture-payment.json';
 import releasePayoutMock from '@/mocks/release-payout.json';
+import notificationsMock from '@/mocks/notifications.json';
+import payoutsMock from '@/mocks/payouts.json';
+import matchMock from '@/mocks/match.json';
 
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
@@ -127,3 +131,44 @@ export const chatWithAgent = (b: ChatBody) =>
   USE_MOCKS
     ? mock<{ reply: string; actions: AgentAction[] }>(chatMock)
     : http<{ reply: string; actions: AgentAction[] }>('/api/agent/chat', 'POST', b);
+
+export const getNotifications = (params?: {
+  cursor?: string | null;
+  limit?: number;
+  unread?: boolean;
+}) =>
+  USE_MOCKS
+    ? mock<NotificationPage>(notificationsMock)
+    : http<NotificationPage>(
+        `/api/notifications${query({
+          ...(params?.cursor ? { cursor: params.cursor } : {}),
+          ...(params?.limit ? { limit: String(params.limit) } : {}),
+          ...(params?.unread ? { unread: '1' } : {}),
+        })}`,
+      );
+export const markNotificationsRead = (body: { ids?: string[]; all?: boolean }) =>
+  USE_MOCKS
+    ? mock<{ updated: number }>({ updated: body.all ? 2 : body.ids?.length ?? 0 })
+    : http<{ updated: number }>('/api/notifications/read', 'POST', body);
+export const subscribePush = (body: PushSubscriptionBody) =>
+  USE_MOCKS
+    ? mock<{ subscribed: boolean }>({ subscribed: true })
+    : http<{ subscribed: boolean }>('/api/push/subscribe', 'POST', body);
+export const unsubscribePush = (endpoint: string) =>
+  USE_MOCKS
+    ? mock<{ subscribed: boolean }>({ subscribed: false })
+    : http<{ subscribed: boolean }>('/api/push/subscribe', 'DELETE', { endpoint });
+export const getPayouts = () =>
+  USE_MOCKS
+    ? mock<PayoutHubData>(payoutsMock)
+    : http<PayoutHubData>('/api/payouts');
+export const releasePayoutById = (payoutId: string) =>
+  USE_MOCKS
+    ? mock<{ payout: Payout }>(releasePayoutMock)
+    : http<{ payout: Payout }>(`/api/payouts/${payoutId}/release`, 'POST');
+export const getMatches = (body: {
+  contributionCents?: number;
+  frequency?: 'weekly' | 'monthly';
+  risk?: 'safe' | 'risky';
+} = {}) =>
+  USE_MOCKS ? mock<MatchData>(matchMock) : http<MatchData>('/api/match', 'POST', body);

@@ -1,7 +1,7 @@
 // One router for: auth (signup, login, logout), me, circles (list, create, get, join).
 // More specific files (e.g. app/api/circles/[id]/pay/route.ts, app/api/webhooks/paypal/route.ts)
 // win over this catch-all, so later endpoints go in their own files.
-import { NextRequest } from 'next/server';
+import { NextRequest, after } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import {
@@ -10,6 +10,8 @@ import {
 } from '@/lib/server';
 import { canSeeCircle, joinCheck, nationalityAllowed, sortForStudio } from '@/lib/rules';
 import { markLateIfDue } from '@/lib/payments';
+import { notifyJoin } from '@/lib/notification-events';
+import { dispatchPush } from '@/lib/push';
 import { MIN_CONTRIBUTION_CENTS, MIN_MEMBERS, MAX_MEMBERS } from '@/lib/rules/constants';
 import type { Tier } from '@/types/api';
 
@@ -170,6 +172,8 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
       }
     });
     const fresh = await loadCircle({ id: circle.id });
+    const notificationIds = await notifyJoin(circle.id, me.id);
+    after(() => dispatchPush(notificationIds));
     return ok({ circle: await toDetail(fresh!, me) });
   }
 

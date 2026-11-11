@@ -2,8 +2,11 @@
 // There is no tool that releases a payout: only the winner's tap on the release endpoint does that.
 import { Type } from '@google/genai';
 import type { FunctionDeclaration } from '@google/genai';
+import { after } from 'next/server';
 import { db } from '@/lib/server';
 import { ensurePayoutPrepared } from '@/lib/payments';
+import { notifyNudge } from '@/lib/notification-events';
+import { dispatchPush } from '@/lib/push';
 import type { AgentAction } from '@/types/api';
 
 export interface AgentContext {
@@ -159,6 +162,50 @@ const draftNudge: AgentTool = {
   },
 };
 
+const sendNudge: AgentTool = {
+  declaration: {
+    name: 'send_nudge',
+    description:
+      'Send a nudge notification to a member who has not paid this cycle. Only call after the person explicitly asks to send it.',
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        userId: { type: Type.STRING, description: 'The member to nudge.' },
+        circleId: { type: Type.STRING, description: 'The circle id.' },
+      },
+      required: ['userId', 'circleId'],
+    },
+  },
+  async run(args, ctx) {
+    const circleId = str(args.circleId) || ctx.circleId || '';
+    const memberId = str(args.userId);
+    if (memberId === ctx.userId) return { data: { error: 'You do not need to nudge yourself.' } };
+    const found = await circleForMember(circleId, ctx.userId);
+    if ('error' in found) return { data: { error: found.error } };
+    const circle = found.circle;
+    const member = circle.memberships.find((m) => m.userId === memberId);
+    if (!member) return { data: { error: 'That person is not in this circle.' } };
+    const payment = await db.payment.findUnique({
+      where: { circleId_cycle_userId: { circleId: circle.id, cycle: circle.currentCycle, userId: memberId } },
+    });
+    if (payment?.status === 'paid') return { data: { error: 'That member has already paid this cycle.' } };
+    const amount = payment?.amountCents ?? circle.contributionCents;
+    const text = `Hi ${member.user.name}, your $${dollars(amount)} contribution for ${circle.name} is due. Can you pay today?`;
+    const ids = await notifyNudge({
+      circleId: circle.id,
+      toUserId: memberId,
+      fromUserId: ctx.userId,
+      cycle: circle.currentCycle,
+      text,
+    });
+    if (ids.length > 0) after(() => dispatchPush(ids));
+    return {
+      data: { sent: true, toUserId: memberId, name: member.user.name, amountCents: amount, text },
+      action: { type: 'nudge_sent', toUserId: memberId, circleId: circle.id, text },
+    };
+  },
+};
+
 const explainScore: AgentTool = {
   declaration: {
     name: 'explain_score',
@@ -241,6 +288,7 @@ export const agentTools: AgentTool[] = [
   getCircleStatus,
   listUnpaidMembers,
   draftNudge,
+  sendNudge,
   explainScore,
   preparePayout,
 ];

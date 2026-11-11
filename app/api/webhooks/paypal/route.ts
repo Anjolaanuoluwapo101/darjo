@@ -1,9 +1,16 @@
 // REPLACES the layer 2 webhook file. Adds payout events.
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { db } from '@/lib/server';
 import { verifyWebhook } from '@/lib/paypal';
 import { settlePayment, failPayment } from '@/lib/payments';
 import { finalizePayout, failPayout } from '@/lib/payouts';
+import {
+  notifyPaymentSettled,
+  notifyPaymentFailed,
+  notifyPayoutFinalized,
+  notifyPayoutFailed,
+} from '@/lib/notification-events';
+import { dispatchPush } from '@/lib/push';
 
 
 interface PayPalEvent {
@@ -48,43 +55,63 @@ export async function POST(req: NextRequest) {
   if (await db.webhookEvent.findUnique({ where: { id: event.id } }))
     return NextResponse.json({ ok: true, duplicate: true });
 
+  const notificationIds: string[] = [];
   switch (event.event_type) {
     case 'PAYMENT.CAPTURE.COMPLETED': {
       const p = await findPayment(event);
-      if (p) await settlePayment(p.id, event.resource?.id ?? null);
+      if (p) {
+        await settlePayment(p.id, event.resource?.id ?? null);
+        notificationIds.push(...(await notifyPaymentSettled(p.id)));
+      }
       break;
     }
     case 'PAYMENT.CAPTURE.DENIED':
     case 'PAYMENT.CAPTURE.DECLINED': {
       const p = await findPayment(event);
-      if (p) await failPayment(p.id);
+      if (p) {
+        await failPayment(p.id);
+        notificationIds.push(...(await notifyPaymentFailed(p.id)));
+      }
       break;
     }
     case 'PAYMENT.PAYOUTSBATCH.SUCCESS': {
       const p = await findPayout(event);
-      if (p) await finalizePayout(p.id);
+      if (p) {
+        await finalizePayout(p.id);
+        notificationIds.push(...(await notifyPayoutFinalized(p.id)));
+      }
       break;
     }
     case 'PAYMENT.PAYOUTSBATCH.DENIED': {
       const p = await findPayout(event);
-      if (p) await failPayout(p.id);
+      if (p) {
+        await failPayout(p.id);
+        notificationIds.push(...(await notifyPayoutFailed(p.id)));
+      }
       break;
     }
     case 'PAYMENT.PAYOUTS-ITEM.SUCCEEDED': {
       const p = await findPayout(event);
-      if (p) await finalizePayout(p.id);
+      if (p) {
+        await finalizePayout(p.id);
+        notificationIds.push(...(await notifyPayoutFinalized(p.id)));
+      }
       break;
     }
     case 'PAYMENT.PAYOUTS-ITEM.FAILED':
     case 'PAYMENT.PAYOUTS-ITEM.BLOCKED':
     case 'PAYMENT.PAYOUTS-ITEM.CANCELED': {
       const p = await findPayout(event);
-      if (p) await failPayout(p.id);
+      if (p) {
+        await failPayout(p.id);
+        notificationIds.push(...(await notifyPayoutFailed(p.id)));
+      }
       break;
     }
     default:
       break;
   }
   await db.webhookEvent.create({ data: { id: event.id } });
+  after(() => dispatchPush(notificationIds));
   return NextResponse.json({ ok: true });
 }
