@@ -26,10 +26,10 @@ function NavLinks() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-1 px-3 py-2 transition-colors border-b-2 border-transparent ${
+            className={`flex min-h-11 items-center gap-1 border-b-2 border-transparent px-3 py-2 transition-colors ${
               active
-                ? "text-accent border-accent"
-                : "text-muted hover:text-accent"
+                ? "border-white text-white"
+                : "text-blue-100 hover:text-white"
             }`}
           >
             {item.label}
@@ -52,21 +52,21 @@ function MobileNavLinks({ user, onClose }: { user: User | null; onClose: () => v
             href={item.href}
             aria-current={active ? "page" : undefined}
             onClick={onClose}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-r-2 border-transparent ${
+            className={`flex min-h-11 items-center gap-2 border-r-2 border-transparent px-4 py-3 text-sm transition-colors ${
               active
-                ? "bg-surface font-medium text-accent border-accent"
-                : "text-muted hover:bg-surface-2 hover:text-ink"
+                ? "border-[#003087] bg-gray-50 font-medium text-[#003087]"
+                : "text-gray-700 hover:bg-gray-50 hover:text-[#001c64]"
             }`}
           >
             {item.label}
           </Link>
         );
       })}
-      <div className="border-t border-line mt-2 pt-2 flex items-center gap-3">
+      <div className="mt-2 flex items-center gap-3 border-t border-gray-200 px-4 pt-2">
         {user ? (
           <>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-ink">{user.name}</span>
+              <span className="text-sm font-medium text-[#001c64]">{user.name}</span>
               <TierBadge tier={user.tier} rank={user.rank} />
             </div>
           </>
@@ -108,10 +108,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-surface-2">
-      <header className="sticky top-0 z-40 border-b border-line bg-surface">
+    <div className="flex min-h-dvh flex-col bg-white">
+      <header className="sticky top-0 z-40 border-b border-[#003087] bg-[#001c64]">
         <div className="mx-auto flex w-full max-w-md flex-wrap items-center justify-between px-4 py-1.5 sm:px-6 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl md:py-2">
-          <Link href="/studio" className="shrink-0 text-base font-semibold tracking-tight text-ink">
+          <Link href="/studio" className="shrink-0 text-base font-semibold tracking-tight text-white">
             D&apos;arjo
           </Link>
 
@@ -126,14 +126,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <NotificationBell />
               {user ? (
                 <>
-                  <span className="text-sm text-muted">{user.name}</span>
+                  <span className="text-sm text-blue-100">{user.name}</span>
                   <TierBadge tier={user.tier} rank={user.rank} />
                 </>
               ) : null}
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-lg border border-line px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+                className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#001c64]"
               >
                 Log out
               </button>
@@ -145,7 +145,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-expanded={menuOpen}
               aria-label="Menu"
-              className="md:hidden shrink-0 rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
             >
               <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
               {menuOpen ? (
@@ -174,14 +174,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {menuOpen && (
           <div className="fixed inset-0 z-50 md:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" />
-            <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-surface border-l border-line shadow-xl transform transition-transform duration-300 translate-x-0">
-              <div className="flex items-center justify-between px-4 py-2 border-b border-line">
-                <span className="text-base font-semibold tracking-tight text-ink">D&apos;arjo</span>
+            <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white border-l border-gray-200 shadow-xl transform transition-transform duration-300 translate-x-0">
+              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
+                <span className="text-base font-semibold tracking-tight text-[#001c64]">D&apos;arjo</span>
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
                   aria-label="Close menu"
-                  className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-50 hover:text-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0]"
                 >
                   <span className="sr-only">Close menu</span>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -196,12 +196,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <MobileNavLinks user={user} onClose={() => setMenuOpen(false)} />
               {user ? (
-                <div className="border-t border-line mt-3 pt-3 px-4">
+                <div className="border-t border-gray-200 mt-3 pt-3 px-4">
                   <button
                     type="button"
                     onClick={handleLogout}
                     onClickCapture={() => setMenuOpen(false)}
-                    className="w-full flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+                    className="flex min-h-11 w-full items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0]"
                   >
                     Log out
                   </button>
@@ -215,7 +215,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
 
       {error ? (
-        <p role="alert" className="bg-risky-soft px-4 py-2 text-center text-sm text-risky-ink">
+        <p role="alert" className="border-t border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-[#7a5200]">
           {error}
         </p>
       ) : null}

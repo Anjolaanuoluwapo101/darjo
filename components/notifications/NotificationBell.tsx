@@ -14,7 +14,7 @@ export default function NotificationBell() {
           ? `Notifications, ${unreadCount} unread`
           : 'Notifications'
       }
-      className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#001c64]"
     >
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-5 w-5">
         <path
@@ -32,7 +32,7 @@ export default function NotificationBell() {
         />
       </svg>
       {unreadCount > 0 ? (
-        <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+        <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[#ffd140] px-1.5 py-0.5 text-[11px] font-semibold leading-none text-[#001c64]">
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       ) : null}

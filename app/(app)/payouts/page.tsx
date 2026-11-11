@@ -37,7 +37,7 @@ export default function PayoutsPage() {
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    let active = true;
+    const active = true;
     async function loadUser() {
       const result = await getMe();
       if (!active) return;
@@ -93,21 +93,21 @@ export default function PayoutsPage() {
   );
 
   return (
-    <main className="min-h-screen bg-surface-2 font-sans text-ink">
-      <PageContainer width="wide">
+    <main className="min-h-dvh bg-white font-sans text-gray-900">
+      <PageContainer>
         <header className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-accent">Payouts</p>
-              <h1 className="text-2xl font-semibold tracking-tight">Your turn in the circle</h1>
-              <p className="max-w-prose text-sm text-muted">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">Payouts</p>
+              <h1 className="text-2xl font-semibold tracking-tight text-[#001c64]">Your turn in the circle</h1>
+              <p className="max-w-prose text-sm text-gray-700">
                 Release a payout when the pot is ready. PayPal sends the money to your account.
               </p>
             </div>
             <div className="flex items-center gap-3">
               {user ? (
                 <>
-                  <span className="hidden text-sm text-muted sm:inline">{user.name}</span>
+                  <span className="hidden text-sm text-gray-600 sm:inline">{user.name}</span>
                   <TierBadge tier={user.tier} rank={user.rank} />
                 </>
               ) : null}
@@ -115,12 +115,12 @@ export default function PayoutsPage() {
           </div>
 
           {notice ? (
-            <p role="status" className="rounded-xl bg-safe-soft px-4 py-3 text-sm text-safe-ink">
+            <p role="status" className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
               {notice}
             </p>
           ) : null}
           {error ? (
-            <p role="alert" className="rounded-xl bg-risky-soft px-4 py-3 text-sm text-risky-ink">
+            <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </p>
           ) : null}
@@ -131,23 +131,20 @@ export default function PayoutsPage() {
         ) : data ? (
           <>
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-line bg-surface p-5">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted">Ready to release</p>
-                <p className="mt-2 text-2xl font-bold">{formatUsd(data.totals.readyNetCents)}</p>
+              <div className="rounded-2xl border border-gray-200 bg-white p-5">
+                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Ready to release</p>
+                <p className="mt-2 text-2xl font-bold text-[#001c64]">{formatUsd(data.totals.readyNetCents)}</p>
               </div>
-              <div className="rounded-2xl border border-line bg-surface p-5">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted">Received</p>
-                <p className="mt-2 text-2xl font-bold">{formatUsd(data.totals.paidNetCents)}</p>
+              <div className="rounded-2xl border border-gray-200 bg-white p-5">
+                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Received</p>
+                <p className="mt-2 text-2xl font-bold text-[#001c64]">{formatUsd(data.totals.paidNetCents)}</p>
               </div>
             </section>
 
             <section className="flex flex-col gap-5">
-              <h2 className="text-base font-semibold">Ready now</h2>
+              <h2 className="text-base font-semibold text-[#001c64]">Ready now</h2>
               {data.ready.length === 0 ? (
-                <PayoutEmptyState
-                  message="No payout is ready yet."
-                  action={{ href: '/studio', label: 'Back to studio' }}
-                />
+                <PayoutEmptyState message="No payout is ready yet." />
               ) : (
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {data.ready.map((item) => (
@@ -167,12 +164,9 @@ export default function PayoutsPage() {
             </section>
 
             <section className="flex flex-col gap-5">
-              <h2 className="text-base font-semibold">History</h2>
+              <h2 className="text-base font-semibold text-[#001c64]">History</h2>
               {data.history.length === 0 ? (
-                <PayoutEmptyState
-                  message="Completed payouts will appear here."
-                  action={{ href: '/studio', label: 'Back to studio' }}
-                />
+                <PayoutEmptyState message="Completed payouts will appear here." />
               ) : (
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {data.history.map((item) => (
@@ -188,33 +182,19 @@ export default function PayoutsPage() {
 
         <Link
           href="/studio"
-          className="self-start rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
         >
-          Back to Studio
+          Back to studio
         </Link>
       </PageContainer>
     </main>
   );
 }
 
-function PayoutEmptyState({
-  message,
-  action,
-}: {
-  message: string;
-  action?: { href: string; label: string };
-}) {
+function PayoutEmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-8 text-center">
-      <p className="text-sm text-muted">{message}</p>
-      {action && (
-        <Link
-          href={action.href}
-          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-        >
-          {action.label}
-        </Link>
-      )}
+    <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center">
+      <p className="text-sm text-gray-600">{message}</p>
     </div>
   );
 }
@@ -236,12 +216,12 @@ function PayoutReadyCard({
 }) {
   const isWinner = item.viewerRole === 'winner';
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 hover:bg-surface-2 transition-colors">
+    <article className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition-colors hover:bg-gray-50">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold">{item.circleName}</h3>
-          <p className="text-sm text-muted">
-            Cycle {item.cycle} · {isWinner ? 'Your payout' : `Winner: ${item.winnerName}`}
+          <h3 className="truncate text-base font-semibold text-[#001c64]">{item.circleName}</h3>
+          <p className="text-sm text-gray-600">
+            Cycle {item.cycle} A� {isWinner ? 'Your payout' : `Winner: ${item.winnerName}`}
           </p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone[item.status]}`}>
@@ -250,20 +230,20 @@ function PayoutReadyCard({
       </div>
 
       <dl className="flex flex-col gap-2 text-sm">
-        <div className="flex items-center justify-between gap-3 border-b border-line pb-2">
-          <dt className="text-muted">Pot</dt>
-          <dd className="font-medium">{formatUsd(item.grossCents)}</dd>
+        <div className="flex items-center justify-between gap-3 border-b border-gray-200 pb-2">
+          <dt className="text-gray-500">Pot</dt>
+          <dd className="font-medium text-[#001c64]">{formatUsd(item.grossCents)}</dd>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-muted">Fee</dt>
-          <dd className="font-medium text-muted">-{formatUsd(item.feeCents)}</dd>
+          <dt className="text-gray-500">Fee</dt>
+          <dd className="font-medium text-gray-500">-{formatUsd(item.feeCents)}</dd>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-line pt-2">
-          <dt className="font-semibold">{isWinner ? 'You receive' : 'They receive'}</dt>
-          <dd className="text-lg font-bold">
+        <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-2">
+          <dt className="font-semibold text-[#001c64]">{isWinner ? 'You receive' : 'They receive'}</dt>
+          <dd className="text-lg font-bold text-[#001c64]">
             {formatUsd(item.netCents)}
             {item.localFormatted && item.localCurrency !== 'USD' ? (
-              <span className="ml-1 text-xs font-medium text-muted">
+              <span className="ml-1 text-xs font-medium text-gray-500">
                 about {item.localFormatted} {item.localCurrency}
               </span>
             ) : null}
@@ -273,8 +253,8 @@ function PayoutReadyCard({
 
       {isWinner ? (
         confirming ? (
-          <div className="flex flex-col gap-2 rounded-xl border border-line bg-surface-2 p-3">
-            <p className="text-sm">
+          <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <p className="text-sm text-gray-700">
               Send {formatUsd(item.netCents)} to your account now? This cannot be undone.
             </p>
             <div className="flex gap-2">
@@ -282,7 +262,7 @@ function PayoutReadyCard({
                 type="button"
                 onClick={onRelease}
                 disabled={releasing}
-                className="min-h-11 flex-1 rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-h-11 flex-1 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {releasing ? 'Sending...' : 'Yes, release it'}
               </button>
@@ -290,7 +270,7 @@ function PayoutReadyCard({
                 type="button"
                 onClick={onCancel}
                 disabled={releasing}
-                className="min-h-11 flex-1 rounded-xl border border-line px-4 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-60"
+                className="min-h-11 flex-1 rounded-xl border border-gray-300 px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-white hover:text-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -301,13 +281,13 @@ function PayoutReadyCard({
             type="button"
             onClick={onConfirm}
             disabled={!item.canRelease}
-            className="min-h-12 w-full rounded-xl bg-accent px-5 text-base font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-12 w-full rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Release my payout
           </button>
         )
       ) : (
-        <p className="text-sm text-muted">
+        <p className="text-sm text-gray-600">
           {item.status === 'released'
             ? 'PayPal is sending the money to the winner.'
             : `Waiting for ${item.winnerName || 'the winner'} to release this payout.`}
@@ -315,12 +295,12 @@ function PayoutReadyCard({
       )}
 
       {item.releaseBlockedReason && isWinner && item.status === 'prepared' ? (
-        <p className="text-xs text-muted">{item.releaseBlockedReason}</p>
+        <p className="text-xs text-gray-500">{item.releaseBlockedReason}</p>
       ) : null}
 
       <Link
         href={`/circles/${item.circleId}`}
-        className="mt-2 inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        className="mt-2 inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
       >
         View circle
       </Link>
@@ -330,12 +310,12 @@ function PayoutReadyCard({
 
 function PayoutHistoryItem({ item }: { item: PayoutHubItem }) {
   return (
-    <article className="rounded-2xl border border-line bg-surface p-5">
+    <article className="rounded-2xl border border-gray-200 bg-white p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold">{item.circleName}</h3>
-          <p className="text-sm text-muted">
-            Cycle {item.cycle} · {item.winnerName}
+          <h3 className="truncate text-base font-semibold text-[#001c64]">{item.circleName}</h3>
+          <p className="text-sm text-gray-600">
+            Cycle {item.cycle} A� {item.winnerName}
           </p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone[item.status]}`}>
@@ -345,20 +325,20 @@ function PayoutHistoryItem({ item }: { item: PayoutHubItem }) {
 
       <dl className="mt-3 flex flex-col gap-2 text-sm">
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-muted">Amount</dt>
-          <dd className="text-lg font-bold">{formatUsd(item.netCents)}</dd>
+          <dt className="text-gray-500">Amount</dt>
+          <dd className="text-lg font-bold text-[#001c64]">{formatUsd(item.netCents)}</dd>
         </div>
         {item.localFormatted && item.localCurrency !== 'USD' ? (
           <div className="flex items-center justify-between gap-3">
-            <dt className="text-muted">In local currency</dt>
-            <dd className="text-sm text-muted">{item.localFormatted} {item.localCurrency}</dd>
+            <dt className="text-gray-500">In local currency</dt>
+            <dd className="text-sm text-gray-500">{item.localFormatted} {item.localCurrency}</dd>
           </div>
         ) : null}
       </dl>
 
       <Link
         href={`/circles/${item.circleId}`}
-        className="mt-2 inline-flex min-h-10 items-center justify-center self-start rounded-xl border border-line px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        className="mt-2 inline-flex min-h-11 items-center justify-center self-start rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
       >
         View circle
       </Link>
@@ -372,19 +352,19 @@ function PayoutSkeleton() {
       <span className="sr-only">Loading payouts...</span>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[0, 1].map((card) => (
-          <div key={card} className="rounded-2xl border border-line bg-surface p-5 animate-pulse">
-            <div className="h-4 w-1/3 animate-pulse rounded bg-surface-2" />
-            <div className="mt-2 h-8 w-full animate-pulse rounded bg-surface-2" />
+          <div key={card} className="rounded-2xl border border-gray-200 bg-white p-5 animate-pulse">
+            <div className="h-4 w-1/3 animate-pulse rounded bg-gray-100" />
+            <div className="mt-2 h-8 w-full animate-pulse rounded bg-gray-100" />
           </div>
         ))}
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[0, 1, 2].map((card) => (
-          <div key={card} className="rounded-2xl border border-line bg-surface p-5 animate-pulse">
-            <div className="h-4 w-1/2 animate-pulse rounded bg-surface-2" />
-            <div className="mt-2 h-4 w-full animate-pulse rounded bg-surface-2" />
-            <div className="mt-2 h-6 w-1/2 animate-pulse rounded bg-surface-2" />
-            <div className="mt-2 h-4 w-full animate-pulse rounded bg-surface-2" />
+          <div key={card} className="rounded-2xl border border-gray-200 bg-white p-5 animate-pulse">
+            <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
+            <div className="mt-2 h-4 w-full animate-pulse rounded bg-gray-100" />
+            <div className="mt-2 h-6 w-1/2 animate-pulse rounded bg-gray-100" />
+            <div className="mt-2 h-4 w-full animate-pulse rounded bg-gray-100" />
           </div>
         ))}
       </div>
