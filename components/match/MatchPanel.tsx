@@ -3,11 +3,14 @@
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { friendlyError } from '@/components/forms/errorMessages';
-import { inputClass, labelClass } from '@/components/forms/fieldStyles';
 import { formatUsd } from '@/components/ui/formatUsd';
 import RiskTag from '@/components/ui/RiskTag';
 import { getMatches } from '@/lib/api-client';
 import type { MatchData } from '@/types/api';
+
+const matchInputClass =
+  'min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-[#0070e0] focus:ring-2 focus:ring-[#0070e0]';
+const matchLabelClass = 'text-sm font-medium text-gray-700';
 
 function parseDollarsToCents(input: string): number | null {
   const value = input.trim();
@@ -67,33 +70,33 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
     <div className="flex flex-col gap-5">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5"
+        className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5"
       >
         <div>
-          <h2 className="text-base font-semibold">Tell us what fits</h2>
-          <p className="mt-1 text-sm text-muted">
+          <h2 className="text-base font-semibold text-[#001c64]">Tell us what fits</h2>
+          <p className="mt-1 text-sm text-gray-600">
             We only show open circles you are eligible to join. The assistant explains the matches.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="flex flex-col gap-1.5">
-            <span className={labelClass}>Contribution (USD)</span>
+            <span className={matchLabelClass}>Contribution (USD)</span>
             <input
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               inputMode="decimal"
               placeholder="Any"
-              className={inputClass}
+              className={matchInputClass}
             />
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className={labelClass}>How often</span>
+            <span className={matchLabelClass}>How often</span>
             <select
               value={frequency}
               onChange={(event) => setFrequency(event.target.value as Frequency | '')}
-              className={inputClass}
+              className={matchInputClass}
             >
               <option value="">Any</option>
               <option value="weekly">Weekly</option>
@@ -102,11 +105,11 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className={labelClass}>Risk</span>
+            <span className={matchLabelClass}>Risk</span>
             <select
               value={risk}
               onChange={(event) => setRisk(event.target.value as Risk | '')}
-              className={inputClass}
+              className={matchInputClass}
             >
               <option value="">Any</option>
               <option value="safe">Safe</option>
@@ -116,7 +119,7 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
         </div>
 
         {formError ? (
-          <p role="alert" className="text-sm text-risky-ink">
+          <p role="alert" className="text-sm text-red-600">
             {formError}
           </p>
         ) : null}
@@ -124,14 +127,14 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
         <button
           type="submit"
           disabled={loading}
-          className="min-h-12 w-full rounded-xl bg-accent px-5 text-base font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-start"
+          className="min-h-12 w-full rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-start"
         >
           {loading ? 'Finding matches...' : 'Find my circle'}
         </button>
       </form>
 
       {error ? (
-        <p role="alert" className="rounded-xl bg-risky-soft px-4 py-3 text-sm text-risky-ink">
+        <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </p>
       ) : null}
@@ -139,16 +142,18 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
       {loading ? (
         <div role="status" aria-live="polite" className="flex flex-col gap-3">
           <span className="sr-only">Finding matches...</span>
-{[0, 1].map((item) => (
-  <div key={item} className="rounded-2xl border border-line p-4">
-  </div>
-  ))}
-</div>
-) : result ? (
+          {[0, 1].map((item) => (
+            <div key={item} className="rounded-2xl border border-gray-200 bg-white p-4">
+              <div className="h-5 w-2/3 animate-pulse rounded bg-gray-100" />
+              <div className="mt-3 h-4 w-1/2 animate-pulse rounded bg-gray-100" />
+            </div>
+          ))}
+        </div>
+      ) : result ? (
         <section className="flex flex-col gap-3">
-          <div className="rounded-2xl border border-line bg-surface p-5">
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent">Assistant</p>
-            <p className="mt-2 text-sm text-ink">{result.summary}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white p-5">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">Assistant</p>
+            <p className="mt-2 text-sm text-gray-700">{result.summary}</p>
           </div>
 
           {result.candidates.length > 0 ? (
@@ -157,28 +162,28 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
                 const circle = candidate.circle;
                 return (
                   <li key={circle.id}>
-                    <article className="flex h-full flex-col gap-3 rounded-2xl border border-line bg-surface p-5">
+                    <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h3 className="truncate text-base font-semibold">{circle.name}</h3>
-                          <p className="text-sm text-muted">
+                          <h3 className="truncate text-base font-semibold text-gray-900">{circle.name}</h3>
+                          <p className="text-sm text-gray-600">
                             {formatUsd(circle.contributionCents)} · {circle.frequency} ·{' '}
                             {circle.memberCount}/{circle.memberLimit} members
                           </p>
                         </div>
-                        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink">
+                        <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
                           {candidate.score}% fit
                         </span>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
                         <RiskTag risk={circle.risk} reason={circle.riskReason} />
-                        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-muted">
+                        <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
                           {candidate.seatsLeft} {candidate.seatsLeft === 1 ? 'seat' : 'seats'} left
                         </span>
                       </div>
 
-                      <ul className="flex flex-1 flex-col gap-1 text-sm text-muted">
+                      <ul className="flex flex-1 flex-col gap-1 text-sm text-gray-600">
                         {candidate.reasons.map((reason) => (
                           <li key={reason}>· {reason}</li>
                         ))}
@@ -187,13 +192,13 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
                       <div className="flex flex-wrap gap-2">
                         <Link
                           href={candidate.joinPath}
-                          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
                         >
                           Join circle
                         </Link>
                         <Link
                           href={`/circles/${circle.id}`}
-                          className="inline-flex min-h-11 items-center justify-center rounded-xl border border-line px-4 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                          className="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-300 px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
                         >
                           View details
                         </Link>
@@ -206,10 +211,10 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
           ) : null}
 
           {result.createSuggestion ? (
-            <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5">
-              <h3 className="text-base font-semibold">Nothing fits yet? Create one</h3>
-              <p className="text-sm text-muted">{result.createSuggestion.reason}</p>
-              <p className="text-sm">
+            <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5">
+              <h3 className="text-base font-semibold text-[#001c64]">Nothing fits yet? Create one</h3>
+              <p className="text-sm text-gray-600">{result.createSuggestion.reason}</p>
+              <p className="text-sm text-gray-700">
                 Suggested: <strong>{result.createSuggestion.name}</strong> ·{' '}
                 {formatUsd(result.createSuggestion.contributionCents)} {result.createSuggestion.frequency} ·{' '}
                 {result.createSuggestion.memberLimit} members
@@ -221,7 +226,7 @@ export default function MatchPanel({ initialAmount = '', initialFrequency = '', 
                   frequency: result.createSuggestion.frequency,
                   members: String(result.createSuggestion.memberLimit),
                 }).toString()}`}
-                className="inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
               >
                 Create this circle
               </Link>
