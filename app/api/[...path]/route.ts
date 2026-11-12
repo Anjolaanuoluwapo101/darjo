@@ -71,6 +71,22 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
     return ok({ user: toUser(user) });
   }
 
+  if (key === 'POST auth/quick-login') {
+    const email = str(body.email).toLowerCase();
+    const judgeEmails = [
+      'sb-yl7dj53722335@personal.example.com',
+      'sb-ql7kl53706685@personal.example.com',
+      'sb-eytkw53718260@personal.example.com',
+    ];
+    if (!judgeEmails.includes(email)) {
+      return fail('VALIDATION', 'One-click login is only available for demo accounts.', 403);
+    }
+    const user = await db.user.findUnique({ where: { email } });
+    if (!user) return fail('NOT_FOUND', 'Demo account not found.', 404);
+    await setSession(user.id);
+    return ok({ user: toUser(user) });
+  }
+
   if (key === 'POST auth/logout') {
     // Unsubscribe push notifications for this user (best-effort; never block logout).
     const current = await requireUser();

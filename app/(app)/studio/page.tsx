@@ -159,31 +159,6 @@ export default function StudioPage() {
           />
         ) : (
           <>
-            <div
-              role="group"
-              aria-label="Filter circles"
-              className="flex flex-wrap gap-2"
-            >
-              {FILTERS.map((option) => {
-                const selected = filter === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setFilter(option.value)}
-                    aria-pressed={selected}
-                    className={`min-h-9 rounded-full border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
-                      selected
-                        ? "border-primary bg-primary text-surface"
-                        : "border-line bg-surface text-muted hover:border-line-strong hover:text-ink"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-
             {loading ? (
               <LoadingCircles />
             ) : error ? (
@@ -216,11 +191,11 @@ export default function StudioPage() {
             ) : (
               <>
                 {myCircles.length > 0 && (
-                  <section>
+                  <section className="flex flex-col gap-3">
                     <div
                       role="group"
                       aria-label="My circle payment status"
-                      className="flex flex-wrap gap-2 mb-4"
+                      className="flex flex-wrap gap-2"
                     >
                       {MY_FILTERS.map((option) => {
                         const selected = myFilter === option.value;
@@ -241,6 +216,10 @@ export default function StudioPage() {
                         );
                       })}
                     </div>
+                    <p className="text-xs text-muted">
+                      Paid this cycle means your contribution for the current cycle is settled.
+                      Not paid yet covers circles that are active but still awaiting your payment.
+                    </p>
                     <Section title="My circles" description="Circles you have joined.">
                       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                         {myCircles
@@ -257,39 +236,105 @@ export default function StudioPage() {
                             </li>
                           ))}
                       </ul>
+                      {myCircles
+                        .filter((circle) => {
+                          const status = circle.viewerPaymentStatus;
+                          if (myFilter === "paid") return status === "paid";
+                          if (myFilter === "not_paid")
+                            return circle.status === "active" && status !== "paid";
+                          return true;
+                        }).length === 0 && (
+                        <EmptyState
+                          title="No circles match this filter"
+                          description="Try another filter to see your joined circles."
+                          action={
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => setMyFilter("all")}
+                            >
+                              Show all
+                            </Button>
+                          }
+                        />
+                      )}
                     </Section>
                   </section>
                 )}
-                <div className="flex flex-col gap-6">
-                  {ownTier.length > 0 ? (
-                  <Section title="Your tier">
-                    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      {ownTier.map((circle) => (
-                        <li key={circle.id}>
-                          <CircleCard circle={circle} />
-                        </li>
-                      ))}
-                    </ul>
-                  </Section>
-                ) : null}
 
-                {lowerTiers.length > 0 ? (
-                  <Section
-                    title="Lower tiers"
-                    description="Circles you can join as your score grows."
+                <Section title="Browse open circles" description="Open circles you have not joined yet.">
+                  <div
+                    role="group"
+                    aria-label="Filter circles"
+                    className="flex flex-wrap gap-2 mb-4"
                   >
-                    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      {lowerTiers.map((circle) => (
-                        <li key={circle.id}>
-                          <CircleCard circle={circle} />
-                        </li>
-                      ))}
-                    </ul>
-                  </Section>
-                ) : null}
-              </div>
-            </>
-          )}
+                    {FILTERS.map((option) => {
+                      const selected = filter === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setFilter(option.value)}
+                          aria-pressed={selected}
+                          className={`min-h-9 rounded-full border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+                            selected
+                              ? "border-primary bg-primary text-surface"
+                              : "border-line bg-surface text-muted hover:border-line-strong hover:text-ink"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    {ownTier.length > 0 ? (
+                      <Section title="Circles at your tier">
+                        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                          {ownTier.map((circle) => (
+                            <li key={circle.id}>
+                              <CircleCard circle={circle} />
+                            </li>
+                          ))}
+                        </ul>
+                      </Section>
+                    ) : null}
+
+                    {lowerTiers.length > 0 ? (
+                      <Section
+                        title="Below your tier"
+                        description="Join these as your score grows."
+                      >
+                        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                          {lowerTiers.map((circle) => (
+                            <li key={circle.id}>
+                              <CircleCard circle={circle} />
+                            </li>
+                          ))}
+                        </ul>
+                      </Section>
+                    ) : null}
+
+                    {ownTier.length === 0 && lowerTiers.length === 0 && (
+                      <EmptyState
+                        title="No circles to browse right now"
+                        description={
+                          filter === "all"
+                            ? "Create a circle to start saving with people you trust."
+                            : `There are no ${filter} circles right now. Try another filter or start your own.`
+                        }
+                        action={
+                          <LinkButton href="/circles/new" size="sm">
+                            Create circle
+                          </LinkButton>
+                        }
+                      />
+                    )}
+                  </div>
+                </Section>
+              </>
+            )}
           </>
         )}
 

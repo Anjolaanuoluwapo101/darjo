@@ -8,8 +8,14 @@ import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
 import Button from "@/components/ui/Button";
 import Notice from "@/components/ui/Notice";
-import { login } from "@/lib/api-client";
+import { login, quickLogin } from "@/lib/api-client";
 import { nextPath, redirectAfterAuth } from "@/lib/redirect";
+
+const JUDGE_ACCOUNTS = [
+  { name: "Ada Sandbox", email: "sb-yl7dj53722335@personal.example.com" },
+  { name: "Ben Sandbox", email: "sb-ql7kl53706685@personal.example.com" },
+  { name: "Kenji Sandbox", email: "sb-eytkw53718260@personal.example.com" },
+] as const;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,6 +39,24 @@ export default function LoginPage() {
     // Already on /login, so show the error instead of redirecting to the same page.
     if (result.error.code === "UNAUTHENTICATED") {
       setFormError("Email or password is incorrect.");
+      return;
+    }
+
+    setFormError(
+      result.error.code === "VALIDATION"
+        ? result.error.message
+        : friendlyError(result.error.code, result.error.message)
+    );
+  }
+
+  async function handleQuickLogin(email: string) {
+    setFormError(null);
+    setSubmitting(true);
+    const result = await quickLogin(email);
+    setSubmitting(false);
+
+    if (result.ok) {
+      redirectAfterAuth(router, nextPath());
       return;
     }
 
@@ -83,6 +107,28 @@ export default function LoginPage() {
           {submitting ? "Logging in..." : "Log in"}
         </Button>
       </form>
+
+      <section className="flex flex-col gap-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted">One-click login (demo)</p>
+        <div className="grid gap-2">
+          {JUDGE_ACCOUNTS.map(({ name, email: judgeEmail }) => (
+            <Button
+              key={judgeEmail}
+              type="button"
+              size="sm"
+              fullWidth
+              variant="outline"
+              onClick={() => handleQuickLogin(judgeEmail)}
+              className="text-left text-sm"
+            >
+              {name}
+              <span className="ml-auto font-medium text-muted">
+                {judgeEmail.split("@")[0]}
+              </span>
+            </Button>
+          ))}
+        </div>
+      </section>
 
       <p className="text-center text-sm text-muted">
         New to D&apos;arjo?{" "}

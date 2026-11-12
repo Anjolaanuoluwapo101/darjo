@@ -64,6 +64,8 @@ export const signup = (b: SignupBody) =>
   USE_MOCKS ? mock<{ user: User }>(meMock) : http<{ user: User }>('/api/auth/signup', 'POST', b);
 export const login = (b: LoginBody) =>
   USE_MOCKS ? mock<{ user: User }>(meMock) : http<{ user: User }>('/api/auth/login', 'POST', b);
+export const quickLogin = (email: string) =>
+  USE_MOCKS ? mock<{ user: User }>(meMock) : http<{ user: User }>('/api/auth/quick-login', 'POST', { email });
 export const logout = () =>
   USE_MOCKS ? mock<Record<string, never>>({}) : http<Record<string, never>>('/api/auth/logout', 'POST');
 export const getMe = () =>
