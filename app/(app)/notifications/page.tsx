@@ -47,21 +47,21 @@ function NotificationRow({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-baseline justify-between gap-2">
-          <span className={`text-sm ${item.readAt ? 'font-medium text-ink' : 'font-semibold text-ink'}`}>
+          <span className={`text-sm ${item.readAt ? 'font-medium text-gray-900' : 'font-semibold text-gray-900'}`}>
             {item.title}
           </span>
-          <span className="text-xs text-muted">{relativeTime(item.createdAt)}</span>
+          <span className="text-xs text-gray-500">{relativeTime(item.createdAt)}</span>
         </span>
-        <span className="mt-1 block text-sm text-muted">{item.body}</span>
+        <span className="mt-1 block text-sm text-gray-600">{item.body}</span>
       </span>
       {!item.readAt ? (
-        <span aria-label="Unread" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
+        <span aria-label="Unread" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#0070e0]" />
       ) : null}
     </>
   );
 
-  const className = `flex w-full items-start gap-3 border-b border-line px-4 py-4 text-left transition-colors last:border-b-0 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
-    item.readAt ? 'bg-surface' : 'bg-surface-2/60'
+  const className = `flex w-full items-start gap-3 border-b border-gray-200 px-4 py-4 text-left transition-colors last:border-b-0 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0070e0] ${
+    item.readAt ? 'bg-white' : 'bg-gray-50/40'
   }`;
 
   if (!item.url) {
@@ -104,14 +104,16 @@ export default function NotificationsPage() {
           : 'Get a push notification when a contribution is due, a payout is ready, or someone nudges you.';
 
   return (
-    <main className="min-h-screen bg-surface-2 font-sans text-ink">
+    <main className="min-h-screen bg-white font-sans text-gray-900">
       <PageContainer>
-        <header className="flex flex-col gap-3">
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent">Notifications</p>
+        <header className="flex flex-col gap-4">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
+            Notifications
+          </p>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">Your updates</h1>
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-sm text-gray-600">
                 {unreadCount > 0 ? `${unreadCount} unread` : 'You are all caught up.'}
               </p>
             </div>
@@ -119,7 +121,7 @@ export default function NotificationsPage() {
               <button
                 type="button"
                 onClick={reload}
-                className="min-h-11 rounded-xl border border-line bg-surface px-3 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                className="min-h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
               >
                 Refresh
               </button>
@@ -127,7 +129,7 @@ export default function NotificationsPage() {
                 type="button"
                 onClick={markAllRead}
                 disabled={unreadCount === 0}
-                className="min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Mark all read
               </button>
@@ -135,18 +137,18 @@ export default function NotificationsPage() {
           </div>
         </header>
 
-        <section className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5">
+        <section className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold">Push notifications</h2>
-              <p className="mt-1 max-w-prose text-sm text-muted">{pushCopy}</p>
+              <p className="mt-1 max-w-prose text-sm text-gray-600">{pushCopy}</p>
             </div>
             {pushState === 'subscribed' ? (
               <button
                 type="button"
                 onClick={disableNotifications}
                 disabled={pushBusy}
-                className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-60"
+                className="min-h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 {pushBusy ? 'Working...' : 'Turn off'}
               </button>
@@ -155,33 +157,33 @@ export default function NotificationsPage() {
                 type="button"
                 onClick={enableNotifications}
                 disabled={pushBusy || pushState === 'denied' || pushState === 'unsupported'}
-                className="min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {pushBusy ? 'Turning on...' : 'Turn on push'}
               </button>
             )}
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-gray-500">
             On iPhone, add D&apos;arjo to your Home Screen first, then turn on push from there.
           </p>
         </section>
 
         {error ? (
-          <p role="alert" className="rounded-xl bg-risky-soft px-4 py-3 text-sm text-risky-ink">
+          <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </p>
         ) : null}
 
-        <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {loading ? (
             <div role="status" aria-live="polite" className="flex flex-col">
               <span className="sr-only">Loading notifications...</span>
               {[0, 1, 2].map((row) => (
-                <div key={row} className="flex items-start gap-3 border-b border-line px-4 py-4 last:border-b-0">
-                  <div className="h-9 w-9 animate-pulse rounded-full bg-surface-2" />
+                <div key={row} className="flex items-start gap-3 border-b border-gray-200 px-4 py-4 last:border-b-0">
+                  <div className="h-9 w-9 animate-pulse rounded-full bg-gray-100" />
                   <div className="flex-1">
-                    <div className="h-4 w-1/2 animate-pulse rounded bg-surface-2" />
-                    <div className="mt-2 h-4 w-3/4 animate-pulse rounded bg-surface-2" />
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
+                    <div className="mt-2 h-4 w-3/4 animate-pulse rounded bg-gray-100" />
                   </div>
                 </div>
               ))}
@@ -189,12 +191,12 @@ export default function NotificationsPage() {
           ) : items.length === 0 ? (
             <div className="flex flex-col items-start gap-3 px-5 py-8">
               <h2 className="text-base font-semibold">Nothing yet</h2>
-              <p className="text-sm text-muted">
+              <p className="text-sm text-gray-600">
                 When a payment, payout, or nudge needs your attention, it will show up here.
               </p>
               <Link
                 href="/studio"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
               >
                 Back to Studio
               </Link>

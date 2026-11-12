@@ -47,7 +47,7 @@ export default function AssistantPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer width="wide">
+      <PageContainer>
         <header className="flex flex-col gap-1">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Assistant
@@ -108,7 +108,7 @@ export default function AssistantPage() {
                     type="button"
                     onClick={() => setDetailsOpen(true)}
                     disabled={!selected}
-                    className="min-h-10 rounded-full border border-gray-300 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                    className="min-h-10 rounded-full border border-gray-200 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
                   >
                     Circle details
                   </button>
@@ -117,7 +117,7 @@ export default function AssistantPage() {
                   id="assistant-circle"
                   value={selectedId}
                   onChange={(event) => setSelectedId(event.target.value)}
-                  className="min-h-11 rounded-xl border border-gray-300 bg-white px-3 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
+                  className="min-h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
                 >
                   {circles.map((circle) => (
                     <option key={circle.id} value={circle.id}>

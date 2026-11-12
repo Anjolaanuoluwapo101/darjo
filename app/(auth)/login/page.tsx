@@ -46,7 +46,7 @@ export default function LoginPage() {
     <main className="min-h-screen bg-white font-sans text-gray-900">
       <PageContainer width="narrow" className="py-10">
         <header className="flex flex-col gap-1">
-          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             D&apos;arjo
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
@@ -87,7 +87,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-600 px-5 text-base font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? "Logging in..." : "Log in"}
           </button>
@@ -97,7 +97,7 @@ export default function LoginPage() {
           New to D&apos;arjo?{" "}
           <Link
             href="/signup"
-            className="font-semibold text-indigo-700 hover:underline"
+            className="font-semibold text-[#0070e0] hover:underline"
           >
             Create an account
           </Link>

@@ -196,7 +196,7 @@ function PotCard({ circle }: { circle: CircleDetail }) {
   const remaining = Math.max(0, circle.potCents - circle.paidThisCycleCents);
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-gray-200 bg-white p-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
           This cycle&apos;s pot
@@ -222,7 +222,7 @@ function PotCard({ circle }: { circle: CircleDetail }) {
         className="mt-3 h-3 w-full overflow-hidden rounded-full bg-gray-100"
       >
         <div
-          className="h-full rounded-full bg-[#0070e0] transition-all"
+          className="h-full rounded-full bg-[#003087] transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>

@@ -68,7 +68,6 @@ export default function StudioPage() {
 
       if (meResult.ok) setUser(meResult.data.user);
       if (circlesResult.ok) {
-        // Mocks ignore the { risk } param, so filter again on the client.
         const risk = filter === "all" ? null : filter;
         setCircles(
           risk
@@ -92,7 +91,7 @@ export default function StudioPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer width="wide">
+      <PageContainer>
         <header className="flex flex-col gap-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
             Circle Studio
@@ -117,29 +116,29 @@ export default function StudioPage() {
           <div className="grid grid-cols-2 gap-3">
             <Link
               href="/circles/new"
-              className="flex min-h-12 items-center justify-center rounded-xl bg-[#003087] px-4 text-center text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+              className="flex min-h-12 items-center justify-center rounded-xl bg-[#003087] px-4 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
             >
               Create circle
             </Link>
             <Link
               href="/join"
-              className="flex min-h-12 items-center justify-center rounded-xl border border-[#003087] px-4 text-center text-base font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+              className="flex min-h-12 items-center justify-center rounded-xl border border-[#003087] px-4 text-base font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
             >
               Join with code
             </Link>
           </div>
         </header>
 
-        <div role="tablist" aria-label="Studio view" className="flex gap-2 border-b border-line pb-1">
+        <div role="tablist" aria-label="Studio view" className="flex gap-2 border-b border-gray-200 pb-1">
           <button
             type="button"
             role="tab"
             aria-selected={view === "browse"}
             onClick={() => setView("browse")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
               view === "browse"
-                ? "bg-surface text-ink"
-                : "text-muted hover:bg-surface-2 hover:text-ink"
+                ? "bg-white text-gray-900 border-[#0070e0]"
+                : "text-gray-500 hover:bg-gray-50"
             }`}
           >
             Browse circles
@@ -149,10 +148,10 @@ export default function StudioPage() {
             role="tab"
             aria-selected={view === "match"}
             onClick={() => setView("match")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
               view === "match"
-                ? "bg-surface text-ink"
-                : "text-muted hover:bg-surface-2 hover:text-ink"
+                ? "bg-white text-gray-900 border-[#0070e0]"
+                : "text-gray-500 hover:bg-gray-50"
             }`}
           >
             Find my circle
@@ -170,10 +169,10 @@ export default function StudioPage() {
                 type="button"
                 onClick={() => setFilter(option.value)}
                 aria-pressed={selected}
-                className={`min-h-11 rounded-full px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
+                className={`min-h-11 rounded-full px-4 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
                   selected
-                    ? "bg-[#0070e0] text-white"
-                    : "border border-gray-300 bg-white text-gray-700 hover:border-[#0070e0]"
+                    ? "bg-[#003087] text-white border-[#003087]"
+                    : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 {option.label}
@@ -195,7 +194,7 @@ export default function StudioPage() {
           <div className="flex flex-col gap-6">
             {ownTier.length > 0 ? (
               <section className="flex flex-col gap-3">
-                <h2 className="self-start rounded-full bg-[#ffd140] px-3 py-1 text-sm font-semibold text-[#001c64]">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
                   Your tier
                 </h2>
                 <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
