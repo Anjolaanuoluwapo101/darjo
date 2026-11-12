@@ -4,6 +4,8 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { friendlyError } from "@/components/forms/errorMessages";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
 import { capturePayment, getCircle, startPayment } from "@/lib/api-client";
 import type { CircleDetail } from "@/types/api";
 
@@ -69,7 +71,7 @@ export default function PayButton({ circleId, onPaid }: PayButtonProps) {
       if (!mountedRef.current) return;
     }
 
-    // PayPal's webhook can take longer than 30 seconds.
+    // The provider's webhook can take longer than 30 seconds.
     setStillPending(true);
     setBusy(false);
     setStage("idle");
@@ -141,7 +143,7 @@ export default function PayButton({ circleId, onPaid }: PayButtonProps) {
     const message =
       typeof paypalError.message === "string"
         ? paypalError.message
-        : "PayPal had a problem, please try again.";
+        : "The payment provider had a problem, please try again.";
     setError(friendlyError("PAYPAL_ERROR", message));
   }
 
@@ -157,14 +159,15 @@ export default function PayButton({ circleId, onPaid }: PayButtonProps) {
   return (
     <div className="flex flex-col gap-2">
       {showTestButton ? (
-        <button
+        <Button
           type="button"
+          size="lg"
+          fullWidth
           onClick={handleTestPay}
-          disabled={busy}
-          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          loading={busy}
         >
           {testLabel}
-        </button>
+        </Button>
       ) : (
         <div className="w-full">
           <PayPalButtons
@@ -185,28 +188,24 @@ export default function PayButton({ circleId, onPaid }: PayButtonProps) {
       )}
 
       {!showTestButton && stage === "confirming" ? (
-        <p role="status" className="text-sm text-gray-600">
+        <p role="status" className="text-sm text-muted">
           Payment approved. Waiting for confirmation...
         </p>
       ) : null}
 
-      {error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {error}
-        </p>
-      ) : null}
+      {error ? <Notice variant="error">{error}</Notice> : null}
 
       {cancelled ? (
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted">
           Payment cancelled. No money was taken.
         </p>
       ) : null}
 
       {stillPending ? (
-        <p className="text-sm text-amber-800">
+        <Notice variant="warning">
           Payment sent. It is still being confirmed, so this can take a little
           longer.
-        </p>
+        </Notice>
       ) : null}
     </div>
   );

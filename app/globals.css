@@ -1,74 +1,151 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  /* Base surfaces */
   --surface: #ffffff;
   --surface-2: #f8fafc;
-  --line: #e4e4e7;
-  --ink: #18181b;
-  --muted: #52525b;
+  --surface-3: #f1f5f9;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+
+  /* Text */
+  --ink: #0f172a;
+  --muted: #64748b;
+  --muted-soft: #94a3b8;
+
+  /* Brand */
+  --primary: #3730a3;
+  --primary-hover: #312e81;
+  --primary-soft: #eef2ff;
   --accent: #4f46e5;
+  --accent-hover: #4338ca;
 
-  --safe-soft: #dcfce7;
-  --safe-line: #bbf7d0;
-  --safe-ink: #15803d;
+  /* Positive / safe */
+  --safe: #10b981;
+  --safe-soft: #ecfdf5;
+  --safe-line: #a7f3d0;
+  --safe-ink: #047857;
 
-  --risky-soft: #fef3c7;
+  /* Caution / risky */
+  --risky: #f59e0b;
+  --risky-soft: #fffbeb;
   --risky-line: #fde68a;
   --risky-ink: #b45309;
 
+  /* Negative / error */
+  --error: #ef4444;
+  --error-soft: #fef2f2;
+  --error-line: #fecaca;
+  --error-ink: #b91c1c;
+
+  /* Tiers */
   --tier-1: #94a3b8;
-  --tier-2: #0ea5e9;
+  --tier-2: #3b82f6;
   --tier-3: #8b5cf6;
   --tier-4: #f59e0b;
 
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface: #0b0b0f;
-    --surface-2: #15151b;
-    --line: #2a2a33;
-    --ink: #f4f4f5;
-    --muted: #a1a1aa;
-    --accent: #818cf8;
+.dark {
+  --surface: #0b1120;
+  --surface-2: #111827;
+  --surface-3: #1e293b;
+  --line: #273449;
+  --line-strong: #3b4a63;
 
-    --safe-soft: #052e16;
-    --safe-line: #166534;
-    --safe-ink: #86efac;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --muted-soft: #64748b;
 
-    --risky-soft: #451a03;
-    --risky-line: #92400e;
-    --risky-ink: #fcd34d;
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --primary-soft: #1e1b4b;
+  --accent: #a5b4fc;
+  --accent-hover: #c7d2fe;
 
-    color-scheme: dark;
-  }
+  --safe: #34d399;
+  --safe-soft: #052e21;
+  --safe-line: #065f46;
+  --safe-ink: #6ee7b7;
+
+  --risky: #fbbf24;
+  --risky-soft: #3b2a06;
+  --risky-line: #92400e;
+  --risky-ink: #fcd34d;
+
+  --error: #f87171;
+  --error-soft: #3b0d0d;
+  --error-line: #7f1d1d;
+  --error-ink: #fca5a5;
+
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--surface);
   --color-foreground: var(--ink);
+
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
   --color-ink: var(--ink);
   --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+
+  --color-safe: var(--safe);
   --color-safe-soft: var(--safe-soft);
   --color-safe-line: var(--safe-line);
   --color-safe-ink: var(--safe-ink);
+
+  --color-risky: var(--risky);
   --color-risky-soft: var(--risky-soft);
   --color-risky-line: var(--risky-line);
   --color-risky-ink: var(--risky-ink);
+
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-error-line: var(--error-line);
+  --color-error-ink: var(--error-ink);
+
   --color-tier-1: var(--tier-1);
   --color-tier-2: var(--tier-2);
   --color-tier-3: var(--tier-3);
   --color-tier-4: var(--tier-4);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   background: var(--surface);
   color: var(--ink);
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Consistent focus treatment across the app */
+:focus-visible {
+  outline: none;
+}
+
+/* Keep long words from breaking layouts on small screens */
+@layer utilities {
+  .balance {
+    text-wrap: balance;
+  }
 }

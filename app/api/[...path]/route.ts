@@ -72,6 +72,11 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
   }
 
   if (key === 'POST auth/logout') {
+    // Unsubscribe push notifications for this user (best-effort; never block logout).
+    const current = await requireUser();
+    if (current) {
+      await db.pushSubscription.deleteMany({ where: { userId: current.id } }).catch(() => {});
+    }
     await clearSession();
     return ok({});
   }

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { DISCLAIMER } from "@/data/countries";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import { formatUsd } from "@/components/ui/formatUsd";
 import type { CircleSummary } from "@/types/api";
 
@@ -27,80 +29,78 @@ export default function CircleDetailsDrawer({
 
   if (!circle) return null;
 
-  const riskLabel = circle.risk === "safe" ? "Low volatility" : "High volatility";
+  const riskLabel =
+    circle.risk === "safe" ? "Low volatility" : "High volatility";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`${circle.name} details`}
-        className="flex max-h-[85dvh] w-full max-w-md flex-col gap-4 rounded-t-2xl border border-gray-200 bg-white p-5 shadow-xl sm:rounded-2xl"
+        className="flex max-h-[85dvh] w-full max-w-md flex-col gap-4 overflow-y-auto rounded-t-2xl border border-line bg-surface p-5 shadow-xl sm:rounded-2xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="break-words text-lg font-semibold tracking-tight text-[#001c64]">
+            <h2 className="break-words text-lg font-semibold tracking-tight text-ink">
               {circle.name}
             </h2>
-            <p className="text-sm text-gray-500">Circle details and risk</p>
+            <p className="text-sm text-muted">Circle details and risk</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close the circle details"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-300 text-gray-600 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-gray-50 p-3">
-            <span className="block text-xs text-gray-500">Contribution</span>
-            <span className="text-lg font-semibold text-[#001c64]">
+          <div className="rounded-xl bg-surface-2 p-3">
+            <span className="block text-xs text-muted">Contribution</span>
+            <span className="text-lg font-semibold text-ink">
               {formatUsd(circle.contributionCents)}
             </span>
-            <span className="block text-xs text-gray-500">{circle.frequency}</span>
+            <span className="block text-xs capitalize text-muted">
+              {circle.frequency}
+            </span>
           </div>
-          <div className="rounded-xl bg-gray-50 p-3">
-            <span className="block text-xs text-gray-500">Members</span>
-            <span className="text-lg font-semibold text-[#001c64]">
+          <div className="rounded-xl bg-surface-2 p-3">
+            <span className="block text-xs text-muted">Members</span>
+            <span className="text-lg font-semibold text-ink">
               {circle.memberCount} of {circle.memberLimit}
             </span>
-            <span className="block text-xs text-gray-500">
+            <span className="block text-xs text-muted">
               Created by {circle.creatorName}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-[#d6e4ff] bg-[#f2f7ff] p-3">
-          <span className="text-xs font-semibold text-[#001c64]">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface-2 p-3">
+          <span className="text-xs font-semibold text-ink">
             Currency volatility rating
           </span>
-          <span
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-              circle.risk === "safe"
-                ? "bg-safe-soft text-safe-ink"
-                : "bg-risky-soft text-risky-ink"
-            }`}
-          >
+          <Badge variant={circle.risk === "safe" ? "safe" : "risky"} dot>
             {riskLabel}
-          </span>
+          </Badge>
         </div>
 
-        <p className="text-sm leading-relaxed text-gray-600">{circle.riskReason}</p>
+        <p className="text-sm leading-relaxed text-muted">{circle.riskReason}</p>
 
-        <p className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs italic text-gray-500">
+        <p className="rounded-xl border border-line bg-surface-2 p-3 text-xs italic text-muted">
           {DISCLAIMER}
         </p>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="min-h-11 w-full rounded-xl bg-[#003087] text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
+        <Button type="button" fullWidth onClick={onClose}>
           Close
-        </button>
+        </Button>
       </div>
     </div>
   );

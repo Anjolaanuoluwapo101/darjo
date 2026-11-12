@@ -49,7 +49,7 @@ export async function releasePayout(
     return {
       ok: false,
       code: 'COUNTRY_NOT_SUPPORTED',
-      message: 'PayPal cannot send a payout to your country yet.',
+      message: 'Payouts are not available in your country yet.',
       status: 403,
     };
   if (payout.status === 'released' || payout.status === 'paid')
@@ -107,7 +107,7 @@ export async function releasePayout(
       return {
         ok: false,
         code: 'PAYPAL_ERROR',
-        message: 'PayPal could not send the payout. Please try again.',
+        message: 'The payout could not be sent. Please try again.',
         status: 502,
       };
     }

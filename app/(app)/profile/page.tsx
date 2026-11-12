@@ -1,39 +1,59 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import ScoreRing from "@/components/profile/ScoreRing";
-import PageContainer from "@/components/layout/PageContainer";
-import TierBadge from "@/components/ui/TierBadge";
-import { friendlyError } from "@/components/forms/errorMessages";
-import { getProfile, getVolatility, type VolatilityReading } from "@/lib/api-client";
-import type { ProfileData } from "@/types/api";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { friendlyError } from '@/components/forms/errorMessages';
+import PageContainer from '@/components/layout/PageContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import ScoreRing from '@/components/profile/ScoreRing';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
+import InfoNote from '@/components/ui/InfoNote';
+import LinkButton from '@/components/ui/LinkButton';
+import Notice from '@/components/ui/Notice';
+import Section from '@/components/ui/Section';
+import Skeleton from '@/components/ui/Skeleton';
+import TierBadge from '@/components/ui/TierBadge';
+import { getProfile, getVolatility, type VolatilityReading } from '@/lib/api-client';
+import type { ProfileData } from '@/types/api';
 
-const VOLATILITY_TEXT: Record<VolatilityReading["label"], string> = {
-  low: "Your currency is steady against the US dollar, so your payments hold their value.",
-  medium: "Your currency moves a little against the US dollar, so the real cost can change.",
-  high: "Your currency swings against the US dollar, so payments can cost you more than you expect.",
+const VOLATILITY_TEXT: Record<VolatilityReading['label'], string> = {
+  low: 'Your currency is steady against the US dollar, so your payments hold their value.',
+  medium:
+    'Your currency moves a little against the US dollar, so the real cost can change.',
+  high: 'Your currency swings against the US dollar, so payments can cost you more than you expect.',
 };
 
-const EVENT_TEXT: Record<ProfileData["events"][number]["type"], string> = {
-  on_time: "Paid on time",
-  recovered: "Caught up after being late",
-  late: "Paid late",
-  failed: "Missed a payment",
+const VOLATILITY_VARIANT: Record<
+  VolatilityReading['label'],
+  'safe' | 'risky' | 'error'
+> = {
+  low: 'safe',
+  medium: 'risky',
+  high: 'error',
 };
 
-const CIRCLE_STATUS: Record<ProfileData["circles"][number]["status"], string> = {
-  open: "Open",
-  active: "Active",
-  completed: "Completed",
+const EVENT_TEXT: Record<ProfileData['events'][number]['type'], string> = {
+  on_time: 'Paid on time',
+  recovered: 'Caught up after being late',
+  late: 'Paid late',
+  failed: 'Missed a payment',
+};
+
+const CIRCLE_STATUS: Record<ProfileData['circles'][number]['status'], string> = {
+  open: 'Open',
+  active: 'Active',
+  completed: 'Completed',
 };
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
 export default function ProfilePage() {
@@ -55,8 +75,8 @@ export default function ProfilePage() {
       if (!active) return;
 
       if (!result.ok) {
-        if (result.error.code === "UNAUTHENTICATED") {
-          router.replace("/login");
+        if (result.error.code === 'UNAUTHENTICATED') {
+          router.replace('/login');
           return;
         }
         setError(friendlyError(result.error.code, result.error.message));
@@ -80,173 +100,165 @@ export default function ProfilePage() {
   }, [reloadKey, router]);
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer>
-        <header className="flex flex-col gap-4">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            Profile
-          </p>
-
-          {profile ? (
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex flex-col">
-                <h1 className="text-2xl font-semibold tracking-tight">
-                  {profile.user.name}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {profile.user.currency} · {profile.user.nationality}
-                </p>
-              </div>
+    <PageContainer>
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Profile"
+          title={profile?.user.name ?? 'Your profile'}
+          description={
+            profile
+              ? `${profile.user.currency} · ${profile.user.nationality}`
+              : undefined
+          }
+          action={
+            profile ? (
               <TierBadge tier={profile.user.tier} rank={profile.user.rank} />
-            </div>
-          ) : (
-            <div
-              className="h-9 w-40 animate-pulse rounded-lg bg-gray-100"
-              aria-hidden="true"
-            />
-          )}
-        </header>
+            ) : undefined
+          }
+        />
+
+        <InfoNote>
+          Your score is a record of behaviour inside D&apos;arjo circles. It is
+          not a credit score, and it does not predict whether a circle will pay.
+        </InfoNote>
 
         {loading ? (
-          <div role="status" aria-live="polite" className="flex flex-col gap-3">
-            <span className="sr-only">Loading profile...</span>
-            <div className="h-44 animate-pulse rounded-2xl border border-gray-200" />
-            <div className="h-24 animate-pulse rounded-2xl border border-gray-200" />
-          </div>
+          <ProfileSkeleton />
         ) : error ? (
-          <div
-            role="alert"
-            className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-red-50 p-5"
-          >
-            <p className="text-sm text-red-700">{error}</p>
-            <button
-              type="button"
-              onClick={() => setReloadKey((key) => key + 1)}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+          <div className="flex flex-col items-start gap-4">
+            <Notice
+              variant="error"
+              title="Could not load your profile"
+              className="w-full"
             >
+              {error}
+            </Notice>
+            <Button type="button" onClick={() => setReloadKey((key) => key + 1)}>
               Try again
-            </button>
+            </Button>
           </div>
         ) : profile ? (
           <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
             <div className="flex flex-col gap-6">
-              <section className="flex flex-col items-center gap-4 rounded-2xl border border-gray-200 p-6">
+              <Card className="flex flex-col items-center gap-4 p-6">
                 <ScoreRing score={profile.user.score} />
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-sm leading-relaxed text-muted">
                   {profile.nextTier.requirement}
                 </p>
-              </section>
+              </Card>
 
               {volatility ? (
-                <section className="flex flex-col gap-2 rounded-2xl border border-gray-200 p-5">
+                <Card className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
                       {volatility.currency} risk
                     </h2>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        volatility.label === "low"
-                          ? "bg-safe-soft text-safe-ink"
-                          : volatility.label === "medium"
-                            ? "bg-[#fff4d6] text-[#7a5200]"
-                            : "bg-risky-soft text-risky-ink"
-                      }`}
-                    >
+                    <Badge variant={VOLATILITY_VARIANT[volatility.label]} dot>
                       {volatility.label} volatility
-                    </span>
+                    </Badge>
                   </div>
-                  <p className="text-sm leading-relaxed text-gray-700">
+                  <p className="text-sm leading-relaxed text-muted">
                     {VOLATILITY_TEXT[volatility.label]}
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {volatility.source === "live"
-                      ? "Live reading from the market"
-                      : "Our own reference table"}
+                  <p className="text-xs text-muted-soft">
+                    {volatility.source === 'live'
+                      ? 'Live reading from the market'
+                      : 'Our own reference table'}
                   </p>
-                </section>
+                </Card>
               ) : null}
             </div>
 
             <div className="flex flex-col gap-6">
-              <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                Your circles
-              </h2>
-              {profile.circles.length === 0 ? (
-                <p className="rounded-2xl border border-gray-200 bg-gray-50 p-5 text-sm text-gray-600">
-                  You are not in a circle yet.{" "}
-                  <Link
-                    href="/studio"
-                    className="font-semibold text-[#0070e0] underline"
-                  >
-                    Find one in the Studio
-                  </Link>
-                  .
-                </p>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {profile.circles.map((circle) => (
-                    <li key={circle.id}>
-                      <Link
-                        href={`/circles/${circle.id}`}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 p-4 transition hover:border-[#0070e0]"
-                      >
-                        <span className="font-medium">{circle.name}</span>
-                        <span className="text-sm text-gray-500">
-                          {CIRCLE_STATUS[circle.status]}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+              <Section title="Your circles">
+                {profile.circles.length === 0 ? (
+                  <EmptyState
+                    title="No circles yet"
+                    description="Join a circle to start building your score."
+                    action={
+                      <LinkButton href="/studio" variant="outline" size="sm">
+                        Find one in the Studio
+                      </LinkButton>
+                    }
+                  />
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {profile.circles.map((circle) => (
+                      <li key={circle.id}>
+                        <Link
+                          href={`/circles/${circle.id}`}
+                          className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-line-strong hover:bg-surface-2"
+                        >
+                          <span className="min-w-0 truncate font-medium text-ink">
+                            {circle.name}
+                          </span>
+                          <span className="shrink-0 text-sm text-muted">
+                            {CIRCLE_STATUS[circle.status]}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Section>
 
-            <Link
-              href="/assistant"
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-            >
-              Ask the assistant to explain my score
-            </Link>
+              <LinkButton href="/assistant" variant="outline" fullWidth>
+                Ask the assistant to explain my score
+              </LinkButton>
 
-            <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                Score history
-              </h2>
-              {profile.events.length === 0 ? (
-                <p className="rounded-2xl border border-gray-200 bg-gray-50 p-5 text-sm text-gray-600">
-                  Your score history will appear here once you pay a cycle.
-                </p>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {profile.events.map((event) => (
-                    <li
-                      key={event.id}
-                      className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 p-4"
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-medium">{EVENT_TEXT[event.type]}</span>
-                        <span className="text-sm text-gray-500">
-                          {event.circleName} · {formatDate(event.createdAt)}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-sm font-semibold ${
-                          event.points >= 0 ? "text-safe-ink" : "text-risky-ink"
-                        }`}
+              <Section title="Score history">
+                {profile.events.length === 0 ? (
+                  <EmptyState
+                    title="No score history yet"
+                    description="Your score history will appear here once you pay a cycle."
+                  />
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {profile.events.map((event) => (
+                      <li
+                        key={event.id}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4"
                       >
-                        {event.points >= 0 ? "+" : ""}
-                        {event.points}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+                        <div className="flex min-w-0 flex-col">
+                          <span className="font-medium text-ink">
+                            {EVENT_TEXT[event.type]}
+                          </span>
+                          <span className="truncate text-sm text-muted">
+                            {event.circleName} · {formatDate(event.createdAt)}
+                          </span>
+                        </div>
+                        <span
+                          className={`shrink-0 text-sm font-semibold ${
+                            event.points >= 0 ? 'text-safe-ink' : 'text-risky-ink'
+                          }`}
+                        >
+                          {event.points >= 0 ? '+' : ''}
+                          {event.points}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Section>
             </div>
           </div>
         ) : null}
-      </PageContainer>
-    </main>
+      </div>
+    </PageContainer>
+  );
+}
+
+function ProfileSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col gap-3"
+      aria-label="Loading profile"
+    >
+      <span className="sr-only">Loading profile...</span>
+      <Skeleton className="h-44 rounded-2xl" />
+      <Skeleton className="h-24 rounded-2xl" />
+    </div>
   );
 }

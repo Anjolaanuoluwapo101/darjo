@@ -32,7 +32,7 @@ export default function NotificationBell() {
         />
       </svg>
       {unreadCount > 0 ? (
-        <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+        <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold leading-none text-surface">
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       ) : null}

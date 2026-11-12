@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "./cn";
 
 type RiskTagProps = {
   risk: "safe" | "risky";
   reason?: string;
 };
 
-// Shared icon sizing.
 const iconClass = "h-4 w-4 shrink-0";
 
 // Pill that reveals the reason when tapped.
@@ -21,11 +21,12 @@ export default function RiskTag({ risk, reason }: RiskTagProps) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={`inline-flex min-h-10 items-center gap-2 self-start rounded-full px-4 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+        className={cn(
+          "inline-flex min-h-10 items-center gap-2 self-start rounded-full border px-3.5 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
           isSafe
-            ? "bg-safe-soft text-safe-ink hover:brightness-95"
-            : "bg-risky-soft text-risky-ink hover:brightness-95"
-        }`}
+            ? "border-safe-line bg-safe-soft text-safe-ink"
+            : "border-risky-line bg-risky-soft text-risky-ink"
+        )}
       >
         {isSafe ? (
           <svg
@@ -60,11 +61,12 @@ export default function RiskTag({ risk, reason }: RiskTagProps) {
       </button>
       {open && reason ? (
         <p
-          className={`max-w-full rounded-xl border px-3 py-2 text-sm leading-relaxed ${
+          className={cn(
+            "max-w-full rounded-xl border px-3 py-2 text-sm leading-relaxed",
             isSafe
               ? "border-safe-line bg-safe-soft text-safe-ink"
               : "border-risky-line bg-risky-soft text-risky-ink"
-          }`}
+          )}
         >
           {reason}
         </p>

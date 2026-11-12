@@ -5,11 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { friendlyError } from '@/components/forms/errorMessages';
 import PageContainer from '@/components/layout/PageContainer';
-import { formatUsd } from '@/components/ui/formatUsd';
-import { getPayouts, releasePayoutById } from '@/lib/api-client';
-import { getMe } from '@/lib/api-client';
-import type { PayoutHubData, PayoutHubItem, User } from '@/types/api';
+import PageHeader from '@/components/layout/PageHeader';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
+import InfoNote from '@/components/ui/InfoNote';
+import Notice from '@/components/ui/Notice';
+import Section from '@/components/ui/Section';
+import Skeleton from '@/components/ui/Skeleton';
 import TierBadge from '@/components/ui/TierBadge';
+import { formatUsd } from '@/components/ui/formatUsd';
+import { getMe, getPayouts, releasePayoutById } from '@/lib/api-client';
+import type { PayoutHubData, PayoutHubItem, User } from '@/types/api';
 
 const statusCopy: Record<PayoutHubItem['status'], string> = {
   prepared: 'Ready to release',
@@ -18,11 +26,14 @@ const statusCopy: Record<PayoutHubItem['status'], string> = {
   failed: 'Failed',
 };
 
-const statusTone: Record<PayoutHubItem['status'], string> = {
-  prepared: 'bg-safe-soft text-safe-ink',
-  released: 'bg-risky-soft text-risky-ink',
-  paid: 'bg-safe-soft text-safe-ink',
-  failed: 'bg-risky-soft text-risky-ink',
+const statusVariant: Record<
+  PayoutHubItem['status'],
+  'safe' | 'risky' | 'error'
+> = {
+  prepared: 'safe',
+  released: 'risky',
+  paid: 'safe',
+  failed: 'error',
 };
 
 export default function PayoutsPage() {
@@ -74,6 +85,7 @@ export default function PayoutsPage() {
   const handleRelease = useCallback(
     async (item: PayoutHubItem) => {
       setError(null);
+      setNotice(null);
       setReleasingId(item.id);
       const result = await releasePayoutById(item.id);
       setReleasingId(null);
@@ -93,71 +105,73 @@ export default function PayoutsPage() {
   );
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer>
-        <header className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-                Payouts
-              </p>
-              <h1 className="text-2xl font-semibold tracking-tight">Your turn in the circle</h1>
-              <p className="max-w-prose text-sm text-gray-600">
-                Release a payout when the pot is ready. PayPal sends the money to your account.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              {user ? (
-                <>
-                  <span className="hidden text-sm text-muted sm:inline">{user.name}</span>
-                  <TierBadge tier={user.tier} rank={user.rank} />
-                </>
-              ) : null}
-            </div>
-          </div>
+    <PageContainer>
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Payouts"
+          title="Your turn in the circle"
+          description="Release a payout when the pot is ready. The money goes straight to your account."
+          action={user ? <TierBadge tier={user.tier} rank={user.rank} /> : undefined}
+        />
 
-          {notice ? (
-            <p role="status" className="rounded-xl bg-safe-soft px-4 py-3 text-sm text-safe-ink">
-              {notice}
-            </p>
-          ) : null}
-          {error ? (
-            <p role="alert" className="rounded-xl bg-risky-soft px-4 py-3 text-sm text-risky-ink">
-              {error}
-            </p>
-          ) : null}
-        </header>
+        <InfoNote>
+          The platform fee is taken from the pot before release. Local-currency
+          amounts are estimates and are not locked at today&apos;s rate.
+        </InfoNote>
+
+        {notice ? (
+          <Notice variant="success" title="Release started">
+            {notice}
+          </Notice>
+        ) : null}
+        {error ? (
+          <Notice variant="error" title="Something went wrong">
+            {error}
+          </Notice>
+        ) : null}
 
         {loading ? (
           <PayoutSkeleton />
         ) : data ? (
           <>
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <section className="grid grid-cols-2 gap-3">
+              <Card className="flex flex-col gap-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                   Ready to release
                 </p>
-                <p className="mt-2 text-2xl font-bold">{formatUsd(data.totals.readyNetCents)}</p>
-              </div>
-              <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <p className="text-2xl font-semibold tracking-tight text-ink">
+                  {formatUsd(data.totals.readyNetCents)}
+                </p>
+              </Card>
+              <Card className="flex flex-col gap-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                   Received
                 </p>
-                <p className="mt-2 text-2xl font-bold">{formatUsd(data.totals.paidNetCents)}</p>
-              </div>
+                <p className="text-2xl font-semibold tracking-tight text-safe-ink">
+                  {formatUsd(data.totals.paidNetCents)}
+                </p>
+              </Card>
             </section>
 
-            <section className="flex flex-col gap-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                Ready now
-              </h2>
+            <Section
+              title="Ready now"
+              description="Only the cycle's winner can release a payout."
+            >
               {data.ready.length === 0 ? (
-                <PayoutEmptyState
-                  message="No payout is ready yet."
-                  action={{ href: '/studio', label: 'Back to studio' }}
+                <EmptyState
+                  title="No payout ready yet"
+                  description="When your turn comes and the pot is full, the release button appears here."
+                  action={
+                    <Link
+                      href="/studio"
+                      className="text-sm font-medium text-accent hover:underline"
+                    >
+                      Back to studio
+                    </Link>
+                  }
                 />
               ) : (
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {data.ready.map((item) => (
                     <li key={item.id}>
                       <PayoutReadyCard
@@ -172,19 +186,24 @@ export default function PayoutsPage() {
                   ))}
                 </ul>
               )}
-            </section>
+            </Section>
 
-            <section className="flex flex-col gap-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                History
-              </h2>
+            <Section title="History">
               {data.history.length === 0 ? (
-                <PayoutEmptyState
-                  message="Completed payouts will appear here."
-                  action={{ href: '/studio', label: 'Back to studio' }}
+                <EmptyState
+                  title="No payouts yet"
+                  description="Completed payouts will appear here once your circles start paying out."
+                  action={
+                    <Link
+                      href="/studio"
+                      className="text-sm font-medium text-accent hover:underline"
+                    >
+                      Back to studio
+                    </Link>
+                  }
                 />
               ) : (
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {data.history.map((item) => (
                     <li key={item.id}>
                       <PayoutHistoryItem item={item} />
@@ -192,40 +211,18 @@ export default function PayoutsPage() {
                   ))}
                 </ul>
               )}
-            </section>
+            </Section>
           </>
         ) : null}
 
         <Link
           href="/studio"
-          className="self-start rounded-lg border border-[#003087] px-4 py-2.5 text-sm font-medium text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+          className="self-start text-sm font-medium text-accent hover:underline"
         >
           Back to Studio
         </Link>
-      </PageContainer>
-    </main>
-  );
-}
-
-function PayoutEmptyState({
-  message,
-  action,
-}: {
-  message: string;
-  action?: { href: string; label: string };
-}) {
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
-      <p className="text-sm text-gray-600">{message}</p>
-      {action && (
-        <Link
-          href={action.href}
-          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
-          {action.label}
-        </Link>
-      )}
-    </div>
+      </div>
+    </PageContainer>
   );
 }
 
@@ -246,34 +243,38 @@ function PayoutReadyCard({
 }) {
   const isWinner = item.viewerRole === 'winner';
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 hover:bg-gray-50 transition-colors">
+    <Card className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold">{item.circleName}</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="truncate text-base font-semibold tracking-tight text-ink">
+            {item.circleName}
+          </h3>
+          <p className="text-sm text-muted">
             Cycle {item.cycle} · {isWinner ? 'Your payout' : `Winner: ${item.winnerName}`}
           </p>
         </div>
-        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone[item.status]}`}>
+        <Badge variant={statusVariant[item.status]} dot>
           {statusCopy[item.status]}
-        </span>
+        </Badge>
       </div>
 
       <dl className="flex flex-col gap-2 text-sm">
-        <div className="flex items-center justify-between gap-3 border-b border-gray-200 pb-2">
-          <dt className="text-gray-600">Pot</dt>
-          <dd className="font-medium">{formatUsd(item.grossCents)}</dd>
+        <div className="flex items-center justify-between gap-3 border-b border-line pb-2">
+          <dt className="text-muted">Pot</dt>
+          <dd className="font-medium text-ink">{formatUsd(item.grossCents)}</dd>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Fee</dt>
-          <dd className="font-medium text-gray-600">-{formatUsd(item.feeCents)}</dd>
+          <dt className="text-muted">Fee</dt>
+          <dd className="font-medium text-muted">-{formatUsd(item.feeCents)}</dd>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-2">
-          <dt className="font-semibold">{isWinner ? 'You receive' : 'They receive'}</dt>
-          <dd className="text-lg font-bold">
+        <div className="flex items-center justify-between gap-3 border-t border-line pt-2">
+          <dt className="font-semibold text-ink">
+            {isWinner ? 'You receive' : 'They receive'}
+          </dt>
+          <dd className="text-lg font-semibold text-ink">
             {formatUsd(item.netCents)}
             {item.localFormatted && item.localCurrency !== 'USD' ? (
-              <span className="ml-1 text-xs font-medium text-gray-600">
+              <span className="ml-1 text-xs font-medium text-muted">
                 about {item.localFormatted} {item.localCurrency}
               </span>
             ) : null}
@@ -283,96 +284,102 @@ function PayoutReadyCard({
 
       {isWinner ? (
         confirming ? (
-          <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
-            <p className="text-sm text-gray-900">
+          <div className="flex flex-col gap-2 rounded-xl border border-risky-line bg-risky-soft p-3">
+            <p className="text-sm text-risky-ink">
               Send {formatUsd(item.netCents)} to your account now? This cannot be undone.
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={onRelease}
-                disabled={releasing}
-                className="min-h-11 flex-1 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                loading={releasing}
+                className="flex-1"
               >
                 {releasing ? 'Sending...' : 'Yes, release it'}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
                 onClick={onCancel}
                 disabled={releasing}
-                className="min-h-11 flex-1 rounded-xl border border-[#003087] px-4 text-sm font-medium text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
+                className="flex-1"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <button
+          <Button
             type="button"
+            size="lg"
+            fullWidth
             onClick={onConfirm}
             disabled={!item.canRelease}
-            className="min-h-12 w-full rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Release my payout
-          </button>
+          </Button>
         )
       ) : (
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted">
           {item.status === 'released'
-            ? 'PayPal is sending the money to the winner.'
+            ? 'The money is on its way to the winner.'
             : `Waiting for ${item.winnerName || 'the winner'} to release this payout.`}
         </p>
       )}
 
       {item.releaseBlockedReason && isWinner && item.status === 'prepared' ? (
-        <p className="text-xs text-gray-500">{item.releaseBlockedReason}</p>
+        <p className="text-xs text-muted">{item.releaseBlockedReason}</p>
       ) : null}
 
       <Link
         href={`/circles/${item.circleId}`}
-        className="mt-2 inline-flex min-h-11 items-center justify-center self-start rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+        className="inline-flex min-h-10 items-center justify-center self-start rounded-xl border border-line-strong px-3 text-sm font-medium text-ink transition-colors hover:bg-surface-2"
       >
         View circle
       </Link>
-    </article>
+    </Card>
   );
 }
 
 function PayoutHistoryItem({ item }: { item: PayoutHubItem }) {
   return (
-    <article className="rounded-2xl border border-gray-200 bg-white p-5">
+    <Card className="flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold">{item.circleName}</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="truncate text-base font-semibold tracking-tight text-ink">
+            {item.circleName}
+          </h3>
+          <p className="text-sm text-muted">
             Cycle {item.cycle} · {item.winnerName}
           </p>
         </div>
-        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone[item.status]}`}>
+        <Badge variant={statusVariant[item.status]} dot>
           {statusCopy[item.status]}
-        </span>
+        </Badge>
       </div>
 
-      <dl className="mt-3 flex flex-col gap-2 text-sm">
+      <dl className="flex flex-col gap-2 text-sm">
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Amount</dt>
-          <dd className="text-lg font-bold">{formatUsd(item.netCents)}</dd>
+          <dt className="text-muted">Amount</dt>
+          <dd className="text-lg font-semibold text-ink">{formatUsd(item.netCents)}</dd>
         </div>
         {item.localFormatted && item.localCurrency !== 'USD' ? (
           <div className="flex items-center justify-between gap-3">
-            <dt className="text-gray-600">In local currency</dt>
-            <dd className="text-sm text-gray-600">{item.localFormatted} {item.localCurrency}</dd>
+            <dt className="text-muted">In local currency</dt>
+            <dd className="text-sm text-muted">
+              {item.localFormatted} {item.localCurrency}
+            </dd>
           </div>
         ) : null}
       </dl>
 
       <Link
         href={`/circles/${item.circleId}`}
-        className="mt-2 inline-flex min-h-10 items-center justify-center self-start rounded-lg border border-[#003087] px-3 py-2 text-sm font-medium text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+        className="inline-flex min-h-10 items-center justify-center self-start rounded-xl px-3 text-sm font-medium text-accent transition-colors hover:bg-surface-2"
       >
         View circle
       </Link>
-    </article>
+    </Card>
   );
 }
 
@@ -380,22 +387,23 @@ function PayoutSkeleton() {
   return (
     <div role="status" aria-live="polite" className="flex flex-col gap-4">
       <span className="sr-only">Loading payouts...</span>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {[0, 1].map((card) => (
-          <div key={card} className="rounded-2xl border border-gray-200 p-5 animate-pulse">
-            <div className="h-4 w-1/3 animate-pulse rounded bg-gray-100" />
-            <div className="mt-2 h-8 w-full animate-pulse rounded bg-gray-100" />
-          </div>
+          <Card key={card}>
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="mt-2 h-7 w-2/3" />
+          </Card>
         ))}
       </div>
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Skeleton className="h-5 w-24" />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2].map((card) => (
-          <div key={card} className="rounded-2xl border border-gray-200 p-5 animate-pulse">
-            <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
-            <div className="mt-2 h-4 w-full animate-pulse rounded bg-gray-100" />
-            <div className="mt-2 h-6 w-1/2 animate-pulse rounded bg-gray-100" />
-            <div className="mt-2 h-4 w-full animate-pulse rounded bg-gray-100" />
-          </div>
+          <Card key={card}>
+            <Skeleton className="h-5 w-1/2" />
+            <Skeleton className="mt-2 h-4 w-full" />
+            <Skeleton className="mt-2 h-6 w-1/2" />
+            <Skeleton className="mt-4 h-10 w-full" />
+          </Card>
         ))}
       </div>
     </div>

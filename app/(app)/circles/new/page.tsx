@@ -6,6 +6,7 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import CountryMultiSelect from "@/components/forms/CountryMultiSelect";
 import TextField from "@/components/forms/TextField";
 import PageContainer from "@/components/layout/PageContainer";
+import PageHeader from "@/components/layout/PageHeader";
 import { friendlyError } from "@/components/forms/errorMessages";
 import {
   errorClass,
@@ -14,6 +15,12 @@ import {
   inputNormalClass,
   labelClass,
 } from "@/components/forms/fieldStyles";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import InfoNote from "@/components/ui/InfoNote";
+import Notice from "@/components/ui/Notice";
+import Skeleton from "@/components/ui/Skeleton";
+import ToggleGroup from "@/components/ui/ToggleGroup";
 import TierBadge from "@/components/ui/TierBadge";
 import { formatUsd } from "@/components/ui/formatUsd";
 import { countryByCode } from "@/data/countries";
@@ -29,6 +36,11 @@ type FormErrors = {
 };
 
 const MEMBER_LIMITS = Array.from({ length: 11 }, (_, index) => index + 2);
+
+const FREQUENCY_OPTIONS = [
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+];
 
 function parseDollarsToCents(input: string): number | null {
   const value = input.trim();
@@ -225,213 +237,197 @@ export default function NewCirclePage() {
   }
 
   return (
-    <div className="min-h-full bg-white font-sans text-gray-900">
-      <PageContainer>
-        <header className="flex flex-col gap-2">
-          <Link
-            href="/studio"
-            className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#0070e0] hover:underline"
-          >
-            <span aria-hidden="true">&larr;</span>
-            Back to studio
-          </Link>
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            Create a circle
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Start a savings circle
-          </h1>
-          <p className="text-sm text-gray-600">
-            Set the amount, rhythm and who can join.
-          </p>
-        </header>
+    <PageContainer>
+      <div className="flex flex-col gap-6">
+        <Link
+          href="/studio"
+          className="inline-flex w-fit items-center gap-1 rounded-lg text-sm font-medium text-accent outline-none hover:text-accent-hover hover:underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+        >
+          <span aria-hidden="true">&larr;</span>
+          Back to studio
+        </Link>
+
+        <PageHeader
+          eyebrow="Create a circle"
+          title="Start a savings circle"
+          description="Set the amount, rhythm and who can join."
+        />
+
+        <InfoNote variant="warning" title="Set the rules carefully">
+          Contribution size, rhythm and member limit are fixed once members
+          join. Changing them means starting a new circle.
+        </InfoNote>
 
         {userLoading ? (
           <PageLoading />
         ) : userError ? (
-          <PageError
-            message={userError}
-            onRetry={() => setUserReloadKey((key) => key + 1)}
-          />
+          <Notice variant="error" title="Could not load your account">
+            <p>{userError}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setUserReloadKey((key) => key + 1)}
+              >
+                Try again
+              </Button>
+              <Link
+                href="/studio"
+                className="inline-flex min-h-9 items-center rounded-xl px-3 text-sm font-medium underline-offset-2 hover:underline"
+              >
+                Back to studio
+              </Link>
+            </div>
+          </Notice>
         ) : user ? (
-          <form
-            onSubmit={handleSubmit}
-            noValidate
-            className="flex flex-col gap-5"
-          >
-            <TextField
-              label="Circle name"
-              name="name"
-              required
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-                if (errors.name) {
-                  setErrors((current) => ({ ...current, name: undefined }));
-                }
-              }}
-              placeholder="Weekend Savers"
-              error={errors.name}
-            />
-
-            <TextField
-              label="Contribution (USD)"
-              name="contribution"
-              required
-              inputMode="decimal"
-              autoComplete="off"
-              value={contribution}
-              onChange={(event) => {
-                setContribution(event.target.value);
-                if (errors.contribution) {
-                  setErrors((current) => ({
-                    ...current,
-                    contribution: undefined,
-                  }));
-                }
-              }}
-              placeholder="100"
-              hint="Enter dollars, for example 100 or 100.50."
-              error={errors.contribution}
-            />
-
-            <fieldset className="flex flex-col gap-1.5">
-              <legend className={labelClass}>Frequency</legend>
-              <div role="group" className="grid grid-cols-2 gap-2">
-                {(["weekly", "monthly"] as const).map((option) => {
-                  const selected = frequency === option;
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setFrequency(option)}
-                      aria-pressed={selected}
-                      className={`min-h-12 rounded-xl px-4 text-base font-semibold capitalize transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
-                        selected
-                          ? "bg-[#003087] text-white"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-[#0070e0]"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor={memberLimitId} className={labelClass}>
-                Member limit
-              </label>
-              <select
-                id={memberLimitId}
-                value={memberLimit}
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+            <Card className="flex flex-col gap-5">
+              <TextField
+                label="Circle name"
+                name="name"
+                required
+                value={name}
                 onChange={(event) => {
-                  setMemberLimit(Number(event.target.value));
-                  if (errors.memberLimit) {
+                  setName(event.target.value);
+                  if (errors.name) {
+                    setErrors((current) => ({ ...current, name: undefined }));
+                  }
+                }}
+                placeholder="Weekend Savers"
+                error={errors.name}
+              />
+
+              <TextField
+                label="Contribution (USD)"
+                name="contribution"
+                required
+                inputMode="decimal"
+                autoComplete="off"
+                value={contribution}
+                onChange={(event) => {
+                  setContribution(event.target.value);
+                  if (errors.contribution) {
                     setErrors((current) => ({
                       ...current,
-                      memberLimit: undefined,
+                      contribution: undefined,
                     }));
                   }
                 }}
-                className={`${inputClass} ${
-                  errors.memberLimit ? inputErrorClass : inputNormalClass
-                }`}
-              >
-                {MEMBER_LIMITS.map((limit) => (
-                  <option key={limit} value={limit}>
-                    {limit} members
-                  </option>
-                ))}
-              </select>
-              {errors.memberLimit ? (
-                <p className={errorClass}>{errors.memberLimit}</p>
-              ) : null}
-            </div>
+                placeholder="100"
+                hint="Enter dollars, for example 100 or 100.50."
+                error={errors.contribution}
+              />
 
-            <CountryMultiSelect
-              label="Include nationalities"
-              value={included}
-              onChange={updateIncluded}
-              hint="Leave empty to include everyone."
-              blockedCodes={excluded}
-              blockedLabel="In exclude"
-            />
+              <ToggleGroup
+                label="Frequency"
+                options={FREQUENCY_OPTIONS}
+                value={frequency}
+                onChange={(value) => setFrequency(value as Frequency)}
+              />
 
-            <CountryMultiSelect
-              label="Exclude nationalities"
-              value={excluded}
-              onChange={updateExcluded}
-              hint="People from excluded nationalities will not see this circle."
-              blockedCodes={included}
-              blockedLabel="In include"
-            />
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor={memberLimitId} className={labelClass}>
+                  Member limit
+                </label>
+                <select
+                  id={memberLimitId}
+                  value={memberLimit}
+                  onChange={(event) => {
+                    setMemberLimit(Number(event.target.value));
+                    if (errors.memberLimit) {
+                      setErrors((current) => ({
+                        ...current,
+                        memberLimit: undefined,
+                      }));
+                    }
+                  }}
+                  className={`${inputClass} ${
+                    errors.memberLimit ? inputErrorClass : inputNormalClass
+                  }`}
+                >
+                  {MEMBER_LIMITS.map((limit) => (
+                    <option key={limit} value={limit}>
+                      {limit} members
+                    </option>
+                  ))}
+                </select>
+                {errors.memberLimit ? (
+                  <p className={errorClass}>{errors.memberLimit}</p>
+                ) : null}
+              </div>
+            </Card>
+
+            <Card className="flex flex-col gap-5">
+              <CountryMultiSelect
+                label="Include nationalities"
+                value={included}
+                onChange={updateIncluded}
+                hint="Leave empty to include everyone."
+                blockedCodes={excluded}
+                blockedLabel="In exclude"
+              />
+
+              <CountryMultiSelect
+                label="Exclude nationalities"
+                value={excluded}
+                onChange={updateExcluded}
+                hint="People from excluded nationalities will not see this circle."
+                blockedCodes={included}
+                blockedLabel="In include"
+              />
+            </Card>
 
             {countryError ? (
-              <p
-                role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-              >
-                {countryError}
-              </p>
+              <Notice variant="error">{countryError}</Notice>
             ) : null}
 
-            <section className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-5">
-              <h2 className="text-base font-semibold">Circle summary</h2>
+            <Card className="flex flex-col gap-4 bg-surface-2">
+              <h2 className="text-base font-semibold tracking-tight text-ink">
+                Circle summary
+              </h2>
 
-              <dl className="flex flex-col gap-1.5 text-sm">
+              <dl className="flex flex-col gap-2 text-sm">
                 <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-600">Contribution</dt>
-                  <dd className="font-medium text-[#001c64]">
+                  <dt className="text-muted">Contribution</dt>
+                  <dd className="font-medium text-ink">
                     {formatUsd(contributionCents ?? 0)}{" "}
-                    <span className="font-normal text-gray-500">
+                    <span className="font-normal capitalize text-muted">
                       {frequency}
                     </span>
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-600">Pot size</dt>
-                  <dd className="font-semibold text-[#001c64]">
-                    {formatUsd(potCents)}
-                  </dd>
+                  <dt className="text-muted">Pot size</dt>
+                  <dd className="font-semibold text-ink">{formatUsd(potCents)}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-600">Number of cycles</dt>
-                  <dd className="font-medium">{memberLimit}</dd>
+                  <dt className="text-muted">Number of cycles</dt>
+                  <dd className="font-medium text-ink">{memberLimit}</dd>
                 </div>
               </dl>
 
-              <p className="text-sm text-gray-600">
-                D&apos;arjo keeps 1.5% of each payout.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-2 border-t border-gray-200 pt-3 text-sm text-gray-600">
-                <span>This circle will take your tier</span>
-                <TierBadge tier={user.tier} rank={user.rank} />
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+                <p className="text-sm text-muted">D&apos;arjo keeps 1.5% of each payout.</p>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+                  <span>Your tier</span>
+                  <TierBadge tier={user.tier} rank={user.rank} />
+                </div>
               </div>
-            </section>
+            </Card>
 
             {formError ? (
-              <p
-                role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-              >
+              <Notice variant="error" title="Could not create circle">
                 {formError}
-              </p>
+              </Notice>
             ) : null}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <Button type="submit" size="lg" fullWidth loading={submitting}>
               {submitting ? "Creating circle..." : "Create circle"}
-            </button>
+            </Button>
           </form>
         ) : null}
-      </PageContainer>
-    </div>
+      </div>
+    </PageContainer>
   );
 }
 
@@ -439,42 +435,10 @@ function PageLoading() {
   return (
     <div className="flex flex-col gap-4" role="status" aria-live="polite">
       <span className="sr-only">Loading the create-circle form...</span>
-      <div className="h-4 w-24 animate-pulse rounded bg-gray-100" />
-      <div className="h-12 w-full animate-pulse rounded-xl bg-gray-100" />
-      <div className="h-12 w-full animate-pulse rounded-xl bg-gray-100" />
-      <div className="h-32 w-full animate-pulse rounded-2xl bg-gray-100" />
-    </div>
-  );
-}
-
-function PageError({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div
-      role="alert"
-      className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-red-50 p-5"
-    >
-      <p className="text-sm text-red-700">{message}</p>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={onRetry}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
-          Try again
-        </button>
-        <Link
-          href="/studio"
-          className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
-          Back to studio
-        </Link>
-      </div>
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-32 w-full rounded-2xl" />
     </div>
   );
 }

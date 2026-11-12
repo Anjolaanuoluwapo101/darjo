@@ -7,6 +7,15 @@ import CircleCard from "@/components/circles/CircleCard";
 import MatchPanel from "@/components/match/MatchPanel";
 import { friendlyError } from "@/components/forms/errorMessages";
 import PageContainer from "@/components/layout/PageContainer";
+import PageHeader from "@/components/layout/PageHeader";
+import Button from "@/components/ui/Button";
+import EmptyState from "@/components/ui/EmptyState";
+import InfoNote from "@/components/ui/InfoNote";
+import LinkButton from "@/components/ui/LinkButton";
+import Notice from "@/components/ui/Notice";
+import Section from "@/components/ui/Section";
+import Skeleton from "@/components/ui/Skeleton";
+import ToggleGroup from "@/components/ui/ToggleGroup";
 import TierBadge from "@/components/ui/TierBadge";
 import { getMe, listCircles } from "@/lib/api-client";
 import type { CircleSummary, User } from "@/types/api";
@@ -19,6 +28,11 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "safe", label: "Safe" },
   { value: "risky", label: "Risky" },
+];
+
+const VIEW_OPTIONS = [
+  { value: "browse", label: "Browse" },
+  { value: "match", label: "Find my circle" },
 ];
 
 export default function StudioPage() {
@@ -90,200 +104,160 @@ export default function StudioPage() {
   const lowerTiers = circles.filter((circle) => !circle.ownTier);
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer>
-        <header className="flex flex-col gap-4">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            Circle Studio
-          </p>
+    <PageContainer>
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Circle Studio"
+          title={user ? user.name : "Circle Studio"}
+          description="Save with people you trust, on a rhythm that fits. Your tier decides how much you can take on."
+          action={user ? <TierBadge tier={user.tier} rank={user.rank} /> : undefined}
+        />
 
-          <div className="flex items-center justify-between gap-3">
-            {user ? (
-              <>
-                <h1 className="text-2xl font-semibold tracking-tight">
-                  {user.name}
-                </h1>
-                <TierBadge tier={user.tier} rank={user.rank} />
-              </>
-            ) : (
-              <div
-                className="h-9 w-40 animate-pulse rounded-lg bg-gray-100"
-                aria-hidden="true"
-              />
-            )}
-          </div>
+        <InfoNote>
+          Risk tags reflect currency volatility and member mix, not a guarantee
+          that everyone will pay. Your tier limits how much you can take on.
+        </InfoNote>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href="/circles/new"
-              className="flex min-h-12 items-center justify-center rounded-xl bg-[#003087] px-4 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-            >
-              Create circle
-            </Link>
-            <Link
-              href="/join"
-              className="flex min-h-12 items-center justify-center rounded-xl border border-[#003087] px-4 text-base font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-            >
-              Join with code
-            </Link>
-          </div>
-        </header>
-
-        <div role="tablist" aria-label="Studio view" className="flex gap-2 border-b border-gray-200 pb-1">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={view === "browse"}
-            onClick={() => setView("browse")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
-              view === "browse"
-                ? "bg-white text-gray-900 border-[#0070e0]"
-                : "text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            Browse circles
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={view === "match"}
-            onClick={() => setView("match")}
-            className={`min-h-11 rounded-t-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
-              view === "match"
-                ? "bg-white text-gray-900 border-[#0070e0]"
-                : "text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            Find my circle
-          </button>
+        <div className="grid grid-cols-2 gap-3">
+          <LinkButton href="/circles/new" size="lg">
+            Create circle
+          </LinkButton>
+          <LinkButton href="/join" variant="outline" size="lg">
+            Join with code
+          </LinkButton>
         </div>
 
-        {view === "match" ? <MatchPanel initialAmount={qAmount ?? ''} initialFrequency={(qFrequency ?? '') as Frequency | ''} initialRisk={(qRisk ?? '') as Risk | ''} /> : (
-        <>
-        <div role="group" aria-label="Filter circles" className="flex gap-2">
-          {FILTERS.map((option) => {
-            const selected = filter === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setFilter(option.value)}
-                aria-pressed={selected}
-                className={`min-h-11 rounded-full px-4 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 ${
-                  selected
-                    ? "bg-[#003087] text-white border-[#003087]"
-                    : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
+        <ToggleGroup
+          label="Studio view"
+          options={VIEW_OPTIONS}
+          value={view}
+          onChange={(value) => setView(value as "browse" | "match")}
+        />
 
-        {loading ? (
-          <LoadingCircles />
-        ) : error ? (
-          <ErrorState
-            message={error}
-            onRetry={() => setReloadKey((key) => key + 1)}
+        {view === "match" ? (
+          <MatchPanel
+            initialAmount={qAmount ?? ""}
+            initialFrequency={(qFrequency ?? "") as Frequency | ""}
+            initialRisk={(qRisk ?? "") as Risk | ""}
           />
-        ) : circles.length === 0 ? (
-          <EmptyState filter={filter} />
         ) : (
-          <div className="flex flex-col gap-6">
-            {ownTier.length > 0 ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                  Your tier
-                </h2>
-                <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {ownTier.map((circle) => (
-                    <li key={circle.id}>
-                      <CircleCard circle={circle} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
+          <>
+            <div
+              role="group"
+              aria-label="Filter circles"
+              className="flex flex-wrap gap-2"
+            >
+              {FILTERS.map((option) => {
+                const selected = filter === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFilter(option.value)}
+                    aria-pressed={selected}
+                    className={`min-h-9 rounded-full border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+                      selected
+                        ? "border-primary bg-primary text-surface"
+                        : "border-line bg-surface text-muted hover:border-line-strong hover:text-ink"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
 
-            {lowerTiers.length > 0 ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                  Lower tiers
-                </h2>
-                <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {lowerTiers.map((circle) => (
-                    <li key={circle.id}>
-                      <CircleCard circle={circle} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-          </div>
+            {loading ? (
+              <LoadingCircles />
+            ) : error ? (
+              <Notice variant="error" title="Could not load circles">
+                <p>{error}</p>
+                <div className="mt-3">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setReloadKey((key) => key + 1)}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              </Notice>
+            ) : circles.length === 0 ? (
+              <EmptyState
+                title="No circles here yet"
+                description={
+                  filter === "all"
+                    ? "Create a circle to start saving with people you trust."
+                    : `There are no ${filter} circles right now. Try another filter or start your own.`
+                }
+                action={
+                  <LinkButton href="/circles/new" size="sm">
+                    Create circle
+                  </LinkButton>
+                }
+              />
+            ) : (
+              <div className="flex flex-col gap-6">
+                {ownTier.length > 0 ? (
+                  <Section title="Your tier">
+                    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {ownTier.map((circle) => (
+                        <li key={circle.id}>
+                          <CircleCard circle={circle} />
+                        </li>
+                      ))}
+                    </ul>
+                  </Section>
+                ) : null}
+
+                {lowerTiers.length > 0 ? (
+                  <Section
+                    title="Lower tiers"
+                    description="Circles you can join as your score grows."
+                  >
+                    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {lowerTiers.map((circle) => (
+                        <li key={circle.id}>
+                          <CircleCard circle={circle} />
+                        </li>
+                      ))}
+                    </ul>
+                  </Section>
+                ) : null}
+              </div>
+            )}
+          </>
         )}
-        </>
-        )}
-      </PageContainer>
-    </main>
+
+        <p className="text-center text-xs text-muted-soft">
+          Invite-only by design. Share a code, keep the circle tight.
+        </p>
+      </div>
+    </PageContainer>
   );
 }
 
 function LoadingCircles() {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-live="polite">
+    <div
+      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+      role="status"
+      aria-live="polite"
+    >
       <span className="sr-only">Loading circles...</span>
       {[0, 1, 2].map((item) => (
-        <div key={item} className="rounded-2xl border border-gray-200 p-4">
-          <div className="h-5 w-2/3 animate-pulse rounded bg-gray-100" />
-          <div className="mt-3 h-4 w-1/2 animate-pulse rounded bg-gray-100" />
-          <div className="mt-3 h-4 w-full animate-pulse rounded bg-gray-100" />
+        <div
+          key={item}
+          className="rounded-2xl border border-line bg-surface p-5"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <Skeleton className="h-5 w-2/3" />
+            <Skeleton className="h-6 w-16 rounded-full" />
+          </div>
+          <Skeleton className="mt-3 h-4 w-1/2" />
+          <Skeleton className="mt-4 h-4 w-full" />
         </div>
       ))}
-    </div>
-  );
-}
-
-function ErrorState({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div
-      role="alert"
-      className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-red-50 p-5"
-    >
-      <p className="text-sm text-red-700">{message}</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-      >
-        Try again
-      </button>
-    </div>
-  );
-}
-
-function EmptyState({ filter }: { filter: Filter }) {
-  const message =
-    filter === "all"
-      ? "No circles to show yet. Create one to start saving with your circle."
-      : `No ${filter} circles right now. Try another filter or create a circle.`;
-
-  return (
-    <div className="flex flex-col items-start gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-5">
-      <p className="text-sm text-gray-600">{message}</p>
-      <Link
-        href="/circles/new"
-        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-      >
-        Create circle
-      </Link>
     </div>
   );
 }

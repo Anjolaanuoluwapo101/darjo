@@ -2,6 +2,10 @@
 
 import { useRef, useState } from "react";
 import { friendlyError } from "@/components/forms/errorMessages";
+import { inputClass, inputNormalClass } from "@/components/forms/fieldStyles";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
+import { cn } from "@/components/ui/cn";
 import { chatWithAgent } from "@/lib/api-client";
 import type { AgentAction } from "@/types/api";
 
@@ -90,12 +94,12 @@ export default function ChatPanel({
     <div className="flex min-h-0 flex-1 flex-col gap-3">
       <div
         ref={listRef}
-        className="flex min-h-40 flex-col gap-3 overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-4"
+        className="flex min-h-40 flex-col gap-3 overflow-y-auto rounded-2xl border border-line bg-surface-2 p-4"
         aria-live="polite"
         aria-label="Conversation with the D'arjo assistant"
       >
         {messages.length === 0 ? (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm leading-relaxed text-muted">
             {circleName
               ? `Ask me anything about ${circleName}.`
               : "Ask me about your circles, payments or payouts."}
@@ -105,19 +109,21 @@ export default function ChatPanel({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex flex-col gap-1 ${
-              message.role === "user" ? "items-end" : "items-start"
-            }`}
+            className={cn(
+              "flex flex-col gap-1",
+              message.role === "user" ? "items-end" : "items-start",
+            )}
           >
-            <span className="text-xs uppercase tracking-wide text-gray-500">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-soft">
               {message.role === "user" ? "You" : "Assistant"}
             </span>
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+              className={cn(
+                "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                 message.role === "user"
-                  ? "bg-[#003087] text-white"
-                  : "border border-gray-200 bg-white text-gray-800"
-              }`}
+                  ? "bg-primary text-surface"
+                  : "border border-line bg-surface text-ink",
+              )}
             >
               {message.text}
             </div>
@@ -125,7 +131,9 @@ export default function ChatPanel({
         ))}
 
         {sending ? (
-          <p className="text-sm text-gray-500">Thinking...</p>
+          <p role="status" className="text-sm text-muted">
+            Thinking...
+          </p>
         ) : null}
       </div>
 
@@ -136,7 +144,7 @@ export default function ChatPanel({
               key={question}
               type="button"
               onClick={() => send(question)}
-              className="min-h-10 rounded-full border border-gray-300 px-3.5 text-sm text-gray-700 transition hover:border-[#0070e0] hover:text-[#0070e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+              className="min-h-10 rounded-full border border-line-strong bg-surface px-3.5 text-sm text-muted transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               {question}
             </button>
@@ -149,18 +157,20 @@ export default function ChatPanel({
           {lastActions.map((action, index) => (
             <li
               key={`${action.type}-${index}`}
-              className="rounded-xl border border-[#ffd140] bg-[#fff9e6] px-3.5 py-2.5 text-sm text-[#4a3a00]"
+              className="rounded-xl border border-risky-line bg-risky-soft px-3.5 py-2.5 text-sm text-risky-ink"
             >
               {action.type === "nudge_drafted" ? (
                 <div className="flex flex-col gap-2">
                   <span>Draft nudge ready: &ldquo;{action.text}&rdquo;</span>
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => copyNudge(action.text)}
-                    className="w-fit min-h-10 rounded-lg border border-[#003087] px-3 text-xs font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                    className="w-fit"
                   >
                     {copiedNudge === action.text ? "Copied" : "Copy nudge"}
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 "A payout was prepared for this cycle."
@@ -170,11 +180,7 @@ export default function ChatPanel({
         </ul>
       ) : null}
 
-      {error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {error}
-        </p>
-      ) : null}
+      {error ? <Notice variant="error">{error}</Notice> : null}
 
       <form
         className="flex items-end gap-2"
@@ -192,15 +198,14 @@ export default function ChatPanel({
           onChange={(event) => setDraft(event.target.value)}
           rows={2}
           placeholder="Ask about a circle, a payment or a payout"
-          className="min-h-11 flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus-visible:border-[#0070e0] focus-visible:ring-2 focus-visible:ring-[#0070e0]"
+          className={cn(inputClass, inputNormalClass, "min-h-11 flex-1 resize-none py-2.5")}
         />
-        <button
+        <Button
           type="submit"
           disabled={sending || draft.trim().length === 0}
-          className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] disabled:cursor-not-allowed disabled:bg-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
         >
           Send
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -55,7 +55,7 @@ export default function PasswordField({
           type="button"
           onClick={() => setVisible((value) => !value)}
           aria-label={visible ? "Hide password" : "Show password"}
-          className="absolute inset-y-0 right-1 flex min-w-12 items-center justify-center rounded-lg px-3 text-sm font-medium text-indigo-700 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="absolute inset-y-0 right-1 my-1 flex min-w-12 items-center justify-center rounded-lg px-3 text-sm font-medium text-accent hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {visible ? "Hide" : "Show"}
         </button>

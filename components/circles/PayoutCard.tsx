@@ -3,6 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { friendlyError } from "@/components/forms/errorMessages";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Notice from "@/components/ui/Notice";
 import { formatUsd } from "@/components/ui/formatUsd";
 import { releasePayout } from "@/lib/api-client";
 import type { Payout } from "@/types/api";
@@ -46,54 +50,58 @@ export default function PayoutCard({
 
   if (payout.status === "released" || payout.status === "paid") {
     return (
-      <section className="flex flex-col gap-2 rounded-2xl border border-green-200 bg-green-50 p-5">
-        <h2 className="text-base font-semibold text-green-800">
+      <Card className="flex flex-col gap-2 border-safe-line bg-safe-soft">
+        <h2 className="text-base font-semibold tracking-tight text-safe-ink">
           {payout.status === "released" ? "Payout released" : "Payout paid"}
         </h2>
-        <p className="text-sm text-green-800">
+        <p className="text-sm text-safe-ink">
           You received {formatUsd(payout.netCents)}.
         </p>
-      </section>
+      </Card>
     );
   }
 
   if (payout.status === "failed") {
     return (
-      <section className="flex flex-col gap-1 rounded-2xl border border-red-200 bg-red-50 p-5">
-        <h2 className="text-base font-semibold text-red-700">Payout issue</h2>
-        <p className="text-sm text-red-700">
+      <Card className="flex flex-col gap-1 border-error-line bg-error-soft">
+        <h2 className="text-base font-semibold tracking-tight text-error-ink">
+          Payout issue
+        </h2>
+        <p className="text-sm text-error-ink">
           The payout could not be sent. Please contact support so we can help.
         </p>
-      </section>
+      </Card>
     );
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-[#ffd140] bg-amber-50 p-5">
+    <Card className="flex flex-col gap-3 border-risky-line bg-risky-soft">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-[#001c64]">
+        <h2 className="text-base font-semibold tracking-tight text-ink">
           Your payout is ready
         </h2>
-        <span className="rounded-full bg-[#ffd140] px-2.5 py-1 text-xs font-semibold text-[#001c64]">
-          Cycle {payout.cycle}
-        </span>
+        <Badge variant="risky">Cycle {payout.cycle}</Badge>
       </div>
 
       <dl className="flex flex-col gap-1.5 text-sm">
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Pot collected</dt>
-          <dd className="font-medium">{formatUsd(payout.grossCents)}</dd>
+          <dt className="text-muted">Pot collected</dt>
+          <dd className="font-medium text-ink">
+            {formatUsd(payout.grossCents)}
+          </dd>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-gray-600">Service fee</dt>
-          <dd className="font-medium">-{formatUsd(payout.feeCents)}</dd>
+          <dt className="text-muted">Service fee</dt>
+          <dd className="font-medium text-ink">
+            -{formatUsd(payout.feeCents)}
+          </dd>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-[#ffd140] pt-1.5">
-          <dt className="font-semibold text-[#001c64]">You receive</dt>
-          <dd className="text-base font-semibold text-[#001c64]">
+        <div className="flex items-center justify-between gap-3 border-t border-risky-line pt-1.5">
+          <dt className="font-semibold text-ink">You receive</dt>
+          <dd className="text-base font-semibold text-ink">
             {formatUsd(payout.netCents)}
             {payout.localFormatted && payout.localCurrency !== "USD" ? (
-              <span className="block text-xs font-medium text-gray-600">
+              <span className="block text-xs font-medium text-muted">
                 about {payout.localFormatted} {payout.localCurrency}
               </span>
             ) : null}
@@ -102,55 +110,48 @@ export default function PayoutCard({
       </dl>
 
       {payout.localFormatted && payout.localCurrency !== "USD" ? (
-        <p className="text-xs text-gray-600">
-          PayPal sends the money in US dollars and converts it into your own
-          currency at its own rate, so the final amount can differ a little.
+        <p className="text-xs leading-relaxed text-muted">
+          The money is sent in US dollars and converted into your own currency
+          at the provider&apos;s rate, so the final amount can differ a little.
         </p>
       ) : null}
 
       {confirming ? (
-        <div className="flex flex-col gap-2 rounded-xl border border-[#ffd140] bg-white p-3">
-          <p className="text-sm text-gray-700">
+        <div className="flex flex-col gap-2 rounded-xl border border-risky-line bg-surface p-3">
+          <p className="text-sm text-muted">
             Send {formatUsd(payout.netCents)} to your account now? This cannot
             be undone.
           </p>
           <div className="flex gap-2">
-            <button
+            <Button
               type="button"
               onClick={handleRelease}
-              disabled={releasing}
-              className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              loading={releasing}
+              className="flex-1"
             >
               {releasing ? "Sending..." : "Yes, release my payout"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => {
                 setConfirming(false);
                 setError(null);
               }}
               disabled={releasing}
-              className="min-h-11 flex-1 rounded-xl border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
+              className="flex-1"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => setConfirming(true)}
-          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
+        <Button type="button" size="lg" fullWidth onClick={() => setConfirming(true)}>
           Release my payout
-        </button>
+        </Button>
       )}
 
-      {error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {error}
-        </p>
-      ) : null}
-    </section>
+      {error ? <Notice variant="error">{error}</Notice> : null}
+    </Card>
   );
 }

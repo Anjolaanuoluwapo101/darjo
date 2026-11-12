@@ -1,7 +1,5 @@
 import type { InputHTMLAttributes } from "react";
-
-export const fieldClass =
-  "mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted/60 focus-visible:ring-2 focus-visible:ring-accent";
+import { inputClass, inputNormalClass, labelClass } from "./fieldStyles";
 
 type FieldProps = {
   label: string;
@@ -10,11 +8,15 @@ type FieldProps = {
 
 export default function Field({ label, htmlFor, ...props }: FieldProps) {
   return (
-    <div>
-      <label htmlFor={htmlFor} className="text-sm font-medium text-ink">
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={htmlFor} className={labelClass}>
         {label}
       </label>
-      <input id={htmlFor} className={fieldClass} {...props} />
+      <input
+        id={htmlFor}
+        className={`${inputClass} ${inputNormalClass}`}
+        {...props}
+      />
     </div>
   );
 }

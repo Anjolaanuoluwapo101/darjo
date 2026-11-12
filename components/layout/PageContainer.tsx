@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/components/ui/cn";
 
 // One container for every screen. The width grows with the viewport: a single
 // column on phones, more columns and a wider measure on tablets and desktops.
@@ -17,11 +18,15 @@ type PageContainerProps = {
 export default function PageContainer({
   children,
   width = "default",
-  className = "",
+  className,
 }: PageContainerProps) {
   return (
     <div
-      className={`mx-auto flex w-full ${WIDTHS[width]} flex-col gap-6 px-5 py-8 sm:px-6 lg:py-10 ${className}`}
+      className={cn(
+        "mx-auto flex w-full flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:py-10",
+        WIDTHS[width],
+        className
+      )}
     >
       {children}
     </div>

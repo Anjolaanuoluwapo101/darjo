@@ -1,19 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { useNotifications } from '@/components/notifications/NotificationProvider';
 import PageContainer from '@/components/layout/PageContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import { useNotifications } from '@/components/notifications/NotificationProvider';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
+import LinkButton from '@/components/ui/LinkButton';
+import Notice from '@/components/ui/Notice';
+import Skeleton from '@/components/ui/Skeleton';
 import type { AppNotification } from '@/types/api';
 
-const typeStyles: Record<string, string> = {
-  payout_ready: 'bg-safe-soft text-safe-ink',
-  payout_sent: 'bg-safe-soft text-safe-ink',
-  payout_paid: 'bg-safe-soft text-safe-ink',
-  payout_failed: 'bg-risky-soft text-risky-ink',
-  payment_paid: 'bg-safe-soft text-safe-ink',
-  payment_failed: 'bg-risky-soft text-risky-ink',
-  payment_overdue: 'bg-risky-soft text-risky-ink',
-  nudge: 'bg-risky-soft text-risky-ink',
+const typeTone: Record<string, string> = {
+  payout_ready: 'safe',
+  payout_sent: 'safe',
+  payout_paid: 'safe',
+  payout_failed: 'risky',
+  payment_paid: 'safe',
+  payment_failed: 'risky',
+  payment_overdue: 'risky',
+  nudge: 'risky',
+};
+
+const toneClasses: Record<string, string> = {
+  safe: 'bg-safe-soft text-safe-ink',
+  risky: 'bg-risky-soft text-risky-ink',
+  neutral: 'bg-surface-2 text-muted',
 };
 
 function relativeTime(value: string) {
@@ -36,32 +49,41 @@ function NotificationRow({
   item: AppNotification;
   onOpen: () => void;
 }) {
-  const tone = typeStyles[item.type] ?? 'bg-surface-2 text-muted';
+  const tone = typeTone[item.type] ?? 'neutral';
   const content = (
     <>
       <span
         aria-hidden="true"
-        className={`mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${tone}`}
+        className={`mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${toneClasses[tone]}`}
       >
         {item.title.slice(0, 1).toUpperCase()}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-baseline justify-between gap-2">
-          <span className={`text-sm ${item.readAt ? 'font-medium text-gray-900' : 'font-semibold text-gray-900'}`}>
+          <span
+            className={`text-sm text-ink ${
+              item.readAt ? 'font-medium' : 'font-semibold'
+            }`}
+          >
             {item.title}
           </span>
-          <span className="text-xs text-gray-500">{relativeTime(item.createdAt)}</span>
+          <span className="text-xs text-muted-soft">
+            {relativeTime(item.createdAt)}
+          </span>
         </span>
-        <span className="mt-1 block text-sm text-gray-600">{item.body}</span>
+        <span className="mt-1 block text-sm text-muted">{item.body}</span>
       </span>
       {!item.readAt ? (
-        <span aria-label="Unread" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#0070e0]" />
+        <span
+          aria-label="Unread"
+          className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent"
+        />
       ) : null}
     </>
   );
 
-  const className = `flex w-full items-start gap-3 border-b border-gray-200 px-4 py-4 text-left transition-colors last:border-b-0 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0070e0] ${
-    item.readAt ? 'bg-white' : 'bg-gray-50/40'
+  const className = `flex w-full items-start gap-3 border-b border-line px-4 py-4 text-left transition-colors last:border-b-0 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
+    item.readAt ? 'bg-surface' : 'bg-primary-soft/30'
   }`;
 
   if (!item.url) {
@@ -103,103 +125,99 @@ export default function NotificationsPage() {
           ? 'This browser cannot receive push notifications. In-app updates still appear here.'
           : 'Get a push notification when a contribution is due, a payout is ready, or someone nudges you.';
 
+  const pushDisabled =
+    pushBusy || pushState === 'denied' || pushState === 'unsupported';
+
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer>
-        <header className="flex flex-col gap-4">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            Notifications
-          </p>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Your updates</h1>
-              <p className="mt-1 text-sm text-gray-600">
-                {unreadCount > 0 ? `${unreadCount} unread` : 'You are all caught up.'}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={reload}
-                className="min-h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-              >
+    <PageContainer>
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Notifications"
+          title="Your updates"
+          description={
+            unreadCount > 0 ? `${unreadCount} unread` : 'You are all caught up.'
+          }
+          action={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button type="button" variant="outline" onClick={reload}>
                 Refresh
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={markAllRead}
                 disabled={unreadCount === 0}
-                className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Mark all read
-              </button>
+              </Button>
             </div>
-          </div>
-        </header>
+          }
+        />
 
-        <section className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5">
+        <Card className="flex flex-col gap-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-base font-semibold">Push notifications</h2>
-              <p className="mt-1 max-w-prose text-sm text-gray-600">{pushCopy}</p>
+              <h2 className="text-base font-semibold tracking-tight text-ink">
+                Push notifications
+              </h2>
+              <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted">
+                {pushCopy}
+              </p>
             </div>
             {pushState === 'subscribed' ? (
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={disableNotifications}
                 disabled={pushBusy}
-                className="min-h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 {pushBusy ? 'Working...' : 'Turn off'}
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 type="button"
                 onClick={enableNotifications}
-                disabled={pushBusy || pushState === 'denied' || pushState === 'unsupported'}
-                className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={pushDisabled}
               >
                 {pushBusy ? 'Turning on...' : 'Turn on push'}
-              </button>
+              </Button>
             )}
           </div>
-          <p className="text-xs text-gray-500">
-            On iPhone, add D&apos;arjo to your Home Screen first, then turn on push from there.
+          <p className="text-xs text-muted-soft">
+            On iPhone, add D&apos;arjo to your Home Screen first, then turn on
+            push from there.
           </p>
-        </section>
+        </Card>
 
-        {error ? (
-          <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </p>
-        ) : null}
+        {error ? <Notice variant="error">{error}</Notice> : null}
 
-        <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <section className="overflow-hidden rounded-2xl border border-line bg-surface">
           {loading ? (
             <div role="status" aria-live="polite" className="flex flex-col">
               <span className="sr-only">Loading notifications...</span>
               {[0, 1, 2].map((row) => (
-                <div key={row} className="flex items-start gap-3 border-b border-gray-200 px-4 py-4 last:border-b-0">
-                  <div className="h-9 w-9 animate-pulse rounded-full bg-gray-100" />
+                <div
+                  key={row}
+                  className="flex items-start gap-3 border-b border-line px-4 py-4 last:border-b-0"
+                >
+                  <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="flex-1">
-                    <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
-                    <div className="mt-2 h-4 w-3/4 animate-pulse rounded bg-gray-100" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="mt-2 h-4 w-3/4" />
                   </div>
                 </div>
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-start gap-3 px-5 py-8">
-              <h2 className="text-base font-semibold">Nothing yet</h2>
-              <p className="text-sm text-gray-600">
-                When a payment, payout, or nudge needs your attention, it will show up here.
-              </p>
-              <Link
-                href="/studio"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-              >
-                Back to Studio
-              </Link>
+            <div className="px-4 py-6">
+              <EmptyState
+                title="Nothing yet"
+                description="When a payment, payout, or nudge needs your attention, it will show up here."
+                action={
+                  <LinkButton href="/studio" size="sm">
+                    Back to Studio
+                  </LinkButton>
+                }
+              />
             </div>
           ) : (
             <div>
@@ -215,7 +233,7 @@ export default function NotificationsPage() {
             </div>
           )}
         </section>
-      </PageContainer>
-    </main>
+      </div>
+    </PageContainer>
   );
 }

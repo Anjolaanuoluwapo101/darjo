@@ -11,7 +11,7 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
   POT_NOT_FULL: "Not everyone has paid yet.",
   PAYOUT_ALREADY_RELEASED: "The payout was already sent.",
   COUNTRY_NOT_SUPPORTED: "Payments are not available for your country yet.",
-  PAYPAL_ERROR: "PayPal had a problem, please try again.",
+  PAYPAL_ERROR: "The payment provider had a problem, please try again.",
   NETWORK: "Could not reach the server. Please try again.",
 };
 

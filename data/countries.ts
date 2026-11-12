@@ -142,4 +142,4 @@ export const countryByCode = (code: string): Country | undefined => {
 };
 
 export const DISCLAIMER =
-  'PayPal availability and exchange rates vary by country. Amounts shown are estimates; the final charge is set by PayPal at checkout.';
+  'Payment availability and exchange rates vary by country. Amounts shown are estimates; the final charge is set at checkout.';

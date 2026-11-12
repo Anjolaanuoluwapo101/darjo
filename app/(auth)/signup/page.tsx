@@ -7,7 +7,8 @@ import CountrySelect from "@/components/forms/CountrySelect";
 import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
-import PageContainer from "@/components/layout/PageContainer";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
 import { DISCLAIMER } from "@/data/countries";
 import { signup } from "@/lib/api-client";
 import { nextPath, redirectAfterAuth } from "@/lib/redirect";
@@ -60,94 +61,76 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer width="narrow" className="py-10">
-        <header className="flex flex-col gap-1">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            D&apos;arjo
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Create your account
-          </h1>
-          <p className="text-sm text-gray-600">
-            Join a savings circle and start building your D&apos;arjo score.
-          </p>
-        </header>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <TextField
-            label="Full name"
-            name="name"
-            autoComplete="name"
-            required
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Ada Okafor"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="ada@example.com"
-          />
-          <PasswordField
-            label="Password"
-            name="password"
-            autoComplete="new-password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-
-          <CountrySelect
-            value={nationality}
-            onChange={setNationality}
-            error={nationalityError ?? undefined}
-          />
-
-          {countryNotSupported ? (
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              You can browse D&apos;arjo from your country, but payments are not
-              available for your country yet.
-            </p>
-          ) : null}
-
-          <p className="text-xs leading-relaxed text-gray-500">
-            {DISCLAIMER}
-          </p>
-
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              {formError}
-            </p>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting ? "Creating account..." : "Create account"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-semibold text-[#0070e0] hover:underline"
-          >
-            Log in
-          </Link>
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-1.5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+          Get started
         </p>
-      </PageContainer>
-    </main>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+          Create your account
+        </h1>
+        <p className="text-sm text-muted">
+          Join a savings circle and start building your D&apos;arjo score.
+        </p>
+      </header>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <TextField
+          label="Full name"
+          name="name"
+          autoComplete="name"
+          required
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Ada Okafor"
+        />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="ada@example.com"
+        />
+        <PasswordField
+          label="Password"
+          name="password"
+          autoComplete="new-password"
+          required
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+
+        <CountrySelect
+          value={nationality}
+          onChange={setNationality}
+          error={nationalityError ?? undefined}
+        />
+
+        {countryNotSupported ? (
+          <Notice variant="warning">
+            You can browse D&apos;arjo from your country, but payments are not
+            available there yet.
+          </Notice>
+        ) : null}
+
+        <p className="text-xs leading-relaxed text-muted">{DISCLAIMER}</p>
+
+        {formError ? <Notice variant="error">{formError}</Notice> : null}
+
+        <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
+          {submitting ? "Creating account..." : "Create account"}
+        </Button>
+      </form>
+
+      <p className="text-center text-sm text-muted">
+        Already have an account?{" "}
+        <Link href="/login" className="font-semibold text-accent hover:underline">
+          Log in
+        </Link>
+      </p>
+    </div>
   );
 }

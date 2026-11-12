@@ -113,10 +113,10 @@ export default function CountrySelect({
           <ul
             id={listId}
             role="listbox"
-            className="absolute z-20 mt-1 max-h-[min(16rem,50vh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+            className="absolute z-20 mt-1 max-h-[min(16rem,50vh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface py-1 shadow-lg"
           >
             {filtered.length === 0 ? (
-              <li className="px-4 py-2 text-sm text-gray-500">
+              <li className="px-4 py-2 text-sm text-muted">
                 No countries found
               </li>
             ) : (
@@ -130,10 +130,10 @@ export default function CountrySelect({
                     type="button"
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => choose(country)}
-                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-base text-gray-900 hover:bg-indigo-50 focus-visible:bg-indigo-50 focus-visible:outline-none"
+                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-base text-ink hover:bg-primary-soft focus-visible:bg-primary-soft focus-visible:outline-none"
                   >
                     <span>{country.name}</span>
-                    <span className="text-sm text-gray-500">{country.code}</span>
+                    <span className="text-sm text-muted">{country.code}</span>
                   </button>
                 </li>
               ))

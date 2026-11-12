@@ -96,13 +96,13 @@ export default function CountryMultiSelect({
         >
           {selected.map((country) => (
             <li key={country.code} className="max-w-full">
-              <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-gray-100 py-1 pl-3 pr-1 text-sm text-gray-800">
+              <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-surface-3 py-1 pl-3 pr-1 text-sm text-ink">
                 <span className="truncate">{country.name}</span>
                 <button
                   type="button"
                   onClick={() => toggle(country)}
                   aria-label={`Remove ${country.name}`}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-200 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0]"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition hover:bg-line hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <svg
                     viewBox="0 0 16 16"
@@ -155,10 +155,10 @@ export default function CountryMultiSelect({
             id={listId}
             role="listbox"
             aria-multiselectable="true"
-            className="absolute z-20 mt-1 max-h-[min(16rem,50vh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+            className="absolute z-20 mt-1 max-h-[min(16rem,50vh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface py-1 shadow-lg"
           >
             {filtered.length === 0 ? (
-              <li className="px-4 py-2 text-sm text-gray-500">
+              <li className="px-4 py-2 text-sm text-muted">
                 No countries found
               </li>
             ) : (
@@ -176,14 +176,14 @@ export default function CountryMultiSelect({
                       type="button"
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => toggle(country)}
-                      className="flex min-h-12 w-full items-center justify-between gap-2 px-4 py-2 text-left text-base text-gray-900 hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-none"
+                      className="flex min-h-12 w-full items-center justify-between gap-2 px-4 py-2 text-left text-base text-ink hover:bg-primary-soft focus-visible:bg-primary-soft focus-visible:outline-none"
                     >
                       <span className="flex min-w-0 items-center gap-2">
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
                             isSelected
-                              ? "border-[#0070e0] bg-[#0070e0] text-white"
-                              : "border-gray-300 bg-white"
+                              ? "border-primary bg-primary text-surface"
+                              : "border-line-strong bg-surface"
                           }`}
                           aria-hidden="true"
                         >
@@ -205,15 +205,15 @@ export default function CountryMultiSelect({
                       </span>
 
                       {isBlocked ? (
-                        <span className="shrink-0 text-xs font-medium text-amber-700">
+                        <span className="shrink-0 text-xs font-medium text-risky-ink">
                           {blockedLabel}
                         </span>
                       ) : isSelected ? (
-                        <span className="shrink-0 text-xs font-medium text-[#0070e0]">
+                        <span className="shrink-0 text-xs font-medium text-accent">
                           Added
                         </span>
                       ) : (
-                        <span className="shrink-0 text-xs text-gray-400">
+                        <span className="shrink-0 text-xs text-muted-soft">
                           {country.code}
                         </span>
                       )}

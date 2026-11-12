@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ChatPanel from "@/components/agent/ChatPanel";
+import Button from "@/components/ui/Button";
 
 type AssistantDrawerProps = {
   circleId: string;
@@ -33,11 +34,7 @@ export default function AssistantDrawer({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-      >
+      <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
         <svg
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -47,25 +44,30 @@ export default function AssistantDrawer({
           <path d="M10 2a8 8 0 0 0-8 8c0 1.5.4 2.9 1.2 4.1L2 18l4.1-1.1A8 8 0 1 0 10 2Zm0 14a6 6 0 0 1-3.1-.9l-.3-.2-2.4.6.6-2.3-.2-.3A6 6 0 1 1 10 16Z" />
         </svg>
         Ask the assistant
-      </button>
+      </Button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) close();
+          }}
+        >
           <div
             role="dialog"
             aria-modal="true"
             aria-label="D'arjo assistant"
-            className="flex max-h-[85dvh] w-full max-w-md flex-col gap-3 rounded-t-2xl border border-gray-200 bg-white p-4 shadow-xl sm:rounded-2xl"
+            className="flex max-h-[85dvh] w-full max-w-md flex-col gap-3 rounded-t-2xl border border-line bg-surface p-4 shadow-xl sm:rounded-2xl"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold tracking-tight text-[#001c64]">
+              <h2 className="text-lg font-semibold tracking-tight text-ink">
                 {circleName ? `Ask about ${circleName}` : "Ask the assistant"}
               </h2>
               <button
                 type="button"
                 onClick={close}
                 aria-label="Close the assistant"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-300 text-gray-600 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
               >
                 <span aria-hidden="true">&times;</span>
               </button>

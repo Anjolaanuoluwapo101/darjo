@@ -6,7 +6,8 @@ import { useState, type FormEvent } from "react";
 import PasswordField from "@/components/forms/PasswordField";
 import TextField from "@/components/forms/TextField";
 import { friendlyError } from "@/components/forms/errorMessages";
-import PageContainer from "@/components/layout/PageContainer";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
 import { login } from "@/lib/api-client";
 import { nextPath, redirectAfterAuth } from "@/lib/redirect";
 
@@ -43,66 +44,52 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white font-sans text-gray-900">
-      <PageContainer width="narrow" className="py-10">
-        <header className="flex flex-col gap-1">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#0070e0]">
-            D&apos;arjo
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="text-sm text-gray-600">
-            Log in to see your circle and keep saving.
-          </p>
-        </header>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="ada@example.com"
-          />
-          <PasswordField
-            label="Password"
-            name="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              {formError}
-            </p>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting ? "Logging in..." : "Log in"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-600">
-          New to D&apos;arjo?{" "}
-          <Link
-            href="/signup"
-            className="font-semibold text-[#0070e0] hover:underline"
-          >
-            Create an account
-          </Link>
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-1.5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+          Welcome back
         </p>
-      </PageContainer>
-    </main>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+          Log in to D&apos;arjo
+        </h1>
+        <p className="text-sm text-muted">
+          Pick up where your circle left off.
+        </p>
+      </header>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="ada@example.com"
+        />
+        <PasswordField
+          label="Password"
+          name="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+
+        {formError ? <Notice variant="error">{formError}</Notice> : null}
+
+        <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
+          {submitting ? "Logging in..." : "Log in"}
+        </Button>
+      </form>
+
+      <p className="text-center text-sm text-muted">
+        New to D&apos;arjo?{" "}
+        <Link href="/signup" className="font-semibold text-accent hover:underline">
+          Create an account
+        </Link>
+      </p>
+    </div>
   );
 }

@@ -1,23 +1,40 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
-import PayButton from "@/components/circles/PayButton";
-import PayoutCard from "@/components/circles/PayoutCard";
-import AssistantDrawer from "@/components/agent/AssistantDrawer";
-import { friendlyError } from "@/components/forms/errorMessages";
-import PageContainer from "@/components/layout/PageContainer";
-import RiskTag from "@/components/ui/RiskTag";
-import TierBadge from "@/components/ui/TierBadge";
-import { formatUsd } from "@/components/ui/formatUsd";
-import { getCircle, getMe, joinCircle } from "@/lib/api-client";
-import type { CircleDetail, Member } from "@/types/api";
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import AssistantDrawer from '@/components/agent/AssistantDrawer';
+import PayButton from '@/components/circles/PayButton';
+import PayoutCard from '@/components/circles/PayoutCard';
+import { friendlyError } from '@/components/forms/errorMessages';
+import PageContainer from '@/components/layout/PageContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InfoNote from '@/components/ui/InfoNote';
+import LinkButton from '@/components/ui/LinkButton';
+import Notice from '@/components/ui/Notice';
+import RiskTag from '@/components/ui/RiskTag';
+import Skeleton from '@/components/ui/Skeleton';
+import TierBadge from '@/components/ui/TierBadge';
+import { formatUsd } from '@/components/ui/formatUsd';
+import { getCircle, getMe, joinCircle } from '@/lib/api-client';
+import type { CircleDetail, Member } from '@/types/api';
 
-const STATUS_LABEL: Record<CircleDetail["status"], string> = {
-  open: "Open",
-  active: "Active",
-  completed: "Completed",
+const STATUS_LABEL: Record<CircleDetail['status'], string> = {
+  open: 'Open',
+  active: 'Active',
+  completed: 'Completed',
+};
+
+const STATUS_VARIANT: Record<
+  CircleDetail['status'],
+  'neutral' | 'safe' | 'brand'
+> = {
+  open: 'brand',
+  active: 'safe',
+  completed: 'neutral',
 };
 
 function CircleDetail() {
@@ -50,8 +67,8 @@ function CircleDetail() {
           : null;
 
       if (failed) {
-        if (failed.error.code === "UNAUTHENTICATED") {
-          router.replace("/login");
+        if (failed.error.code === 'UNAUTHENTICATED') {
+          router.replace('/login');
           return;
         }
         setError(friendlyError(failed.error.code, failed.error.message));
@@ -75,41 +92,41 @@ function CircleDetail() {
     : false;
 
   return (
-    <div className="min-h-full bg-white font-sans text-gray-900">
-      <PageContainer>
-        {loading ? (
-          <CircleSkeleton />
-        ) : error ? (
-          <ErrorState
-            message={error}
-            onRetry={() => setReloadKey((key) => key + 1)}
-          />
-        ) : circle ? (
-          <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-            <div className="flex flex-col gap-6">
-              <CircleHeader circle={circle} />
+    <PageContainer>
+      {loading ? (
+        <CircleSkeleton />
+      ) : error ? (
+        <ErrorState
+          message={error}
+          onRetry={() => setReloadKey((key) => key + 1)}
+        />
+      ) : circle ? (
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+          <div className="flex flex-col gap-6">
+            <CircleHeader circle={circle} />
 
-              <PotCard circle={circle} />
+            <InfoNote>
+              A payout depends on every member paying this cycle. D&apos;arjo
+              does not cover missed contributions or guarantee the pot.
+            </InfoNote>
 
-              <CircleActions
-                circle={circle}
-                isMember={isMember}
-                onCircleChange={setCircle}
-              />
-            </div>
+            <PotCard circle={circle} />
 
-            <div className="flex flex-col gap-6">
-              <MembersList
-                circle={circle}
-                viewerId={viewerId}
-              />
-
-              <AssistantDrawer circleId={circle.id} circleName={circle.name} />
-            </div>
+            <CircleActions
+              circle={circle}
+              isMember={isMember}
+              onCircleChange={setCircle}
+            />
           </div>
-        ) : null}
-      </PageContainer>
-    </div>
+
+          <div className="flex flex-col gap-6">
+            <MembersList circle={circle} viewerId={viewerId} />
+
+            <AssistantDrawer circleId={circle.id} circleName={circle.name} />
+          </div>
+        </div>
+      ) : null}
+    </PageContainer>
   );
 }
 
@@ -127,58 +144,54 @@ function CircleHeader({ circle }: { circle: CircleDetail }) {
   }
 
   return (
-    <header className="flex flex-col gap-3">
+    <header className="flex flex-col gap-4">
       <Link
         href="/studio"
-        className="inline-flex min-h-11 w-fit items-center gap-1 text-sm font-medium text-[#0070e0] hover:underline"
+        className="inline-flex min-h-11 w-fit items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover hover:underline"
       >
         <span aria-hidden="true">&larr;</span>
         Back to studio
       </Link>
 
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="break-words text-2xl font-semibold tracking-tight">
-            {circle.name}
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Created by {circle.creatorName}
-          </p>
-        </div>
-        <TierBadge tier={circle.tier} />
-      </div>
+      <PageHeader
+        eyebrow="Circle"
+        title={circle.name}
+        description={`Created by ${circle.creatorName}`}
+        action={<TierBadge tier={circle.tier} />}
+      />
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700">
+        <Badge variant={STATUS_VARIANT[circle.status]}>
           {STATUS_LABEL[circle.status]}
-        </span>
-        <span className="text-gray-500">
+        </Badge>
+        <span className="text-muted">
           Cycle {circle.currentCycle} of {circle.totalCycles}
         </span>
-        <span className="text-gray-300" aria-hidden="true">
+        <span className="text-muted-soft" aria-hidden="true">
           &middot;
         </span>
-        <span className="text-gray-500">
+        <span className="text-muted">
           {formatUsd(circle.contributionCents)} {circle.frequency}
         </span>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <RiskTag risk={circle.risk} reason={circle.riskReason} />
-        <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-          <span className="text-xs uppercase tracking-wide text-gray-500">
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted">
             Invite code
           </span>
-          <span className="font-mono text-sm font-semibold text-[#001c64]">
+          <span className="font-mono text-sm font-semibold text-primary">
             {circle.inviteCode}
           </span>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={copyInviteCode}
-            className="min-h-11 rounded-lg border border-[#003087] px-2.5 text-xs font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
           >
-            {copied ? "Copied" : "Copy"}
-          </button>
+            {copied ? 'Copied' : 'Copy'}
+          </Button>
         </div>
       </div>
     </header>
@@ -190,25 +203,23 @@ function PotCard({ circle }: { circle: CircleDetail }) {
     circle.potCents > 0
       ? Math.min(
           100,
-          Math.round((circle.paidThisCycleCents / circle.potCents) * 100)
+          Math.round((circle.paidThisCycleCents / circle.potCents) * 100),
         )
       : 0;
   const remaining = Math.max(0, circle.potCents - circle.paidThisCycleCents);
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-5">
+    <Card className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           This cycle&apos;s pot
         </h2>
-        <span className="text-sm font-semibold text-[#0070e0]">
-          {progress}%
-        </span>
+        <span className="text-sm font-semibold text-primary">{progress}%</span>
       </div>
 
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-[#001c64]">
+      <p className="text-3xl font-semibold tracking-tight text-ink">
         {formatUsd(circle.paidThisCycleCents)}
-        <span className="ml-1 text-base font-normal text-gray-500">
+        <span className="ml-1 text-base font-normal text-muted">
           of {formatUsd(circle.potCents)}
         </span>
       </p>
@@ -219,20 +230,20 @@ function PotCard({ circle }: { circle: CircleDetail }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Pot collected this cycle"
-        className="mt-3 h-3 w-full overflow-hidden rounded-full bg-gray-100"
+        className="h-3 w-full overflow-hidden rounded-full bg-surface-3"
       >
         <div
-          className="h-full rounded-full bg-[#003087] transition-all"
+          className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="text-sm text-muted">
         {remaining > 0
           ? `${formatUsd(remaining)} still to collect`
           : "Everyone has paid into this cycle's pot."}
       </p>
-    </section>
+    </Card>
   );
 }
 
@@ -250,8 +261,8 @@ function CircleActions({
   const [joinError, setJoinError] = useState<string | null>(null);
 
   function handleAuthError(code: string): boolean {
-    if (code === "UNAUTHENTICATED") {
-      router.replace("/login");
+    if (code === 'UNAUTHENTICATED') {
+      router.replace('/login');
       return true;
     }
     return false;
@@ -274,7 +285,7 @@ function CircleActions({
     setJoining(false);
   }
 
-  if (circle.status === "completed") {
+  if (circle.status === 'completed') {
     return (
       <InfoPanel
         title="Circle complete"
@@ -284,7 +295,7 @@ function CircleActions({
   }
 
   if (!isMember) {
-    if (circle.status !== "open") {
+    if (circle.status !== 'open') {
       return (
         <InfoPanel
           title="This circle is already active"
@@ -294,30 +305,31 @@ function CircleActions({
     }
 
     return (
-      <section className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-5">
-        <h2 className="text-base font-semibold">Join this circle</h2>
-        <p className="text-sm text-gray-600">
-          Contribute {formatUsd(circle.contributionCents)} {circle.frequency}{" "}
+      <Card className="flex flex-col gap-3">
+        <h2 className="text-base font-semibold tracking-tight text-ink">
+          Join this circle
+        </h2>
+        <p className="text-sm leading-relaxed text-muted">
+          Contribute {formatUsd(circle.contributionCents)} {circle.frequency}{' '}
           and take your turn in the payout order.
         </p>
-        <button
-          type="button"
-          onClick={handleJoin}
-          disabled={joining}
-          className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#003087] px-5 text-base font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {joining ? "Joining..." : "Join this circle"}
-        </button>
         {joinError ? (
-          <p role="alert" className="text-sm text-red-700">
-            {joinError}
-          </p>
+          <Notice variant="error">{joinError}</Notice>
         ) : null}
-      </section>
+        <Button
+          type="button"
+          size="lg"
+          fullWidth
+          loading={joining}
+          onClick={handleJoin}
+        >
+          {joining ? 'Joining...' : 'Join this circle'}
+        </Button>
+      </Card>
     );
   }
 
-  if (circle.status === "open") {
+  if (circle.status === 'open') {
     return (
       <InfoPanel
         title="Waiting for the circle to fill"
@@ -341,9 +353,11 @@ function CircleActions({
       ) : null}
 
       {!circle.viewerPaidThisCycle ? (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-base font-semibold">Your turn to pay</h2>
-          <p className="text-sm text-gray-600">
+        <div className="flex flex-col gap-3">
+          <h2 className="text-base font-semibold tracking-tight text-ink">
+            Your turn to pay
+          </h2>
+          <p className="text-sm leading-relaxed text-muted">
             Pay {formatUsd(circle.contributionCents)} to keep this cycle on
             track.
           </p>
@@ -367,22 +381,22 @@ function MembersList({
   viewerId: string | null;
 }) {
   const members = [...circle.members].sort(
-    (a, b) => a.turnPosition - b.turnPosition
+    (a, b) => a.turnPosition - b.turnPosition,
   );
 
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Members
         </h2>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-muted">
           {circle.memberCount} of {circle.memberLimit}
         </span>
       </div>
 
       {members.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
+        <p className="rounded-2xl border border-dashed border-line bg-surface-2 p-4 text-sm text-muted">
           No members have joined this circle yet.
         </p>
       ) : (
@@ -413,11 +427,13 @@ function MemberRow({
   return (
     <li
       className={`flex items-start gap-3 rounded-2xl border p-3 ${
-        isViewer ? "border-[#0070e0] bg-blue-50/40" : "border-gray-200"
+        isViewer
+          ? 'border-accent bg-primary-soft/40'
+          : 'border-line bg-surface'
       }`}
     >
       <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-600"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-3 text-sm font-semibold text-muted"
         aria-label={`Turn ${member.turnPosition}`}
       >
         {member.turnPosition}
@@ -425,21 +441,19 @@ function MemberRow({
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="break-words font-medium text-gray-900">{member.name}</span>
-          {isViewer ? (
-            <span className="rounded-full bg-[#0070e0] px-2 py-0.5 text-xs font-semibold text-white">
-              You
-            </span>
-          ) : null}
+          <span className="break-words font-medium text-ink">
+            {member.name}
+          </span>
+          {isViewer ? <Badge variant="brand">You</Badge> : null}
           {isWinner ? (
-            <span className="rounded-full bg-[#ffd140] px-2 py-0.5 text-xs font-semibold text-[#001c64]">
+            <Badge variant="risky" dot>
               Winner this cycle
-            </span>
+            </Badge>
           ) : null}
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+          <span className="rounded-md bg-surface-3 px-1.5 py-0.5 text-xs font-medium text-muted">
             {member.nationality}
           </span>
           <TierBadge tier={member.tier} rank={member.rank} />
@@ -450,36 +464,33 @@ function MemberRow({
   );
 }
 
-function StatusPill({ status }: { status: Member["currentCycleStatus"] }) {
-  const styles: Record<Member["currentCycleStatus"], string> = {
-    paid: "bg-green-100 text-green-800",
-    pending: "bg-gray-100 text-gray-600",
-    late: "bg-red-100 text-red-700",
-    failed: "bg-red-200 text-red-800",
+function StatusPill({ status }: { status: Member['currentCycleStatus'] }) {
+  const variant: Record<
+    Member['currentCycleStatus'],
+    'safe' | 'neutral' | 'error'
+  > = {
+    paid: 'safe',
+    pending: 'neutral',
+    late: 'error',
+    failed: 'error',
   };
 
-  const labels: Record<Member["currentCycleStatus"], string> = {
-    paid: "Paid",
-    pending: "Pending",
-    late: "Late",
-    failed: "Failed",
+  const labels: Record<Member['currentCycleStatus'], string> = {
+    paid: 'Paid',
+    pending: 'Pending',
+    late: 'Late',
+    failed: 'Failed',
   };
 
-  return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${styles[status]}`}
-    >
-      {labels[status]}
-    </span>
-  );
+  return <Badge variant={variant[status]}>{labels[status]}</Badge>;
 }
 
 function InfoPanel({ title, body }: { title: string; body: string }) {
   return (
-    <section className="flex flex-col gap-1 rounded-2xl border border-gray-200 bg-gray-50 p-5">
-      <h2 className="text-base font-semibold">{title}</h2>
-      <p className="text-sm text-gray-600">{body}</p>
-    </section>
+    <Card className="flex flex-col gap-1 bg-surface-2">
+      <h2 className="text-base font-semibold tracking-tight text-ink">{title}</h2>
+      <p className="text-sm leading-relaxed text-muted">{body}</p>
+    </Card>
   );
 }
 
@@ -491,25 +502,17 @@ function ErrorState({
   onRetry: () => void;
 }) {
   return (
-    <div
-      role="alert"
-      className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-red-50 p-5"
-    >
-      <p className="text-sm text-red-700">{message}</p>
+    <div className="flex flex-col items-start gap-4">
+      <Notice variant="error" title="Could not load this circle" className="w-full">
+        {message}
+      </Notice>
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={onRetry}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
+        <Button type="button" onClick={onRetry}>
           Try again
-        </button>
-        <Link
-          href="/studio"
-          className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
-        >
+        </Button>
+        <LinkButton href="/studio" variant="outline">
           Back to studio
-        </Link>
+        </LinkButton>
       </div>
     </div>
   );
@@ -519,11 +522,11 @@ function CircleSkeleton() {
   return (
     <div className="flex flex-col gap-5" role="status" aria-live="polite">
       <span className="sr-only">Loading circle...</span>
-      <div className="h-5 w-28 animate-pulse rounded bg-gray-100" />
-      <div className="h-8 w-2/3 animate-pulse rounded bg-gray-100" />
-      <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
-      <div className="h-32 w-full animate-pulse rounded-2xl bg-gray-100" />
-      <div className="h-40 w-full animate-pulse rounded-2xl bg-gray-100" />
+      <Skeleton className="h-5 w-28" />
+      <Skeleton className="h-8 w-2/3" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-32 w-full rounded-2xl" />
+      <Skeleton className="h-40 w-full rounded-2xl" />
     </div>
   );
 }
@@ -532,9 +535,9 @@ export default function CircleDetailPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-full bg-white px-5 py-8">
-          <p className="text-sm text-gray-500">Loading circle...</p>
-        </div>
+        <PageContainer>
+          <p className="text-sm text-muted">Loading circle...</p>
+        </PageContainer>
       }
     >
       <CircleDetail />

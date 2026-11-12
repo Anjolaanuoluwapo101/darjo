@@ -42,10 +42,10 @@ export async function GET() {
 
     let releaseBlockedReason: string | undefined;
     if (viewerRole !== 'winner') releaseBlockedReason = 'Only the winner can release this payout.';
-    else if (row.status === 'released') releaseBlockedReason = 'Waiting for PayPal confirmation.';
+    else if (row.status === 'released') releaseBlockedReason = 'Waiting for payment confirmation.';
     else if (row.status !== 'prepared') releaseBlockedReason = 'This payout is not ready to release.';
     else if (!isPaypalSupported(me.nationality))
-      releaseBlockedReason = 'PayPal cannot send a payout to your country yet.';
+      releaseBlockedReason = 'Payouts are not available in your country yet.';
 
     return {
       ...toPayoutApi(
