@@ -1,23 +1,41 @@
 {
-  "note": "PayPal SANDBOX accounts for the demo only. These are not real accounts and the passwords only work against the PayPal sandbox.",
+  "note": "Demo data only. The darjo-pool-* accounts are PayPal sandbox business profiles; the demo-user-* accounts exist only in this database and cannot sign in to PayPal.",
   "users": [
-    {
-      "name": "Ada Sandbox",
-      "email": "sb-yl7dj53722335@personal.example.com",
-      "password": "1A+jxpJK",
-      "nationality": "US"
-    },
-    {
-      "name": "Ben Sandbox",
-      "email": "sb-ql7kl53706685@personal.example.com",
-      "password": "HbfLM0_^",
-      "nationality": "US"
-    },
-    {
-      "name": "Kenji Sandbox",
-      "email": "sb-eytkw53718260@personal.example.com",
-      "password": "Apf40+:{",
-      "nationality": "JP"
-    }
+    { "name": "Ada Sandbox", "email": "sb-yl7dj53722335@personal.example.com", "password": "1A+jxpJK", "nationality": "US" },
+    { "name": "Ben Sandbox", "email": "sb-ql7kl53706685@personal.example.com", "password": "HbfLM0_^", "nationality": "US" },
+    { "name": "Kenji Sandbox", "email": "sb-eytkw53718260@personal.example.com", "password": "Apf40+:{", "nationality": "JP" },
+
+    { "name": "Miguel Santos", "businessName": "Manila Bay Trading Corp", "email": "darjo-pool-01@business.example.com", "password": "J0nhD03!", "nationality": "PH" },
+    { "name": "Lukas Kazlauskas", "businessName": "Vilnius Baltic UAB", "email": "darjo-pool-02@business.example.com", "password": "J0nhD03!", "nationality": "LT" },
+    { "name": "Sipho Nkosi", "businessName": "Cape Horizon Trading Pty Ltd", "email": "darjo-pool-03@business.example.com", "password": "J0nhD03!", "nationality": "ZA" },
+    { "name": "Arvin Ramgoolam", "businessName": "Indian Ocean Trading Ltd", "email": "darjo-pool-04@business.example.com", "password": "J0nhD03!", "nationality": "MU" },
+    { "name": "Rafael Souza", "businessName": "Verde Amazonia Comercio Ltda", "email": "darjo-pool-05@business.example.com", "password": "J0nhD03!", "nationality": "BR" },
+    { "name": "Minh Nguyen", "businessName": "Mekong Delta Trading JSC", "email": "darjo-pool-06@business.example.com", "password": "J0nhD03!", "nationality": "VN" },
+    { "name": "Michael Carter", "businessName": "Liberty Ridge Trading LLC", "email": "darjo-pool-07@business.example.com", "password": "J0nhD03!", "nationality": "US" },
+    { "name": "Daan de Vries", "businessName": "Amstel Handels BV", "email": "darjo-pool-08@business.example.com", "password": "J0nhD03!", "nationality": "NL" },
+    { "name": "Brian Otieno", "businessName": "Nairobi Highland Trading Ltd", "email": "darjo-pool-09@business.example.com", "password": "J0nhD03!", "nationality": "KE" },
+    { "name": "Yousif Al Khalifa", "businessName": "Pearl Gulf Commerce WLL", "email": "darjo-pool-10@business.example.com", "password": "J0nhD03!", "nationality": "BH" },
+    { "name": "Joao Silva", "businessName": "Tejo Comercio Lda", "email": "darjo-pool-11@business.example.com", "password": "J0nhD03!", "nationality": "PT" },
+
+    { "name": "Amara Okafor", "email": "demo-user-01@darjo.example", "password": "DemoPass123!", "nationality": "NG" },
+    { "name": "Sofia Rossi", "email": "demo-user-02@darjo.example", "password": "DemoPass123!", "nationality": "IT" },
+    { "name": "Liam O'Connor", "email": "demo-user-03@darjo.example", "password": "DemoPass123!", "nationality": "IE" },
+    { "name": "Yuki Tanaka", "email": "demo-user-04@darjo.example", "password": "DemoPass123!", "nationality": "JP" },
+    { "name": "Carlos Mendoza", "email": "demo-user-05@darjo.example", "password": "DemoPass123!", "nationality": "MX" },
+    { "name": "Priya Nair", "email": "demo-user-06@darjo.example", "password": "DemoPass123!", "nationality": "IN" },
+    { "name": "Noah Williams", "email": "demo-user-07@darjo.example", "password": "DemoPass123!", "nationality": "CA" },
+    { "name": "Marta Kowalska", "email": "demo-user-08@darjo.example", "password": "DemoPass123!", "nationality": "PL" },
+    { "name": "Diego Fernandez", "email": "demo-user-09@darjo.example", "password": "DemoPass123!", "nationality": "AR" },
+    { "name": "Fatima Zahra", "email": "demo-user-10@darjo.example", "password": "DemoPass123!", "nationality": "MA" },
+    { "name": "Emma Johansson", "email": "demo-user-11@darjo.example", "password": "DemoPass123!", "nationality": "SE" },
+    { "name": "Oliver Schmidt", "email": "demo-user-12@darjo.example", "password": "DemoPass123!", "nationality": "DE" },
+    { "name": "Chidi Eze", "email": "demo-user-13@darjo.example", "password": "DemoPass123!", "nationality": "NG" },
+    { "name": "Ana Garcia", "email": "demo-user-14@darjo.example", "password": "DemoPass123!", "nationality": "ES" },
+    { "name": "Tomas Silva", "email": "demo-user-15@darjo.example", "password": "DemoPass123!", "nationality": "CL" },
+    { "name": "Mei Lin", "email": "demo-user-16@darjo.example", "password": "DemoPass123!", "nationality": "SG" },
+    { "name": "Kwame Mensah", "email": "demo-user-17@darjo.example", "password": "DemoPass123!", "nationality": "GH" },
+    { "name": "Isabelle Dubois", "email": "demo-user-18@darjo.example", "password": "DemoPass123!", "nationality": "FR" },
+    { "name": "Ravi Patel", "email": "demo-user-19@darjo.example", "password": "DemoPass123!", "nationality": "GB" },
+    { "name": "Naledi Dlamini", "email": "demo-user-20@darjo.example", "password": "DemoPass123!", "nationality": "ZA" }
   ]
 }

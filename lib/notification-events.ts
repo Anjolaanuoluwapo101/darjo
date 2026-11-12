@@ -4,6 +4,7 @@
 import { db } from '@/lib/server';
 import { computeTier } from '@/lib/rules';
 import { createNotifications, notificationKeys } from '@/lib/notifications';
+import { displayName } from '@/lib/names';
 import type { NotificationInput } from '@/lib/notifications';
 import type { Tier } from '@/types/api';
 
@@ -68,7 +69,7 @@ export async function notifyPaymentSettled(paymentId: string) {
         userId: membership.userId,
         type: 'circle_filled',
         title: 'Circle is full',
-        body: `${payment.circle.name} has collected the full pot for cycle ${payment.cycle}. ${winner?.name ?? 'The winner'} can release it.`,
+        body: `${payment.circle.name} has collected the full pot for cycle ${payment.cycle}. ${winner ? displayName(winner) : 'The winner'} can release it.`,
         url: `/circles/${payment.circleId}`,
         data: { circleId: payment.circleId, cycle: payment.cycle, payoutId: payout.id },
         dedupeKey: notificationKeys.circleFilled(payment.circleId),
@@ -259,7 +260,7 @@ export async function notifyNudge(input: {
         userId: input.toUserId,
         type: 'nudge',
         title: 'A circle member nudged you',
-        body: `${sender.name} in ${circle.name}: ${input.text}`,
+        body: `${displayName(sender)} in ${circle.name}: ${input.text}`,
         url: `/circles/${input.circleId}`,
         data: { circleId: input.circleId, fromUserId: input.fromUserId, cycle: input.cycle },
         dedupeKey: notificationKeys.nudge(input.circleId, input.toUserId, input.cycle),

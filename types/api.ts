@@ -3,7 +3,7 @@ export type Tier = 1 | 2 | 3 | 4;
 export type VolatilityLabel = 'low' | 'medium' | 'high';
 
 export interface User {
-  id: string; name: string; email: string;
+  id: string; name: string; businessName?: string | null; email: string;
   nationality: string; // ISO country code, e.g. 'US'
   currency: string;    // ISO currency, e.g. 'USD'
   tier: Tier;
@@ -26,7 +26,7 @@ export interface CircleSummary {
 }
 
 export interface Member {
-  userId: string; name: string; nationality: string;
+  userId: string; name: string; businessName?: string | null; nationality: string;
   currency: string;    // ISO currency of the member, e.g. 'JPY'
   tier: Tier; rank: string | null;
   turnPosition: number;

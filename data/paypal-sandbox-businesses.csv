@@ -1,0 +1,41 @@
+country_code,account_type,primary_email_alias,password,first_name,last_name,ppBalance,addBank,ccType,payment_card,business_name
+PH,PERSONAL,darjo-pool-01@business.example.com,J0nhD03!,Miguel,Santos,1073,Y,VISA,,Manila Bay Trading Corp
+LT,PERSONAL,darjo-pool-02@business.example.com,J0nhD03!,Lukas,Kazlauskas,1055,Y,AMEX,,Vilnius Baltic UAB
+ZA,PERSONAL,darjo-pool-03@business.example.com,J0nhD03!,Sipho,Nkosi,1090,N,MASTERCARD,,Cape Horizon Trading Pty Ltd
+MU,PERSONAL,darjo-pool-04@business.example.com,J0nhD03!,Arvin,Ramgoolam,1062,N,MASTERCARD,,Indian Ocean Trading Ltd
+BR,PERSONAL,darjo-pool-05@business.example.com,J0nhD03!,Rafael,Souza,1010,N,MASTERCARD,,Verde Amazonia Comercio Ltda
+VN,PERSONAL,darjo-pool-06@business.example.com,J0nhD03!,Minh,Nguyen,1089,Y,VISA,,Mekong Delta Trading JSC
+US,PERSONAL,darjo-pool-07@business.example.com,J0nhD03!,Michael,Carter,1086,N,MASTERCARD,PAYPAL,Liberty Ridge Trading LLC
+NL,PERSONAL,darjo-pool-08@business.example.com,J0nhD03!,Daan,de Vries,1066,N,MASTERCARD,,Amstel Handels BV
+KE,PERSONAL,darjo-pool-09@business.example.com,J0nhD03!,Brian,Otieno,1049,Y,VISA,,Nairobi Highland Trading Ltd
+BH,PERSONAL,darjo-pool-10@business.example.com,J0nhD03!,Yousif,Al Khalifa,1008,N,DISCOVER,,Pearl Gulf Commerce WLL
+PT,PERSONAL,darjo-pool-11@business.example.com,J0nhD03!,Joao,Silva,1075,Y,AMEX,,Tejo Comercio Lda
+TR,PERSONAL,darjo-pool-12@business.example.com,J0nhD03!,Emre,Yilmaz,1085,Y,VISA,,Bosphorus Trade AS
+KW,PERSONAL,darjo-pool-13@business.example.com,J0nhD03!,Fahad,Al Sabah,1050,N,MASTERCARD,,Gulf Pearl General Trading Co
+BS,PERSONAL,darjo-pool-14@business.example.com,J0nhD03!,Jamal,Rolle,1011,Y,VISA,,Nassau Bay Traders Ltd
+IN,PERSONAL,darjo-pool-15@business.example.com,J0nhD03!,Arjun,Mehta,1043,Y,AMEX,,Ganges Global Exports Pvt Ltd
+CO,PERSONAL,darjo-pool-16@business.example.com,J0nhD03!,Santiago,Restrepo,1017,Y,VISA,,Cafetal Andino SAS
+JM,PERSONAL,darjo-pool-17@business.example.com,J0nhD03!,Andre,Brown,1046,N,MASTERCARD,,Kingston Blue Mountain Ltd
+FR,PERSONAL,darjo-pool-18@business.example.com,J0nhD03!,Louis,Moreau,1029,Y,VISA,,Maison Lumiere SARL
+MY,PERSONAL,darjo-pool-19@business.example.com,J0nhD03!,Ahmad,Rahman,1064,N,VISA,,Straits Commerce Sdn Bhd
+CR,PERSONAL,darjo-pool-20@business.example.com,J0nhD03!,Valeria,Jimenez,1018,N,MASTERCARD,,Pura Vida Agro SA
+UY,PERSONAL,darjo-pool-21@business.example.com,J0nhD03!,Mateo,Rodriguez,1087,Y,AMEX,,Rio de la Plata Export SA
+NI,PERSONAL,darjo-pool-22@business.example.com,J0nhD03!,Jose,Lopez,1069,Y,VISA,,Lago Azul Export SA
+GB,PERSONAL,darjo-pool-23@business.example.com,J0nhD03!,Oliver,Bennett,1030,N,MASTERCARD,,Thames Commercial Ltd
+HN,PERSONAL,darjo-pool-24@business.example.com,J0nhD03!,Carlos,Mejia,1037,Y,VISA,,Lenca Agroexport SA
+AU,PERSONAL,darjo-pool-25@business.example.com,J0nhD03!,Liam,Carter,1005,Y,VISA,,Southern Cross Supplies Pty Ltd
+GT,PERSONAL,darjo-pool-26@business.example.com,J0nhD03!,Diego,Morales,1035,Y,AMEX,,Quetzal Coffee Export SA
+LS,PERSONAL,darjo-pool-27@business.example.com,J0nhD03!,Thabo,Mokoena,1054,N,MASTERCARD,,Maloti Supply Pty Ltd
+MZ,PERSONAL,darjo-pool-28@business.example.com,J0nhD03!,Carlos,Machel,1065,Y,VISA,,Zambezi Coast Lda
+MA,PERSONAL,darjo-pool-29@business.example.com,J0nhD03!,Youssef,El Amrani,1058,N,MASTERCARD,,Atlas Maroc Commerce SARL
+DE,PERSONAL,darjo-pool-30@business.example.com,J0nhD03!,Felix,Schneider,1021,Y,VISA,,Rheinwerk Handel GmbH
+VE,PERSONAL,darjo-pool-31@business.example.com,J0nhD03!,Jose,Ramirez,1088,N,DISCOVER,,Orinoco Supply CA
+ES,PERSONAL,darjo-pool-32@business.example.com,J0nhD03!,Javier,Romero,1026,N,MASTERCARD,,Iberia Solar Distribucion SL
+NZ,PERSONAL,darjo-pool-33@business.example.com,J0nhD03!,Jack,Wilson,1068,N,VISA,,Kiwi Pacific Ltd
+BW,PERSONAL,darjo-pool-34@business.example.com,J0nhD03!,Kagiso,Molefe,1012,N,VISA,,Kalahari Supply Co Pty Ltd
+QA,PERSONAL,darjo-pool-35@business.example.com,J0nhD03!,Hamad,Al Thani,1076,N,DISCOVER,,Doha Pearl Trading WLL
+CL,PERSONAL,darjo-pool-36@business.example.com,J0nhD03!,Benjamin,Rojas,1015,Y,AMEX,,Andes Central Export SA
+SV,PERSONAL,darjo-pool-37@business.example.com,J0nhD03!,Jose,Martinez,1084,N,DISCOVER,,Cuscatlan Export SA de CV
+RS,PERSONAL,darjo-pool-38@business.example.com,J0nhD03!,Nikola,Jovanovic,1079,Y,VISA,,Balkan Gate d.o.o.
+AR,PERSONAL,darjo-pool-39@business.example.com,J0nhD03!,Mateo,Fernandez,1003,Y,AMEX,,Pampa Exportaciones SA
+JO,PERSONAL,darjo-pool-40@business.example.com,J0nhD03!,Khalid,Haddad,1047,Y,AMEX,,Petra Gate Trading LLC

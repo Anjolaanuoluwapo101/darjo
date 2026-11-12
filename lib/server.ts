@@ -9,6 +9,7 @@ import type {
   User, Tier, Member, Payout, CircleSummary, CircleDetail,
 } from '@/types/api';
 import { computeRisk } from '@/lib/rules';
+import { displayName } from '@/lib/names';
 import { currencyFor } from '@/lib/rules/countries';
 import { estimateLocalAmount, volatilityLabel } from '@/lib/fx';
 
@@ -61,7 +62,8 @@ export const circleInclude = {
 export type CircleRow = Prisma.CircleGetPayload<{ include: typeof circleInclude }>;
 
 export const toUser = (u: UserRow): User => ({
-  id: u.id, name: u.name, email: u.email, nationality: u.nationality, currency: u.currency,
+  id: u.id, name: displayName(u), businessName: u.businessName, email: u.email,
+  nationality: u.nationality, currency: u.currency,
   tier: u.tier as Tier, rank: u.rank, score: u.score,
 });
 
@@ -75,7 +77,10 @@ export function toSummary(c: CircleRow, viewer: UserRow): CircleSummary {
     frequency: c.frequency as 'weekly' | 'monthly',
     memberLimit: c.memberLimit, memberCount: c.memberships.length,
     status: c.status as CircleSummary['status'],
-    creatorName: c.memberships.find((m) => m.userId === c.creatorId)?.user.name ?? '',
+    creatorName: (() => {
+      const creator = c.memberships.find((m) => m.userId === c.creatorId)?.user;
+      return creator ? displayName(creator) : '';
+    })(),
     nationalitiesInCircle: Array.from(new Set(c.memberships.map((m) => m.user.nationality))),
     risk, riskReason: reason, ownTier: c.tier === viewer.tier,
   };
@@ -94,7 +99,8 @@ export async function toDetail(c: CircleRow, viewer: UserRow): Promise<CircleDet
   const members: Member[] = c.memberships.map((m) => {
     const status = byUser.get(m.userId)?.status;
     return {
-      userId: m.userId, name: m.user.name, nationality: m.user.nationality,
+      userId: m.userId, name: displayName(m.user), businessName: m.user.businessName,
+      nationality: m.user.nationality,
       currency: m.user.currency,
       tier: m.user.tier as Tier, rank: m.user.rank, turnPosition: m.turnPosition,
       currentCycleStatus: status === 'failed' ? 'failed' : status === 'paid' ? 'paid' : status === 'late' ? 'late' : 'pending',
