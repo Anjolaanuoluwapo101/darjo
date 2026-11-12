@@ -36,7 +36,7 @@ export default function AssistantDrawer({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#003087] px-4 text-sm font-semibold text-[#003087] transition hover:bg-[#003087] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#ffd140] px-4 text-sm font-bold text-[#001c64] transition hover:bg-[#f2c000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2"
       >
         <svg
           viewBox="0 0 20 20"

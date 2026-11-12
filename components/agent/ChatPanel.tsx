@@ -197,7 +197,7 @@ export default function ChatPanel({
         <button
           type="submit"
           disabled={sending || draft.trim().length === 0}
-          className="min-h-11 rounded-xl bg-[#003087] px-4 text-sm font-semibold text-white transition hover:bg-[#001c64] disabled:cursor-not-allowed disabled:bg-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070e0] focus-visible:ring-offset-2"
+          className="min-h-11 rounded-xl bg-[#ffd140] px-4 text-sm font-bold text-[#001c64] transition hover:bg-[#f2c000] disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-700 disabled:hover:bg-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003087] focus-visible:ring-offset-2"
         >
           Send
         </button>

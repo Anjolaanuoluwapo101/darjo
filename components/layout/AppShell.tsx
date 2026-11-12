@@ -109,7 +109,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-white">
-      <header className="sticky top-0 z-40 border-b border-[#003087] bg-[#001c64]">
+      <header className="sticky top-0 z-40 border-b border-[#2a2a33] bg-[#0b0b0f]">
         <div className="mx-auto flex w-full max-w-md flex-wrap items-center justify-between px-4 py-1.5 sm:px-6 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl md:py-2">
           <Link href="/studio" className="shrink-0 text-base font-semibold tracking-tight text-white">
             D&apos;arjo
@@ -133,7 +133,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#001c64]"
+                className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0f]"
               >
                 Log out
               </button>
