@@ -219,8 +219,8 @@ npx prisma generate
 npm run dev
 ```
 
-Open http://localhost:3000. `/` redirects to `/studio`; signed-out visitors are
-sent to `/login`.
+Open http://localhost:3000 for the landing page. Use **Sign in** to reach
+`/login`; signed-out visitors to app pages are sent to `/login`.
 
 ### 5. Demo data (optional)
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import TextField from "@/components/forms/TextField";
 import PageContainer from "@/components/layout/PageContainer";
 import PageHeader from "@/components/layout/PageHeader";
@@ -68,6 +68,13 @@ function JoinForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Keep the prefilled invite code in sync when navigating between circles
+  // on the same join route (the page component is not remounted).
+  useEffect(() => {
+    const code = (searchParams.get("code") ?? "").trim().toUpperCase();
+    if (code !== inviteCode) setInviteCode(code);
+  }, [searchParams, inviteCode]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CircleCard from "@/components/circles/CircleCard";
+import MyCircleCard from "@/components/circles/MyCircleCard";
 import MatchPanel from "@/components/match/MatchPanel";
 import { friendlyError } from "@/components/forms/errorMessages";
 import PageContainer from "@/components/layout/PageContainer";
@@ -30,6 +31,14 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "risky", label: "Risky" },
 ];
 
+type MyFilter = "all" | "paid" | "not_paid";
+
+const MY_FILTERS: { value: MyFilter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "paid", label: "Paid" },
+  { value: "not_paid", label: "Not paid" },
+];
+
 const VIEW_OPTIONS = [
   { value: "browse", label: "Browse" },
   { value: "match", label: "Find my circle" },
@@ -40,6 +49,8 @@ export default function StudioPage() {
   const [user, setUser] = useState<User | null>(null);
   const [circles, setCircles] = useState<CircleSummary[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
+  const [myCircles, setMyCircles] = useState<CircleSummary[]>([]);
+  const [myFilter, setMyFilter] = useState<MyFilter>("all");
   const [view, setView] = useState<"browse" | "match">("browse");
   const urlParams =
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
@@ -57,9 +68,10 @@ export default function StudioPage() {
       setLoading(true);
       setError(null);
 
-      const [meResult, circlesResult] = await Promise.all([
+      const [meResult, circlesResult, myCirclesResult] = await Promise.all([
         getMe(),
         filter === "all" ? listCircles() : listCircles({ risk: filter }),
+        listCircles({ mine: true }),
       ]);
 
       if (!active) return;
@@ -68,7 +80,9 @@ export default function StudioPage() {
         ? meResult
         : !circlesResult.ok
           ? circlesResult
-          : null;
+          : !myCirclesResult.ok
+            ? myCirclesResult
+            : null;
 
       if (failed) {
         if (failed.error.code === "UNAUTHENTICATED") {
@@ -90,6 +104,9 @@ export default function StudioPage() {
               )
             : circlesResult.data.circles
         );
+      }
+      if (myCirclesResult.ok) {
+        setMyCircles(myCirclesResult.data.circles);
       }
       setLoading(false);
     }
@@ -182,7 +199,7 @@ export default function StudioPage() {
                   </Button>
                 </div>
               </Notice>
-            ) : circles.length === 0 ? (
+            ) : circles.length === 0 && myCircles.length === 0 ? (
               <EmptyState
                 title="No circles here yet"
                 description={
@@ -197,8 +214,54 @@ export default function StudioPage() {
                 }
               />
             ) : (
-              <div className="flex flex-col gap-6">
-                {ownTier.length > 0 ? (
+              <>
+                {myCircles.length > 0 && (
+                  <section>
+                    <div
+                      role="group"
+                      aria-label="My circle payment status"
+                      className="flex flex-wrap gap-2 mb-4"
+                    >
+                      {MY_FILTERS.map((option) => {
+                        const selected = myFilter === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setMyFilter(option.value)}
+                            aria-pressed={selected}
+                            className={`min-h-9 rounded-full border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+                              selected
+                                ? "border-primary bg-primary text-surface"
+                                : "border-line bg-surface text-muted hover:border-line-strong hover:text-ink"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <Section title="My circles" description="Circles you have joined.">
+                      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        {myCircles
+                          .filter((circle) => {
+                            const status = circle.viewerPaymentStatus;
+                            if (myFilter === "paid") return status === "paid";
+                            if (myFilter === "not_paid")
+                              return circle.status === "active" && status !== "paid";
+                            return true;
+                          })
+                          .map((circle) => (
+                            <li key={circle.id}>
+                              <MyCircleCard circle={circle} />
+                            </li>
+                          ))}
+                      </ul>
+                    </Section>
+                  </section>
+                )}
+                <div className="flex flex-col gap-6">
+                  {ownTier.length > 0 ? (
                   <Section title="Your tier">
                     <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       {ownTier.map((circle) => (
@@ -225,7 +288,8 @@ export default function StudioPage() {
                   </Section>
                 ) : null}
               </div>
-            )}
+            </>
+          )}
           </>
         )}
 

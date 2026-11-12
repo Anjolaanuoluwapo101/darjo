@@ -23,6 +23,7 @@ export interface CircleSummary {
   risk: 'safe' | 'risky'; // computed for the viewer
   riskReason: string;
   ownTier: boolean;
+  viewerPaymentStatus?: 'paid' | 'pending' | 'late' | 'failed' | null;
 }
 
 export interface Member {

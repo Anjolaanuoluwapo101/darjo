@@ -37,8 +37,8 @@ npx prisma migrate deploy
 npm run dev
 ```
 
-Open http://localhost:3000. `/` redirects to `/studio`; signed-out users are sent
-to `/login` by `proxy.ts`.
+Open http://localhost:3000 for the landing page. Sign in from the header; any
+signed-out user who opens an app page is sent to `/login` by `proxy.ts`.
 
 ## Demo data
 

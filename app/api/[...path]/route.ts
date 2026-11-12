@@ -97,9 +97,24 @@ async function handle(method: 'GET' | 'POST', req: NextRequest, ctx: Ctx) {
         where: { memberships: { some: { userId: me.id } } },
         include: circleInclude,
       });
+      const payments = await db.payment.findMany({
+        where: { userId: me.id, circleId: { in: rows.map((r) => r.id) } },
+        select: { circleId: true, cycle: true, status: true },
+      });
+      const payByCycle = new Map<string, string>(
+        payments.map((p) => [`${p.circleId}:${p.cycle}`, p.status]),
+      );
       const order = { active: 0, open: 1, completed: 2 } as const;
       const circles = rows
-        .map((circle) => toSummary(circle, me))
+        .map((circle) => ({
+          ...toSummary(circle, me),
+          viewerPaymentStatus: (payByCycle.get(`${circle.id}:${circle.currentCycle}`) ?? null) as
+            | 'paid'
+            | 'pending'
+            | 'late'
+            | 'failed'
+            | null,
+        }))
         .sort((a, b) => order[a.status] - order[b.status] || a.name.localeCompare(b.name));
       return ok({ circles });
     }
